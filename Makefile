@@ -1,4 +1,4 @@
-.PHONY: build clean js hint css php db size dependencies
+.PHONY: build clean structure js hint css php db size dependencies
 
 # repository name
 REPO = equolo
@@ -14,13 +14,16 @@ JS = js/$(REPO).js
 CSS = css/$(REPO).css
 
 # move PHP files
-PHP = php/db.php\
-      php/common.php\
+# NOTE: db.php is moved to the higher level
+#       so it is hidden from this repository
+#       since it contains clear MySQL connection info
+PHP = php/common.php\
       php/activate.php
 
 # default build task
 build:
 	make clean
+	make structure
 	make js
 	make hint
 	make css
@@ -28,9 +31,18 @@ build:
 	make db
 	make size
 
+# clean/remove build folder
+clean:
+	rm -rf build
+	rm -rf www
+
+# create the project structure
+structure:
+	mkdir -p build
+	mkdir -p www/{js,css,cgi}
+
 # build generic version
 js:
-	mkdir -p build
 	cat template/var.before $(JS) template/var.after >build/no-copy.$(REPO).max.js
 	java -jar node_modules/yuicompressor.jar --verbose --type js build/no-copy.$(REPO).max.js -o build/no-copy.$(REPO).js --charset utf-8
 	cat template/license.before LICENSE.txt template/license.after build/no-copy.$(REPO).max.js >build/$(REPO).max.js
@@ -41,9 +53,12 @@ js:
 	cp build/$(REPO).js www/js
 	cp build/$(REPO).max.js www/js
 
+# hint built file
+hint:
+	node node_modules/jshint/bin/jshint build/$(REPO).max.js
+
 # build generic version
 css:
-	mkdir -p build
 	cat $(CSS) >build/no-copy.$(REPO).max.css
 	java -jar node_modules/yuicompressor.jar --verbose --type css build/no-copy.$(REPO).max.css -o build/no-copy.$(REPO).css --charset utf-8
 	cat template/license.before LICENSE.txt template/license.after build/no-copy.$(REPO).max.css >build/$(REPO).max.css
@@ -67,14 +82,6 @@ db:
 size:
 	wc -c build/$(REPO).max.js
 	gzip -c build/$(REPO).js | wc -c
-
-# hint built file
-hint:
-	node node_modules/jshint/bin/jshint build/$(REPO).max.js
-
-# clean/remove build folder
-clean:
-	rm -rf build
 
 # modules used in this repo
 dependencies:
