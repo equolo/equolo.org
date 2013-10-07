@@ -1,5 +1,5 @@
-`)°(, equolo`
-=============
+)°(, equolo
+===========
 
  ... discovering a sustainable world
 
