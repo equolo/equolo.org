@@ -1,4 +1,4 @@
-.PHONY: build clean js hint css php size dependencies
+.PHONY: build clean js hint css php db size dependencies
 
 # repository name
 REPO = equolo
@@ -14,7 +14,8 @@ JS = js/$(REPO).js
 CSS = css/$(REPO).css
 
 # move PHP files
-PHP = php/common.php\
+PHP = php/db.php\
+      php/common.php\
       php/activate.php
 
 # default build task
@@ -24,6 +25,7 @@ build:
 	make hint
 	make css
 	make php
+	make db
 	make size
 
 # build generic version
@@ -56,6 +58,10 @@ css:
 php:
 	rm -rf www/cgi/*
 	cp $(PHP) www/cgi
+
+# preserve private data
+db:
+	cp db.php www/cgi
 
 # keep an eye on the minified and gzipped size
 size:
