@@ -14,9 +14,10 @@ JS = js/$(REPO).js
 CSS = css/$(REPO).css
 
 # move PHP files
-# NOTE: db.php is moved to the higher level
-#       so it is hidden from this repository
+# NOTE: the real db.php is ignored in this repository
 #       since it contains clear MySQL connection info
+#       check php/db.php and crate a copy in the upper folder
+#       using real credentials
 PHP = php/common.php\
       php/activate.php
 
