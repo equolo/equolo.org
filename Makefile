@@ -1,55 +1,63 @@
-.PHONY: build var node amd size hint clean test web preview pages dependencies
+.PHONY: build clean js hint css php size dependencies
 
 # repository name
 REPO = equolo
 
-# make var files
-VAR = src/$(REPO).js
+# YUICompressor version
+# http://yui.github.io/yuicompressor/
+YUI = 2.4.8
 
-# make node files
-NODE = $(VAR)
+# make JS files
+JS = js/$(REPO).js
 
-# make amd files
-AMD = $(VAR)
+# make CSS files
+CSS = css/$(REPO).css
 
-# README constant
-
+# move PHP files
+PHP = php/common.php\
+      php/activate.php
 
 # default build task
 build:
 	make clean
-	make var
-	make node
-	make amd
-	make test
-#	make hint
+	make js
+	make hint
+	make css
+	make php
 	make size
 
 # build generic version
-var:
+js:
 	mkdir -p build
-	cat template/var.before $(VAR) template/var.after >build/no-copy.$(REPO).max.js
-	node node_modules/uglify-js/bin/uglifyjs --verbose build/no-copy.$(REPO).max.js >build/no-copy.$(REPO).js
+	cat template/var.before $(JS) template/var.after >build/no-copy.$(REPO).max.js
+	java -jar node_modules/yuicompressor.jar --verbose --type js build/no-copy.$(REPO).max.js -o build/no-copy.$(REPO).js --charset utf-8
 	cat template/license.before LICENSE.txt template/license.after build/no-copy.$(REPO).max.js >build/$(REPO).max.js
 	cat template/copyright build/no-copy.$(REPO).js >build/$(REPO).js
 	rm build/no-copy.$(REPO).max.js
 	rm build/no-copy.$(REPO).js
+	rm -rf www/js/*
+	cp build/$(REPO).js www/js
+	cp build/$(REPO).max.js www/js
 
-# build node.js version
-node:
+# build generic version
+css:
 	mkdir -p build
-	cat template/license.before LICENSE.txt template/license.after template/node.before $(NODE) template/node.after >build/$(REPO).node.js
+	cat $(CSS) >build/no-copy.$(REPO).max.css
+	java -jar node_modules/yuicompressor.jar --verbose --type css build/no-copy.$(REPO).max.css -o build/no-copy.$(REPO).css --charset utf-8
+	cat template/license.before LICENSE.txt template/license.after build/no-copy.$(REPO).max.css >build/$(REPO).max.css
+	cat template/copyright build/no-copy.$(REPO).css >build/$(REPO).css
+	rm build/no-copy.$(REPO).max.css
+	rm build/no-copy.$(REPO).css
+	rm -rf www/css/*
+	cp build/$(REPO).css www/css
+	cp build/$(REPO).max.css www/css
 
-# build AMD version
-amd:
-	mkdir -p build
-	cat template/amd.before $(AMD) template/amd.after >build/no-copy.$(REPO).max.amd.js
-	node node_modules/uglify-js/bin/uglifyjs --verbose build/no-copy.$(REPO).max.amd.js >build/no-copy.$(REPO).amd.js
-	cat template/license.before LICENSE.txt template/license.after build/no-copy.$(REPO).max.amd.js >build/$(REPO).max.amd.js
-	cat template/copyright build/no-copy.$(REPO).amd.js >build/$(REPO).amd.js
-	rm build/no-copy.$(REPO).max.amd.js
-	rm build/no-copy.$(REPO).amd.js
+# move all needed PHP files in the right folder
+php:
+	rm -rf www/cgi/*
+	cp $(PHP) www/cgi
 
+# keep an eye on the minified and gzipped size
 size:
 	wc -c build/$(REPO).max.js
 	gzip -c build/$(REPO).js | wc -c
@@ -62,50 +70,12 @@ hint:
 clean:
 	rm -rf build
 
-# tests, as usual and of course
-test:
-	npm test
-
-# launch polpetta (ctrl+click to open the page)
-web:
-	node node_modules/polpetta/build/polpetta ./
-
-# markdown the readme and view it
-preview:
-	node_modules/markdown/bin/md2html.js README.md >README.md.htm
-	cat template/md.before README.md.htm template/md.after >README.md.html
-	open README.md.html
-	sleep 3
-	rm README.md.htm README.md.html
-
-pages:
-	git pull --rebase
-	make var
-	mkdir -p ~/tmp
-	mkdir -p ~/tmp/$(REPO)
-	cp -rf src ~/tmp/$(REPO)
-	cp -rf build ~/tmp/$(REPO)
-	cp -rf test ~/tmp/$(REPO)
-	cp index.html ~/tmp/$(REPO)
-	git checkout gh-pages
-	mkdir -p test
-	rm -rf test
-	cp -rf ~/tmp/$(REPO) test
-	git add test
-	git add test/.
-	git commit -m 'automatic test generator'
-	git push
-	git checkout master
-	rm -r ~/tmp/$(REPO)
-
 # modules used in this repo
 dependencies:
 	rm -rf node_modules
 	mkdir node_modules
-	npm install wru
-	npm install polpetta
-	npm install uglify-js@1
 	npm install jshint
-	npm install markdown
+	curl -O -L https://github.com/yui/yuicompressor/releases/download/v$(YUI)/yuicompressor-$(YUI).jar
+	mv yuicompressor-$(YUI).jar node_modules/yuicompressor.jar
 
 
