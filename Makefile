@@ -29,6 +29,7 @@ build:
 	make css
 	make php
 	make db
+	make external
 	make size
 
 # clean/remove build folder
@@ -78,6 +79,13 @@ php:
 db:
 	cp db.php www/cgi
 
+# including CDN files to avoid problems with some redefined CSS
+# this is mainly a Firefox behavior
+external:
+	java -jar node_modules/yuicompressor.jar --verbose --type css leaflet.css -o www/css/leaflet.css --charset utf-8
+	java -jar node_modules/yuicompressor.jar --verbose --type css leaflet.ie.css -o www/css/leaflet.ie.css --charset utf-8
+	cp leaflet.js www/js
+
 # keep an eye on the minified and gzipped size
 size:
 	wc -c build/$(REPO).max.js
@@ -90,5 +98,8 @@ dependencies:
 	npm install jshint
 	curl -O -L https://github.com/yui/yuicompressor/releases/download/v$(YUI)/yuicompressor-$(YUI).jar
 	mv yuicompressor-$(YUI).jar node_modules/yuicompressor.jar
+	curl -O -L http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css
+	curl -O -L http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.ie.css
+	curl -O -L http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js
 
 

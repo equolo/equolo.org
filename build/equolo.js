@@ -1,2 +1,2 @@
-/*! )°(, equolo - Mit Style License */
+/*! )°(, equolo - https://github.com/equolo/equolo.org */
 (function(a){}(this));
