@@ -1,0 +1,3 @@
+[submodule "eddy"]
+	path = eddy
+	url = https://github.com/WebReflection/eddy
