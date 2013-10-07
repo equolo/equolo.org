@@ -1,7 +1,7 @@
 .PHONY: build var node amd size hint clean test web preview pages dependencies
 
 # repository name
-REPO = main
+REPO = equolo
 
 # make var files
 VAR = src/$(REPO).js
