@@ -3,6 +3,8 @@
 
  ... discovering a sustainable world
 
+
+### Mit Style License
 ```
   Copyright (C) 2013 by equolo.org
 
