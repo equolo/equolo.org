@@ -53,6 +53,9 @@ js:
 	rm -rf www/js/*
 	cp build/$(REPO).js www/js
 	cp build/$(REPO).max.js www/js
+	cp eddy/build/ie8.js www/js
+	cat eddy/build/dom4.js >www/js/dom4.eddy.js
+	cat eddy/build/eddy.dom.js >>www/js/dom4.eddy.js
 
 # hint built file
 hint:
