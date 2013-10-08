@@ -1,0 +1,1 @@
+window.$=function(c,p){return[].slice.call((p||document).querySelectorAll(c))};

@@ -1,4 +1,4 @@
-.PHONY: build clean structure js hint css php db size dependencies builder
+.PHONY: build clean structure html js css php db size dependencies builder
 
 # repository name
 REPO = equolo
@@ -8,10 +8,20 @@ REPO = equolo
 YUI = 2.4.8
 
 # make JS files
-JS = js/$(REPO).js
+JS =  js/normalizer.js\
+      eddy/build/dom4.js\
+      eddy/build/eddy.dom.js\
+      js/dollar.js\
+      js/mercator.js\
+      js/shows-scroll-bar.js\
+      js/simple-kinetic.js\
+      js/$(REPO).js
 
 # make CSS files
 CSS = css/$(REPO).css
+
+# move HTML files
+HTML = html/*
 
 # move PHP files
 # NOTE: the real db.php is ignored in this repository
@@ -24,8 +34,8 @@ PHP = php/*
 build:
 	make clean
 	make structure
+	make html
 	make js
-	make hint
 	make css
 	make php
 	make db
@@ -40,26 +50,25 @@ clean:
 # create the project structure
 structure:
 	mkdir -p build
-	mkdir -p www/{js,css,cgi}
+	mkdir -p www/{js,css,cgi,tpl}
+
+# copy over html files
+html:
+	rm -rf www/tpl/*
+	cp $(HTML) www/tpl
 
 # build generic version
 js:
 	cat template/var.before $(JS) template/var.after >build/no-copy.$(REPO).max.js
 	java -jar node_modules/yuicompressor.jar --verbose --type js build/no-copy.$(REPO).max.js -o build/no-copy.$(REPO).js --charset utf-8
-	cat template/license.before LICENSE.txt template/license.after build/no-copy.$(REPO).max.js >build/$(REPO).max.js
-	cat template/copyright build/no-copy.$(REPO).js >build/$(REPO).js
+	cat template/license.before LICENSE.txt template/license.after js/IE.js build/no-copy.$(REPO).max.js >build/$(REPO).max.js
+	cat template/copyright js/IE.js build/no-copy.$(REPO).js >build/$(REPO).js
 	rm build/no-copy.$(REPO).max.js
 	rm build/no-copy.$(REPO).js
 	rm -rf www/js/*
 	cp build/$(REPO).js www/js
 	cp build/$(REPO).max.js www/js
 	cp eddy/build/ie8.js www/js
-	cat eddy/build/dom4.js >www/js/dom4.eddy.js
-	cat eddy/build/eddy.dom.js >>www/js/dom4.eddy.js
-
-# hint built file
-hint:
-	node node_modules/jshint/bin/jshint build/$(REPO).max.js
 
 # build generic version
 css:
@@ -77,6 +86,8 @@ css:
 php:
 	rm -rf www/cgi/*
 	cp $(PHP) www/cgi
+	rm -rf www/*.php
+	cp pages/* www
 
 # preserve private data
 db:
@@ -91,7 +102,7 @@ external:
 
 # keep an eye on the minified and gzipped size
 size:
-	wc -c build/$(REPO).max.js
+	wc -c build/$(REPO).js
 	gzip -c build/$(REPO).js | wc -c
 	ln -s ~/code/phpmyadmin www/phpmyadmin
 
@@ -99,7 +110,6 @@ size:
 dependencies:
 	rm -rf node_modules
 	mkdir node_modules
-	npm install jshint
 	curl -O -L https://github.com/yui/yuicompressor/releases/download/v$(YUI)/yuicompressor-$(YUI).jar
 	mv yuicompressor-$(YUI).jar node_modules/yuicompressor.jar
 	curl -O -L http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css

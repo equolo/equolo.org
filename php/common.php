@@ -10,11 +10,18 @@
 // It contains common functions used here and there
 // promoting code reusability and more flexible signatures
 
+// in order to behave differently
+// define the environment in here
+define(
+  'DEVELOPMENT',
+  in_array($_SERVER['REMOTE_ADDR'], array(
+    '127.0.0.1',  // common IPv4 localhost
+    'fe80::1'     // common OSX IPv6 localhost
+  ))
+);
+
 // if we are in localhost makes sense to actually see errors
-if (in_array($_SERVER['REMOTE_ADDR'], array(
-  '127.0.0.1',  // common IPv4 localhost
-  'fe80::1'     // common OSX IPv6 localhost
-))) {
+if (DEVELOPMENT) {
   error_reporting(-1);
 }
 
@@ -71,6 +78,20 @@ function mailTo(
     // if you are wondering ... NO, this is not needed
     // still a common procedure to flag the env
     // that generated and sent the email
+  );
+}
+
+// utility: helps to set a cookie with common arguments
+function cookieSetter($key, $value, $expires = 3600) {
+  setcookie(
+    $key,
+    $value,
+    time() + $expires,
+    '/',
+    DEVELOPMENT ?
+      'localhost' : 'equolo.org',
+    false,
+    true  // no need to expose server-side cookies to JavaScript
   );
 }
 
