@@ -1,4 +1,4 @@
-.PHONY: build clean structure js hint css php db size dependencies
+.PHONY: build clean structure js hint css php db size dependencies builder
 
 # repository name
 REPO = equolo
@@ -18,8 +18,7 @@ CSS = css/$(REPO).css
 #       since it contains clear MySQL connection info
 #       check php/db.php and crate a copy in the upper folder
 #       using real credentials
-PHP = php/common.php\
-      php/activate.php
+PHP = php/*
 
 # default build task
 build:
@@ -107,4 +106,9 @@ dependencies:
 	curl -O -L http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.ie.css
 	curl -O -L http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js
 
+# every time something changes,
+# except for the runtime created www folder
+# calls the make procedure
+builder:
+	node -e "require('fs').watch('.',function(e,f){f!='www'&&require('child_process').exec('make')&&console.log(''+new Date)})";
 

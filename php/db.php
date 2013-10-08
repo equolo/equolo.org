@@ -1,4 +1,11 @@
 <?php
+
+/**
+ * (C) equolo.org - Mit Style License
+ *
+ *  - Database connection
+ */
+
 // NOTE: this is an example of the original database file used in equolo.org
 function db() {
   static $db;
