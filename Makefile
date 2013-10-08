@@ -120,5 +120,17 @@ dependencies:
 # except for the runtime created www folder
 # calls the make procedure
 builder:
-	node -e "require('fs').watch('.',function(e,f){f!='www'&&require('child_process').exec('make')&&console.log(''+new Date)})";
+	node -e "(function(require){\
+	var fs = require('fs'), exec = require('child_process').exec;\
+	fs.readdirSync('.').filter(function(name){\
+	  return name !== 'build' && name !== 'Makefile' && name !== 'www';\
+	}).forEach(function(name){\
+	  fs.watch(name, this);\
+	}, function(event, name){\
+	  if (exec('make')) {\
+	    console.log('[' + (new Date).toISOString() + '] ' + name);\
+	  }\
+	});\
+	}(require))"
+
 
