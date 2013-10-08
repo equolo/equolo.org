@@ -94,6 +94,7 @@ external:
 size:
 	wc -c build/$(REPO).max.js
 	gzip -c build/$(REPO).js | wc -c
+	ln -s ~/code/phpmyadmin www/phpmyadmin
 
 # modules used in this repo
 dependencies:
