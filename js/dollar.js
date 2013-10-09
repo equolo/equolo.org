@@ -1,1 +1,1 @@
-window.$=function(c,p){return[].slice.call((p||document).querySelectorAll(c))};
+window.$=function(a){return function(c,p){return a.slice.call(a.concat(p||document)[0].querySelectorAll(c))}}([]);

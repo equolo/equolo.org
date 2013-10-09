@@ -14,12 +14,23 @@
 //    $stmt->closeCursor();
 function sql($command) {
   static $query = array(
-    'user-country'    =>
+    'language' =>
+      'SELECT
+        lang.id,
+        lang.value,
+        `lang-description`.value AS description
+      FROM
+        lang,
+        `lang-description`
+      WHERE
+        lang.id = `lang-description`.`lang-id`',
+    'user-country' =>
       'SELECT
         country.*
       FROM
         country_range,
-        country
+        country,
+        `lang-description`
       WHERE
         ?
       BETWEEN

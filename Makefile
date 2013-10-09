@@ -1,4 +1,4 @@
-.PHONY: build clean structure html js css php db size dependencies builder
+.PHONY: build clean structure html js css php db external size dependencies builder
 
 # repository name
 REPO = equolo
@@ -16,6 +16,14 @@ JS =  js/normalizer.js\
       js/shows-scroll-bar.js\
       js/simple-kinetic.js\
       js/$(REPO).js
+
+# make pinit/submit section files
+PINIT=js/normalizer.js\
+      eddy/build/dom4.js\
+      eddy/build/eddy.dom.js\
+      js/dollar.js\
+      js/simple-kinetic.js\
+      js/submit.js
 
 # make CSS files
 CSS = css/$(REPO).css
@@ -39,7 +47,6 @@ build:
 	make css
 	make php
 	make db
-	make external
 	make size
 
 # clean/remove build folder
@@ -59,28 +66,34 @@ html:
 
 # build generic version
 js:
-	cat template/var.before $(JS) template/var.after >build/no-copy.$(REPO).max.js
-	java -jar node_modules/yuicompressor.jar --verbose --type js build/no-copy.$(REPO).max.js -o build/no-copy.$(REPO).js --charset utf-8
-	cat template/license.before LICENSE.txt template/license.after js/IE.js build/no-copy.$(REPO).max.js >build/$(REPO).max.js
-	cat template/copyright js/IE.js build/no-copy.$(REPO).js >build/$(REPO).js
-	rm build/no-copy.$(REPO).max.js
-	rm build/no-copy.$(REPO).js
+	cat js-tpl/var.before $(JS) js-tpl/var.after >build/no-copy.$(REPO).max.js
+	cat js-tpl/var.before $(PINIT) js-tpl/var.after >build/no-copy.submit.max.js
+	java -jar node_modules/yuicompressor.jar --type js build/no-copy.$(REPO).max.js -o build/no-copy.$(REPO).js --charset utf-8
+	java -jar node_modules/yuicompressor.jar --type js build/no-copy.submit.max.js -o build/no-copy.submit.js --charset utf-8
+	cat js-tpl/license.before LICENSE.txt js-tpl/license.after js/IE.js build/no-copy.$(REPO).max.js >build/$(REPO).max.js
+	cat js-tpl/license.before LICENSE.txt js-tpl/license.after js/IE.js build/no-copy.submit.max.js >build/submit.max.js
+	cat js-tpl/copyright js/IE.js build/no-copy.$(REPO).js >build/$(REPO).js
+	cat js-tpl/copyright js/IE.js build/no-copy.submit.js >build/submit.js
+	rm build/no-copy.*
 	rm -rf www/js/*
 	cp build/$(REPO).js www/js
 	cp build/$(REPO).max.js www/js
+	cp build/submit.js www/js
+	cp build/submit.max.js www/js
 	cp eddy/build/ie8.js www/js
 
 # build generic version
 css:
 	cat $(CSS) >build/no-copy.$(REPO).max.css
 	java -jar node_modules/yuicompressor.jar --verbose --type css build/no-copy.$(REPO).max.css -o build/no-copy.$(REPO).css --charset utf-8
-	cat template/license.before LICENSE.txt template/license.after build/no-copy.$(REPO).max.css >build/$(REPO).max.css
-	cat template/copyright build/no-copy.$(REPO).css >build/$(REPO).css
+	cat js-tpl/license.before LICENSE.txt js-tpl/license.after build/no-copy.$(REPO).max.css >build/$(REPO).max.css
+	cat js-tpl/copyright build/no-copy.$(REPO).css >build/$(REPO).css
 	rm build/no-copy.$(REPO).max.css
 	rm build/no-copy.$(REPO).css
 	rm -rf www/css/*
 	cp build/$(REPO).css www/css
 	cp build/$(REPO).max.css www/css
+	cp css/submit.css www/css
 
 # move all needed PHP files in the right folder
 php:
@@ -88,6 +101,7 @@ php:
 	cp $(PHP) www/cgi
 	rm -rf www/*.php
 	cp pages/* www
+	cp -r lang www/cgi
 
 # preserve private data
 db:

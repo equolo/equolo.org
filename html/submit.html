@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+  <head>
+    <title>{{title}}</title>
+    <meta http-equiv="content-language" content="en-US"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta names="apple-mobile-web-app-status-bar-style" content="black"/>
+    <link rel="stylesheet" href="css/submit.css"/>
+    <!--[if IE 8]><script src="js/ie8.js"></script><![endif]-->
+    <script src="cgi/country.php"></script>
+    <script src="js/submit{{MAX_JS}}.js"></script>
+  </head>
+  <body>
+    <div>
+      <fieldset id="step-1">
+        <select name="lang">{{dom-language-options}}</select>
+        <label for="lang">{{language-selection}}</label>
+        <input type="submit"/>
+      </fieldset>
+      <fieldset id="step-2">
+        <legend>{{activity}}<legend>
+        <a href="http://www.3site.eu/">test</a>
+        <select><option>asd</option></select>
+      </fieldset>
+      <fieldset id="step-3" class="disabled">
+        <legend>{{location}}<legend>
+      </fieldset>
+      <fieldset id="step-4">
+        <legend>{{criteria}}<legend>
+      </fieldset>
+      <fieldset id="step-5">
+        <legend>{{final}}<legend>
+      </fieldset>
+    </div>
+  </body>
+</html>

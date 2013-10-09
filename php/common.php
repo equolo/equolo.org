@@ -16,7 +16,8 @@ define(
   'DEVELOPMENT',
   in_array($_SERVER['REMOTE_ADDR'], array(
     '127.0.0.1',  // common IPv4 localhost
-    'fe80::1'     // common OSX IPv6 localhost
+    'fe80::1',    // common OSX IPv6 localhost
+    '::1'         // common OSX IPv6 localhost
   ))
 );
 
@@ -89,10 +90,42 @@ function cookieSetter($key, $value, $expires = 3600) {
     time() + $expires,
     '/',
     DEVELOPMENT ?
-      'localhost' : 'equolo.org',
+      '' : 'equolo.org',
     false,
     true  // no need to expose server-side cookies to JavaScript
   );
+}
+
+// utility: returns the country associated with an IPv4 address
+function getIPv4Country($REMOTE_ADDR) {
+  $country = null;
+  $ip = explode('.', $REMOTE_ADDR);
+  // and only if it contains an IPv4 address
+  if (count($ip) === 4) {
+    // prepare the query
+    $stmt = query(
+      'user-country',
+      array(
+        ($ip[0] * 0x1000000) +
+        ($ip[1] * 0x10000) +
+        ($ip[2] * 0x100) +
+        ($ip[3] * 0x1)
+      )
+    );
+    // only if there is a row
+    while($row = $stmt->fetch(PDO::FETCH_OBJ)) {
+      $object = new StdClass;
+      $object->id = intval($row->id);
+      $object->lang = $row->lang_id;
+      $object->name = $row->name;
+      $object->iso2 = $row->iso2;
+      $object->geo = new StdClass;
+      $object->geo->latitude = floatval($row->latitude);
+      $object->geo->longitude = floatval($row->longitude);
+      $country = $object;
+    }
+  }
+  return $country;
 }
 
 // utility: prepare a PDOStatement through a command
@@ -112,6 +145,18 @@ function query($command, $arguments = array()) {
 // utility: make HTML strings safe
 function safer($text) {
   return htmlentities($text, ENT_QUOTES, 'UTF-8');
+}
+
+// utility: parse and translate a template
+function template($file, $content) {
+  return preg_replace_callback(
+    '/\{\{([^\}]+?)\}\}/',
+    function ($matches) use (&$content) {
+      $key = $matches[1];
+      return isset($content[$key]) ? $content[$key] : $matches[0];
+    },
+    file_get_contents('tpl/'.$file.'.html')
+  );
 }
 
 ?>

@@ -1,0 +1,31 @@
+html, body {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  font-family: sans-serif;
+  background: #286868;
+}
+body > div {
+  height: 100%;
+  background: #FFF;
+  margin: auto;
+  max-width: 720px;
+  padding: 16px;
+  border-left: 8px solid #198A8A;
+  border-right: 8px solid #198A8A;
+}
+fieldset {
+  margin-bottom: 12px;
+  border: 1px solid #198A8A;
+}
+fieldset > legend {
+  font-weight: bold;
+}
+fieldset.disabled {
+  background: #EEE;
+  color: #999;
+}
+fieldset.disabled,
+fieldset.disabled * {
+  cursor: default;
+}

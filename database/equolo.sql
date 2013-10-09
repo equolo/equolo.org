@@ -131,3 +131,9 @@ CREATE TABLE IF NOT EXISTS `lang` (
   `value` char(2) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=ascii;
+
+CREATE TABLE IF NOT EXISTS `lang-description` (
+  `lang-id` int(10) unsigned NOT NULL,
+  `value` varchar(50) NOT NULL,
+  PRIMARY KEY (`lang-id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;

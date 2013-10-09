@@ -1,13 +1,17 @@
 <?php
 
-$content = '';
+/**
+ * (C) equolo.org - Mit Style License
+ *
+ *  - Index page
+ */
 
-echo preg_replace_callback(
-  '/\{\{([^\}]+?)\}\}/',
-  function ($matches) use (&$content) {
-    return $matches[1].$content;
-  },
-  file_get_contents('tpl/index.html')
+require_once('cgi/common.php');
+
+$content = array(
+  'title' => 'equolo.org'
 );
+
+echo template('index', $content);
 
 ?>
