@@ -55,7 +55,7 @@ IE9Mobile&&document.write('<link rel="stylesheet" href="css/IE9Mobile.css"/><scr
   });
 }(Array.prototype, Function.prototype, String.prototype));/*! (C) WebReflection Mit Style License */
 (function(e){"use strict";function t(t){return typeof t=="string"?e.document.createTextNode(t):t}function n(n){if(n.length===1)return t(n[0]);for(var r=e.document.createDocumentFragment(),i=h.call(n),s=0;s<n.length;s++)r.appendChild(t(i[s]));return r}for(var r,i,s,o=/^\s+|\s+$/g,u=/\s+/,a=" ",f=function(t,n){return this.contains(t)?n||this.remove(t):n&&this.add(t),!!n},l=(e.Element||e.Node||e.HTMLElement).prototype,c=["prepend",function(){var t=this.firstChild,r=n(arguments);t?this.insertBefore(r,t):this.appendChild(r)},"append",function(){this.appendChild(n(arguments))},"before",function(){var t=this.parentNode;t&&t.insertBefore(n(arguments),this)},"after",function(){var t=this.parentNode,r=this.nextSibling,i=n(arguments);t&&(r?t.insertBefore(i,r):t.appendChild(i))},"replace",function(){var t=this.parentNode;t&&t.replaceChild(n(arguments),this)},"remove",function(){var t=this.parentNode;t&&t.removeChild(this)}],h=c.slice,p=c.length;p;p-=2)r=c[p-2],r in l||(l[r]=c[p-1]);"classList"in document.documentElement?(s=document.createElement("div").classList,s.add("a","b"),"a b"!=s&&(l=s.constructor.prototype,"add"in l||(l=e.DOMTokenList.prototype),i=function(e){return function(){var t=0;while(t<arguments.length)e.call(this,arguments[t++])}},l.add=i(l.add),l.remove=i(l.remove),l.toggle=f)):(i=function(e){if(!e)throw"SyntaxError";if(u.test(e))throw"InvalidCharacterError";return e},s=function(e){var t=e.className.replace(o,"");t.length&&c.push.apply(this,t.split(u)),this._=e},s.prototype={length:0,add:function(){for(var t=0,n;t<arguments.length;t++)n=arguments[t],this.contains(n)||c.push.call(this,r);this._.className=""+this},contains:function(e){return function(n){return p=e.call(this,r=i(n)),-1<p}}([].indexOf||function(e){p=this.length;while(p--&&this[p]!==e);return p}),item:function(t){return this[t]||null},remove:function(){for(var t=0,n;t<arguments.length;t++)n=arguments[t],this.contains(n)&&c.splice.call(this,p,1);this._.className=""+this},toggle:f,toString:function v(){return c.join.call(this,a)}},(Object.defineProperty||function(e,t,n){e.__defineGetter__(t,n.get)})(l,"classList",{get:function(){return new s(this)},set:function(){}}));try{new e.CustomEvent("?")}catch(d){e.CustomEvent=function(e,t){function n(n,i){var s=document.createEvent(e);if(typeof n!="string")throw new Error("An event name must be provided");return e=="Event"&&(s.initCustomEvent=r),i==null&&(i=t),s.initCustomEvent(n,i.bubbles,i.cancelable,i.detail),s}function r(e,t,n,r){this.initEvent(e,t,n),this.detail=r}return n}(e.CustomEvent?"CustomEvent":"Event",{bubbles:!1,cancelable:!1,detail:null})}})(window);/*! (C) Andrea Giammarchi Mit Style License */
-(function(e){"use strict";function E(){return{l:{},m:[],b:[]}}function S(e){var t=E();return c.value=t,p(e,f,c),c.value=null,t}function x(e,t,n){typeof t=="function"?t.apply(e,n):t.handleEvent.apply(t,n)}function T(e,t,n){n&&y(this,"detail",n),y(this,"type",t),y(this,"target",e),y(this,"timeStamp",m())}if(e.eddy)return;e.eddy=!0;var t=Array.prototype,n=e.prototype,r=T.prototype,i=n.hasOwnProperty,s=t.push,o=t.slice,u=t.unshift,a="toLocaleString",f={toLocaleString:1}.propertyIsEnumerable(a)?"_@eddy"+Math.random():a,l=f===a,c=(e.create||e)(null),h=[],p=l?function(e,t,n){e[t]=n.value}:e.defineProperty,d=function(e){var t=this;return function(){return t.apply(e,arguments)}},v=t.indexOf||function(e){var t=this.length;while(t--&&this[t]!==e);return t},m=Date.now||function(){return(new Date).getTime()},g={boundTo:function(t){var n=i.call(this,f)?this[f]:S(this),r=n.m,o=n.b,u=typeof t=="string"?this[t]:t,a=v.call(r,u);return a<0?o[s.call(r,u)-1]=d.call(u,this):o[a]},emit:function(t){var n=i.call(this,f),r=n&&this[f].l,s=n&&i.call(r,t),u=s&&r[t],a=s&&o.call(arguments,1),l=0,c=s?u.length:l;while(l<c)x(this,u[l++],a);return s},listeners:function(t){return i.call(this,f)&&i.call(this[f].l,t)&&this[f].l[t].slice()||[]},off:function(t,n){var r=i.call(this,f),s=r&&this[f].l,o=r&&i.call(s,t)&&s[t],u;return o&&(u=v.call(o,n),-1<u&&(o.splice(u,1),o.length||delete s[t])),this},on:function(t,n,r){var o=i.call(this,f),a=(o?this[f]:S(this)).l,l=o&&i.call(a,t)?a[t]:a[t]=[];return v.call(l,n)<0&&(r?u:s).call(l,n),this},once:function(t,n,r){var i=function(e){s.off(t,i,r),x(s,n,arguments)},s=this;return s.on(t,i,r)},trigger:function(t,n){var s=i.call(this,f),o=s&&this[f].l,u=typeof t=="string",a=u?t:t.type,l=s&&i.call(o,a),c=l&&o[a].slice(0),p=u?new T(this,a,n):t,d=0,v=l?c.length:d,m=!(p instanceof T);m&&(p._active=!0,p.stopImmediatePropagation=r.stopImmediatePropagation),p.currentTarget=this,h[0]=p;while(p._active&&d<v)x(this,c[d++],h);return m&&(delete p._active,delete p.stopImmediatePropagation),!p.defaultPrevented}},y=function(e,t,n){i.call(e,t)||(e[t]=n)},b=!1,w;r.defaultPrevented=!1,r._active=r.cancelable=!0,r.preventDefault=function(){this.defaultPrevented=!0},r.stopImmediatePropagation=function(){this._active=!1};for(w in g)i.call(g,w)&&p(n,w,{enumerable:!1,configurable:!0,writable:!0,value:g[w]});(function(e){function n(t){function n(e){e[t].apply(e,this)}return function(){return e.call(this,n,arguments),this}}for(var r in g)g.hasOwnProperty(r)&&!/^listeners|boundTo$/.test(r)&&p(t,r,{enumerable:!1,configurable:!0,writable:!0,value:n(r)})})(t.forEach);var N={boundTo:g.boundTo,emit:function(n){var r=new CustomEvent(n);return r.arguments=t.slice.call(arguments,1),this.dispatchEvent(r)},listeners:function(t){return[]},off:function(e,t,n){return this.removeEventListener(e,t,n),this},on:function(e,t,n){return this.addEventListener(e,t,n),this},once:g.once,trigger:function(t,n){var r=typeof t=="string",i=r?t:t.type,s=r?new CustomEvent(i,(c.detail=n,c)):t;return c.detail=null,T.call(s,this,i),this.dispatchEvent(s)}};c.cancelable=!0,c.bubbles=!0;try{document.createEvent("Event").target=document}catch(C){b=!0,y=function(e,t,n){if(!i.call(e,t))try{e[t]=n}catch(r){}}}(function(e){var t=e.Window,n=t?t.prototype:e,r=(e.Node||e.Element||e.HTMLElement).prototype,s=(e.Document||e.HTMLDocument).prototype,o,u;for(o in N)i.call(N,o)&&(u={enumerable:!1,configurable:!0,writable:!0,value:N[o]},p(n,o,u),p(r,o,u),p(s,o,u))})(window)})(Object);window.$=function(a){return function(c,p){return a.slice.call(a.concat(p||document)[0].querySelectorAll(c))}}([]);/*! SimpleKinetic v0.1.1 - MIT license */
+(function(e){"use strict";function E(){return{l:{},m:[],b:[]}}function S(e){var t=E();return c.value=t,p(e,f,c),c.value=null,t}function x(e,t,n){typeof t=="function"?t.apply(e,n):t.handleEvent.apply(t,n)}function T(e,t,n){n&&y(this,"detail",n),y(this,"type",t),y(this,"target",e),y(this,"timeStamp",m())}if(e.eddy)return;e.eddy=!0;var t=Array.prototype,n=e.prototype,r=T.prototype,i=n.hasOwnProperty,s=t.push,o=t.slice,u=t.unshift,a="toLocaleString",f={toLocaleString:1}.propertyIsEnumerable(a)?"_@eddy"+Math.random():a,l=f===a,c=(e.create||e)(null),h=[],p=l?function(e,t,n){e[t]=n.value}:e.defineProperty,d=function(e){var t=this;return function(){return t.apply(e,arguments)}},v=t.indexOf||function(e){var t=this.length;while(t--&&this[t]!==e);return t},m=Date.now||function(){return(new Date).getTime()},g={boundTo:function(t){var n=i.call(this,f)?this[f]:S(this),r=n.m,o=n.b,u=typeof t=="string"?this[t]:t,a=v.call(r,u);return a<0?o[s.call(r,u)-1]=d.call(u,this):o[a]},emit:function(t){var n=i.call(this,f),r=n&&this[f].l,s=n&&i.call(r,t),u=s&&r[t],a=s&&o.call(arguments,1),l=0,c=s?u.length:l;while(l<c)x(this,u[l++],a);return s},listeners:function(t){return i.call(this,f)&&i.call(this[f].l,t)&&this[f].l[t].slice()||[]},off:function(t,n){var r=i.call(this,f),s=r&&this[f].l,o=r&&i.call(s,t)&&s[t],u;return o&&(u=v.call(o,n),-1<u&&(o.splice(u,1),o.length||delete s[t])),this},on:function(t,n,r){var o=i.call(this,f),a=(o?this[f]:S(this)).l,l=o&&i.call(a,t)?a[t]:a[t]=[];return v.call(l,n)<0&&(r?u:s).call(l,n),this},once:function(t,n,r){var i=function(e){s.off(t,i,r),x(s,n,arguments)},s=this;return s.on(t,i,r)},trigger:function(t,n){var s=i.call(this,f),o=s&&this[f].l,u=typeof t=="string",a=u?t:t.type,l=s&&i.call(o,a),c=l&&o[a].slice(0),p=u?new T(this,a,n):t,d=0,v=l?c.length:d,m=!(p instanceof T);m&&(p._active=!0,p.stopImmediatePropagation=r.stopImmediatePropagation),p.currentTarget=this,h[0]=p;while(p._active&&d<v)x(this,c[d++],h);return m&&(delete p._active,delete p.stopImmediatePropagation),!p.defaultPrevented}},y=function(e,t,n){i.call(e,t)||(e[t]=n)},b=!1,w;r.defaultPrevented=!1,r._active=r.cancelable=!0,r.preventDefault=function(){this.defaultPrevented=!0},r.stopImmediatePropagation=function(){this._active=!1};for(w in g)i.call(g,w)&&p(n,w,{enumerable:!1,configurable:!0,writable:!0,value:g[w]});(function(e){function n(t){function n(e){e[t].apply(e,this)}return function(){return e.call(this,n,arguments),this}}for(var r in g)g.hasOwnProperty(r)&&!/^listeners|boundTo$/.test(r)&&p(t,r,{enumerable:!1,configurable:!0,writable:!0,value:n(r)})})(t.forEach);var N={boundTo:g.boundTo,data:function k(e,t){var n="dataset"in this;return arguments.length<2?n?this.dataset[e]:(t=this.getAttribute("data-"+e.replace(k.gre||(k.gre=/-[a-z]/g),k.gplace||(k.gplace=function(e,t){return t.toUpperCase()}))))==null?void 0:t:n?t==null?delete this.dataset[e]:(this.dataset[e]=t,t):(k.sre||(k.sre=/([a-z])([A-Z])/g,k.splace=function(e,t,n){return t+"-"+n.toLowerCase()}),e="data-"+e.replace(k.sre,k.splace),t==null?!this.removeAttribute(e):(this.setAttribute(e,t),t))},emit:function(n){var r=new CustomEvent(n);return r.arguments=t.slice.call(arguments,1),this.dispatchEvent(r)},listeners:function(t){return[]},off:function(e,t,n){return this.removeEventListener(e,t,n),this},on:function(e,t,n){return this.addEventListener(e,t,n),this},once:g.once,trigger:function(t,n){var r=typeof t=="string",i=r?t:t.type,s=r?new CustomEvent(i,(c.detail=n,c)):t;return c.detail=null,T.call(s,this,i),this.dispatchEvent(s)}};c.cancelable=!0,c.bubbles=!0;try{document.createEvent("Event").target=document}catch(C){b=!0,y=function(e,t,n){if(!i.call(e,t))try{e[t]=n}catch(r){}}}(function(e){var t=e.Window,n=t?t.prototype:e,r=(e.Node||e.Element||e.HTMLElement).prototype,s=(e.Document||e.HTMLDocument).prototype,o=(e.XMLHttpRequest||function(){}).prototype,u,a;for(u in N)i.call(N,u)&&(a={enumerable:!1,configurable:!0,writable:!0,value:N[u]},p(n,u,a),p(r,u,a),p(s,u,a),u!=="data"&&p(o,u,a))})(window)})(Object);window.$=function(a){return function(c,p){return a.slice.call(a.concat(p||document)[0].querySelectorAll(c))}}([]);/*! SimpleKinetic v0.1.1 - MIT license */
 
 
 var SimpleKinetic = function(global) {
@@ -254,6 +254,7 @@ return SimpleKinetic;
 
 }(this);document.once('DOMContentLoaded', function () {
   var
+    user = {},
     walkThrough = {
       // per each triggered event
       handleEvent: function (e) {
@@ -281,6 +282,8 @@ return SimpleKinetic;
           // invoke it
           this[tmp](e);
         }
+        // enable current fieldSet
+        FieldSet.enable($('fieldset#' + type)[0]);
         // invoke current type
         this[type](e);
       },
@@ -300,30 +303,38 @@ return SimpleKinetic;
       },
       // email
       'step-2': function (e) {
-        var fieldSet = $('fieldset#' + e.type)[0];
-        FieldSet.disable(fieldSet);
-        setTimeout(function () {
-          FieldSet.enable(fieldSet);
-          setTimeout(function () {
-            FieldSet.disable(fieldSet);
-          }, 5000);
-        }, 5000);
+        var
+          fieldSet = $('fieldset#' + e.type)[0],
+          email = $('input', fieldSet)[0]
+        ;
+        // what hapens once everything has been verified?
+        this.on('email:verified', verifyEmailCompleted);
+        // what happens each time the user change the input?
+        email.on('keyup', this.boundTo(verifyEmailDelayed));
+        // in case the value is already filled via cookies
+        // check it directly through events
+        email.emit('keyup');
+      },
+      'step-3': function (e) {
+        alert('Hello There');
       }
     },
+    // all user events to disable
     commonMouseEvents = [
       'mousedown',
       'mousemove',
       'mouseup',
       'click'
     ],
+    // utility for common DOM fieldSet operations
     FieldSet = {
       disable: function (fieldSet) {
         fieldSet.className = 'disabled';
-        commonMouseEvents.forEach(this._addStopEvent, fieldSet);
+        commonMouseEvents.forEach(FieldSet._addStopEvent, fieldSet);
       },
       enable: function (fieldSet) {
         fieldSet.className = '';
-        commonMouseEvents.forEach(this._removeStopEvent, fieldSet);
+        commonMouseEvents.forEach(FieldSet._removeStopEvent, fieldSet);
       },
       _addStopEvent: function (type) {
         this.on(type, stop, true);
@@ -339,6 +350,98 @@ return SimpleKinetic;
     (e.stopImmediatePropagation || e.stopPropagation).call(e);
   }
 
+
+//// EMAIL VERIFICATION
+
+  // used to save and check the user email
+  function verifyEmail(controller, input) {
+    var
+      value = input.value.trim(),
+      email = input.data('email'),
+      xhr
+    ;
+    if (value !== email) {
+      // avoid further pointless checks
+      // for the same address
+      input.data('email', value);
+      controller.xhr = xhr = new XMLHttpRequest;
+      xhr.target = controller;
+      xhr.open('get', 'cgi/verify.php?email=' + encodeURIComponent(value), true);
+      xhr.on('readystatechange', verifyEmailRequest).send(null);
+    }
+  }
+
+  // once the email is OK
+  function verifyEmailCompleted(e) {
+    var detail = e.detail;
+    console.log(detail);
+    switch(typeof detail) {
+      // user authed with all info received
+      case 'object':
+        user.activities = detail;
+        // show all activities next field
+        // TODO: next ...
+        break;
+      case 'number':
+        // user in but not authenticated
+        // or never confirmed the email
+        // inform the user and
+        // ask if a new email should be sent
+        // silently failing in the backend
+        // if already sent in last 24 hours
+        if (confirm(jslang.seeYouLater)) {
+          // TODO: send the reminder
+        }
+        // nothing to do here, send the user
+        // to the equolo.org site
+        location.href = 'http://equolo.org/';
+        break;
+      default:
+        // start from scratch new activities
+        user.activities = [];
+    }
+  }
+
+  // do not perform this check every keyup event
+  function verifyEmailDelayed(e) {
+    var input = e.currentTarget;
+    // kill previous xhr if possible
+    try{this.xhr.abort()}catch(itsOK){}
+    // clear previous timeout, if any
+    clearTimeout(parseInt(input.data('timer') || 0, 10));
+    // now, only if it's worth asking to the server ...
+    if (/^[^@]+?@[^\1@]+\.([a-z]{2,})$/.test(input.value.trim())) {
+      // address the new timer as data-timer attribute
+      input.data('timer', setTimeout(verifyEmail, 1000, this, input));
+    } else {
+      // disable all fields after this one
+      while(input = input.parentNode) {
+        // once found the fieldSet
+        if (input.nodeName === 'FIELDSET') {
+          $('fieldset').slice(
+            $('fieldset').indexOf(input) + 1
+          ).forEach(FieldSet.disable);
+          break;
+        }
+      }
+    }
+  }
+
+  // only once an email has been verified
+  function verifyEmailRequest() {
+    // and the network has finished
+    if (this.readyState === 4) {
+      // emit the event with
+      // received details
+      this.target.trigger(
+        'email:verified',
+        JSON.parse(this.responseText)
+      );
+    }
+  }
+
+
+
   // per each key in the walkThrough object
   Object.keys(walkThrough).forEach(
     function (key) {
@@ -352,6 +455,9 @@ return SimpleKinetic;
     // the context
     walkThrough
   );
+
+  // disable all fields by default
+  $('fieldset').forEach(FieldSet.disable);
 
   // let's start with step 1 :-)
   walkThrough.trigger('step-1');

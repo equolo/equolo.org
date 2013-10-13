@@ -8,8 +8,60 @@
 
 require_once('cgi/common.php');
 
-// database object needed everywhere in here
+// the needed/reused database object
 $db = db();
+
+
+
+//// <<< AUTHENTICATION >>>
+
+// defaultcondition
+$active = null;
+
+// check if user is authroized/authenticated
+if (
+  // try to ensure not using F5 or trying again in short time
+  !isset($_COOKIE['verified']) &&
+  // coming from an equolo.org link ?
+  isset(
+    $_GET['email'],
+    $_GET['token']
+  ) &&
+  isValidEmail($_GET['email']) &&
+  preg_match(
+    // expected SHA1
+    '/^[a-f0-9]{40}$/',
+    $_GET['token']
+  )
+) {
+  // flag this procedure to avoid
+  // too easy multiple checks (sort of brute forces)
+  cookieSetter('verified', 'true', 3600);
+  // verify the result in database
+  $stmt = query('verify-user', array($_GET['email'], $_GET['token']));
+  $id = 0;
+  while($row = $stmt->fetch(PDO::FETCH_OBJ)) {
+    $id = $row->id;
+    $active = $row->active == 1;
+  }
+  if ($active !== null) {
+    if ($active === false) {
+      // activate all activities related to this email
+      query('user-activation', array($id));
+      $active = true;
+    }
+    cookieSetter('email', $_GET['email']);
+    cookieSetter('token', $_GET['token']);
+  }
+} else {
+  $active = isAuthenticated();
+}
+
+//// <<< /AUTHENTICATION >>>
+
+
+
+//// <<< LANGUAGE >>>
 
 // did the user chose a language ?
 $lang = isset($_GET['lang']) ?
@@ -55,18 +107,18 @@ if ($notFound) {
   $lang = $languages[0]->value;
 }
 
-// save the cookie for the next time
-cookieSetter('lang', $lang, 60 * 60 * 24 * 365);
-
 // require the spoken language
-require_once(
-  // if the file exists
+$dictionary = getLanguage(
   file_exists('cgi/lang/'.$lang.'.php') ?
-    'cgi/lang/'.$lang.'.php' :
+    // everything ok if the file exists
+    $lang :
     // otherwise the first language, which is English
     // ... and I know this is available :-)
-    'cgi/lang/'.$languages[0]->value.'.php'
+    ($lang = $languages[0]->value)
 );
+
+// save the cookie for the next time
+cookieSetter('lang', $lang);
 
 // step-1: select the language
 $languageOptions = array();
@@ -75,16 +127,20 @@ foreach($languages as $row) {
   $languageOptions[] = '<option '.$selected.' value="'.$row->value.'">'.safer($row->description).'</option>';
 }
 
+//// <<< /LANGUAGE >>>
+
+$dictionary['user.email'] = $active ? (
+  isset($_GET['email']) ? $_GET['email'] : $_COOKIE['email']
+) : '';
+$dictionary['MAX_JS'] = DEVELOPMENT ? '.max' : '';
+$dictionary['title'] = 'equolo.org - add your equobusiness here :-)';
+$dictionary['dom-language-options'] = implode('', $languageOptions);
+
 echo template(
   // the template name
   'submit',
-  // the whole list of created strings or variables
-  array(
-    'MAX_JS' => DEVELOPMENT ? '.max' : '',
-    'title' => 'equolo.org - add your equobusiness here',
-    'next' => $dictionary['next'],
-    'dom-language-options' => implode('', $languageOptions)
-  )
+  // all keys to replace
+  $dictionary
 );
 
 ?>

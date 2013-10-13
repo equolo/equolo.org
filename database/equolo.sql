@@ -1,18 +1,10 @@
-CREATE TABLE IF NOT EXISTS `activator` (
-  `auth-id` int(10) unsigned NOT NULL,
-  `activity-id` int(10) unsigned NOT NULL,
-  `active` tinyint(1) NOT NULL,
-  `creation` datetime NOT NULL,
-  `token` char(40) DEFAULT NULL,
-  PRIMARY KEY (`auth-id`,`activity-id`)
-) ENGINE=MyISAM DEFAULT CHARSET=ascii;
-
 CREATE TABLE IF NOT EXISTS `activity` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `auth-id` int(10) unsigned NOT NULL,
+  `creation` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `auth-id` (`auth-id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=ascii;
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
 CREATE TABLE IF NOT EXISTS `activity-certification` (
   `activity-id` int(10) unsigned NOT NULL,
@@ -66,8 +58,10 @@ CREATE TABLE IF NOT EXISTS `activity-place` (
 CREATE TABLE IF NOT EXISTS `auth` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `email` varchar(127) NOT NULL,
+  `token` char(40) CHARACTER SET ascii NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `email` (`email`)
+  UNIQUE KEY `email` (`email`),
+  KEY `token` (`token`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `auth-login` (
@@ -137,3 +131,9 @@ CREATE TABLE IF NOT EXISTS `lang-description` (
   `value` varchar(50) NOT NULL,
   PRIMARY KEY (`lang-id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `notifications` (
+  `auth-id` int(10) unsigned NOT NULL,
+  `tstamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`auth-id`)
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;

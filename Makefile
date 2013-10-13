@@ -134,6 +134,7 @@ dependencies:
 # except for the runtime created www folder
 # calls the make procedure
 builder:
+	make build
 	node -e "(function(require){\
 	var fs = require('fs'), exec = require('child_process').exec;\
 	fs.readdirSync('.').filter(function(name){\

@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="css/submit.css"/>
     <!--[if IE 8]><script src="js/ie8.js"></script><![endif]-->
     <script src="cgi/country.php"></script>
+    <script>{{jslang}}</script>
     <script src="js/submit{{MAX_JS}}.js"></script>
   </head>
   <body>
@@ -16,21 +17,13 @@
       <fieldset id="step-1">
         <select name="lang">{{dom-language-options}}</select>
         <label for="lang">{{language-selection}}</label>
-        <input type="submit"/>
       </fieldset>
       <fieldset id="step-2">
-        <legend>{{activity}}<legend>
-        <a href="http://www.3site.eu/">test</a>
-        <select><option>asd</option></select>
+        <legend>{{email}}</legend>
+        <input placeholder="{{email}}" value="{{user.email}}"/>
       </fieldset>
-      <fieldset id="step-3" class="disabled">
-        <legend>{{location}}<legend>
-      </fieldset>
-      <fieldset id="step-4">
-        <legend>{{criteria}}<legend>
-      </fieldset>
-      <fieldset id="step-5">
-        <legend>{{final}}<legend>
+      <fieldset id="step-3">
+        <legend>{{activity}}</legend>
       </fieldset>
     </div>
   </body>

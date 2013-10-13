@@ -1,8 +1,11 @@
+* {
+  font-size: 16px;
+  font-family: sans-serif;
+}
 html, body {
   padding: 0;
   margin: 0;
   height: 100%;
-  font-family: sans-serif;
   background: #286868;
 }
 body > div {
@@ -20,8 +23,11 @@ fieldset {
 }
 fieldset > legend {
   font-weight: bold;
+  border: 1px solid #198A8A;
+  padding: 4px;
 }
-fieldset.disabled {
+fieldset.disabled,
+fieldset.disabled legend {
   background: #EEE;
   color: #999;
 }

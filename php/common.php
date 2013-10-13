@@ -43,47 +43,10 @@ if (get_magic_quotes_gpc()) {
     array_walk_recursive($_REQUEST, 'stripslashes_gpc');
 }
 
-// utility: set right headers for dynamic JS or JSON files
-function jsHeader(
-  $type,                // javascript || json
-  $compressed = false,  // uses gz_handler if true
-  $CORS = false         // enable CORS if necessary
-) {
-  if ($compressed) ob_start('ob_gzhandler');
-  if ($CORS) header('Access-Control-Allow-Origin: *');
-  header('Content-Type: application/'.$type.'; charset=UTF-8');
-}
-
-// utility: send a basic HTML email
-function mailTo(
-  $from,    // the sender or 'no-reply'
-  $to,      // the destination email
-  $subject, // the email subject
-  $message  // the basic HTML content
-) {
-  // common prefix for all email subjects
-  // users can create a rule in this case
-  // and decide how to be notified
-  static $logo = ')°(, equolo - ';
-
-  // if no-reply, the user should not be able to reply indeed
-  $name = $from === 'no-reply' ? $from : 'equolo - '.$from;
-  return mail(
-    $to,
-    $logo.$subject,
-    '<!DOCTYPE html>'.$message,
-    "From: {$name} <{$from}@equolo.org>\r\n".
-    "Reply-To: {$name} <{$from}@equolo.org>\r\n".
-    "MIME-Version: 1.0\r\nContent-Type: text/html; charset=utf-8\r\n".
-    "X-Mailer: PHP/".phpversion()."\r\n"
-    // if you are wondering ... NO, this is not needed
-    // still a common procedure to flag the env
-    // that generated and sent the email
-  );
-}
+// ALL UTILITIES IN ALPHABETIC ORDER
 
 // utility: helps to set a cookie with common arguments
-function cookieSetter($key, $value, $expires = 3600) {
+function cookieSetter($key, $value, $expires = 31536000) {
   setcookie(
     $key,
     $value,
@@ -126,6 +89,99 @@ function getIPv4Country($REMOTE_ADDR) {
     }
   }
   return $country;
+}
+
+// utility: checks and return the spoken language
+function getLanguage($lang = 'en') {
+  $dir = str_replace('/cgi', '', __DIR__);
+  // default to english if no file exists
+  if (!file_exists($dir.'/cgi/lang/'.$lang.'.php')) {
+    $lang = 'en';
+  }
+  // require the spoken language
+  require_once($dir.'/cgi/lang/'.$lang.'.php');
+  return $dictionary;
+}
+
+// utility: returns true if the user has valid cookies
+function isAuthenticated() {
+  $authenticated = false;
+  if (isset($_COOKIE['email'], $_COOKIE['token'])) {
+    $stmt = query('verify-user', array($_COOKIE['email'], $_COOKIE['token']));
+    while($row = $stmt->fetch(PDO::FETCH_OBJ)) {
+      $authenticated = $row->active == 1;
+    }
+  }
+  return $authenticated;
+}
+
+// utility: returns true if localhost env or real website
+function isEquoloRequest() {
+  // only if REMOTE_ADDR and REQUEST_URI are present
+  return isset(
+    $_SERVER['REMOTE_ADDR'],
+    $_SERVER['HTTP_HOST'],
+    $_SERVER['REQUEST_URI']
+  ) &&
+  // only proper hosts
+  (
+    $_SERVER['HTTP_HOST'] === 'equolo.org' ||
+    (DEVELOPMENT && $_SERVER['HTTP_HOST'] === 'localhost')
+  );
+}
+
+// utility: does a simple check for emails
+function isValidEmail($email) {
+  return preg_match(
+    '/^[^@]+?@[^\1@]+\.([a-z]{2,})$/',
+    $email
+  );
+}
+
+// utility: set right headers for dynamic JS or JSON files
+function jsHeader(
+  $type,                // javascript || json
+  $compressed = false,  // uses gz_handler if true
+  $CORS = false         // enable CORS if necessary
+) {
+  if ($compressed) ob_start('ob_gzhandler');
+  if ($CORS) header('Access-Control-Allow-Origin: *');
+  header('Content-Type: application/'.$type.'; charset=UTF-8');
+}
+
+// in case some smart person is trying to use
+// equolo.org service from the outside
+function jsTroll($message = ')°(, equolo') {
+  jsHeader('javascript');
+  echo "while(1){window.console&&console.log('".addslashes($message)."')}";
+}
+
+// utility: send a basic HTML email
+function mailTo(
+  $from,    // the sender or 'no-reply'
+  $to,      // the destination email
+  $subject, // the email subject
+  $message  // the basic HTML content
+) {
+  // common prefix for all email subjects
+  // users can create a rule in this case
+  // and decide how to be notified
+  static $logo = ')°(, equolo - ';
+
+  // if no-reply, the user should not be able to reply indeed
+  $name = $from === 'no-reply' ? $from : 'equolo - '.$from;
+  return mail(
+    $to,
+    $logo.$subject,
+    '<!DOCTYPE html>'.$message,
+    "From: {$name} <{$from}@equolo.org>\r\n".
+    "Reply-To: {$name} <{$from}@equolo.org>\r\n".
+    "MIME-Version: 1.0\r\nContent-Type: text/html; charset=utf-8\r\n".
+    "X-Mailer: PHP/".phpversion()."\r\n"
+    // if you are wondering ... NO, this is not needed
+    // still a common procedure to flag the env
+    // that generated and sent the email
+  );
 }
 
 // utility: prepare a PDOStatement through a command
