@@ -136,6 +136,7 @@ $dictionary['MAX_JS'] = DEVELOPMENT ? '.max' : '';
 $dictionary['title'] = 'equolo.org - add your equobusiness here :-)';
 $dictionary['dom-language-options'] = implode('', $languageOptions);
 
+header('Content-Type: text/html; charset=UTF-8');
 echo template(
   // the template name
   'submit',

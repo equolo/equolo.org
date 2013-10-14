@@ -12,6 +12,7 @@ $content = array(
   'title' => 'equolo.org'
 );
 
+header('Content-Type: text/html; charset=UTF-8');
 echo template('index', $content);
 
 ?>

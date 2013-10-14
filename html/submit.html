@@ -24,6 +24,20 @@
       </fieldset>
       <fieldset id="step-3">
         <legend>{{activity}}</legend>
+        <div class="activity">
+          <select name="activity"></select>
+          <button name="add">{{add}}</button>
+          <button name="remove">{{remove}}</button>
+        </div>
+        <div class="description">
+          <input placeholder="{{activity.name}}" name="name"/>
+          <textarea placeholder="{{activity.description}}" name="description" maxlength="140"></textarea>
+        </div>
+        <div class="lang">
+          <select name="lang">{{dom-language-options}}</select>
+          <p><span>140</span> {{characters-counting}}</p>
+          <ul><li><strong>√</strong> English</li><li><strong>√</strong> Sticazzi</li></ul>
+        </div>
       </fieldset>
     </div>
   </body>
