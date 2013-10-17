@@ -51,6 +51,7 @@ if (isEquoloRequest()) {
         if (!isset($activities_holder[$row->id])) {
           // create one unique
           $activity = new StdClass;
+          $activity->id = $row->id;
           $activity->name = $row->name;
           $activity->description = array();
           $activity->place = array();

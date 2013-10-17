@@ -45,6 +45,13 @@ function sql($command) {
         notifications
       WHERE
         `auth-id` = (SELECT id FROM auth WHERE email = ?)',
+    'update-notification' =>
+      'UPDATE
+        notifications
+      SET
+        tstamp = NOW()
+      WHERE
+        `auth-id` = (SELECT id FROM auth WHERE email = ?)',
     'user-activation' =>
       'UPDATE
         `auth-login`
