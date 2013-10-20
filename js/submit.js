@@ -1,17 +1,20 @@
 /**
- * Hello Friends,
+ * Hello There,
  *  this area is specific for equolo and it's born
  *  from a quick and fast prototype.
+ * 
  * We couldn't wait to go out with the possibility
  *  to let you insert your data in a hopefully
  *  very user friendly way but unfortunately
  *  the time to optimize everything or split in files
  *  or implement some external framework a part from
  *  Leaflet so it might look a huge file
- *  but actualy is well organized in events sections
+ *  but actualy is kinda organized in events sections
  *  plus it's commented almost everywhere.
- * We hope you'll enjoy or learn something here
- * Happy equolo )°(,
+ * 
+ * We hope you'll enjoy or maybe learn something here
+ * 
+ *  Happy equolo )°(,
  */
 document.once('DOMContentLoaded', function () {
   var
@@ -530,10 +533,10 @@ document.once('DOMContentLoaded', function () {
     }
   ;
 
-  /*function stop(e) {
+  function stop(e) {
     e.preventDefault();
     (e.stopImmediatePropagation || e.stopPropagation).call(e);
-  }*/
+  }
 
 
 ///////////////////////////////////////////////////////////////////////
