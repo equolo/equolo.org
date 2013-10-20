@@ -109,7 +109,8 @@ function sql($command) {
         `activity-place`.email,
         `activity-place`.phone,
         `activity-place`.website,
-        `activity-place`.twitter
+        `activity-place`.twitter,
+        `activity-place`.facebook
       FROM
         auth,
         `auth-login`,

@@ -49,7 +49,8 @@ if (isEquoloRequest()) {
         'email',
         'phone',
         'website',
-        'twitter'
+        'twitter',
+        'facebook'
       );
       while($row = $stmt->fetch(PDO::FETCH_OBJ)) {
         // if there's no activity yet

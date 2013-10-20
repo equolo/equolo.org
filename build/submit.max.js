@@ -387,14 +387,17 @@ document.once('DOMContentLoaded', function () {
                 3 < checkboxes.filter(isInputChecked).length
               ))
             ;
-            // accordingly with next status, all next fieldset should be enabled
-            // or disabled and eventually cleaned but only if already initialized
-            if (this.hasOwnProperty('map')) {
-              fieldsets.slice(
-                fieldsets.indexOf(fieldSet) + 1
-              ).forEach(FieldSet[
-                next.disabled ? 'disable' : 'enable'
-              ]);
+            if (next.disabled) {
+              // all next fieldset should be disabled
+              // if already initialized and next is not enabled yet
+              if (this.hasOwnProperty('map')) {
+                fieldsets.slice(
+                  fieldsets.indexOf(fieldSet) + 1
+                ).forEach(FieldSet.disable);
+              }
+            } else {
+              // unlock automagically next section
+              next.emit('click');
             }
           }.bind(this),
           tmp
@@ -404,11 +407,15 @@ document.once('DOMContentLoaded', function () {
         name.value = description.value =
         activities.innerHTML = languages.innerHTML = '';
         // after change, do everything again from the scratch
-        activities.once('change', function () {
-          user.currentActivity = this.value;
-          // trigger again the same event
-          e.currentTarget.trigger(e);
-        });
+        activities.on(
+          'change',
+          this.onActivityChange || (
+          this.onActivityChange = function () {
+            user.currentActivity = this.value;
+            // trigger again the same event
+            e.currentTarget.trigger(e);
+          }
+        ));
         // when the current activity changes
         // update the activity object with the new name
         name.on(
@@ -591,7 +598,7 @@ document.once('DOMContentLoaded', function () {
             user.currentActivity = null;
             // if there is an activity before go for it
             // otherwise the next one is fine
-            activities.selectedIndex += activities.selectedIndex ? -1 : 1;
+            activities.selectedIndex--;
             activities.emit('change');
           }
         ));
@@ -614,7 +621,7 @@ document.once('DOMContentLoaded', function () {
         // not a criteria concern to create a new user
         // in this case a manual check is better
         tmp = user.currentActivity ?
-          findActivityById(user.activities, user.currentActivity) :
+          getOrCreateActivity(user) :
           {criteria: [], certification: []}
         ;
         // so per each criteria
@@ -647,13 +654,6 @@ document.once('DOMContentLoaded', function () {
             enableAddRemoveButtons();
           }
         ));
-        // verify button status (enable or disable them)
-        enableAddRemoveButtons();
-        // if both disabled
-        if (add.disabled && remove.disabled) {
-          // simulate adding a first element
-          add.emit('click');
-        }
         // what to do after ?
         next.on(
           'click',
@@ -661,28 +661,43 @@ document.once('DOMContentLoaded', function () {
           // this time bound to the walkThrough object
           this.onNextActivity || (
           this.onNextActivity = function (e) {
+            getOrCreateActivity(user).currentPlace = null;
             this.trigger('step-4', user);
           }.bind(this)
         ));
-        // now, if there is already valid data
-        // and buttons are all OK
-        if (!next.disabled) {
-          // just invoke the next step
-          // clean up and show data
-          next.emit('click');
+        // verify button status (enable or disable them)
+        enableAddRemoveButtons();
+        // if both disabled
+        if (add.disabled && remove.disabled) {
+          // simulate adding a first element
+          add.emit('click');
         }
       },
 
 // location
 ///////////////////////////////////////////////////////////////////////
       'step-4': function (e) {
+        // NOTE: e.detail/user is the only variable we can trust
+        // inside shared methods across all options
+        // (except for all DOM nodes, those are the same)
         var
           user = e.detail,
+          activity = getOrCreateActivity(user),
+          place = activity.currentPlace || !activity.place.length ?
+            getOrCreatePlace(activity) : activity.place[0]
+          ,
           fieldSet = $('fieldset#' + e.type)[0],
           icon = $('i', fieldSet)[0],
           category = $('select[name=category]', fieldSet)[0],
-          findMe = $('div.map > button', fieldSet)[0]
+          places = $('select[name=place]', fieldSet)[0],
+          add = $('button[name=add]', fieldSet)[0],
+          remove = $('button[name=remove]', fieldSet)[0],
+          category = $('select[name=category]', fieldSet)[0],
+          findMe = $('div.map > button', fieldSet)[0],
+          fields = $('div.fields > input', fieldSet)
         ;
+
+        activity.currentPlace = place.id;
 
         // this one contains nested fieldSets
         $('fieldset', fieldSet).forEach(FieldSet.enable);
@@ -705,6 +720,49 @@ document.once('DOMContentLoaded', function () {
             navigator.country.geo.latitude,
             navigator.country.geo.longitude
           ], 5);
+
+          // bear in mind
+          // it's forbidden here to refer
+          // outer shortcut instead of fields
+          // so activity and place must be retrived each time
+
+          // as it is for step-3, after change,
+          // do everything again from the scratch
+          places.on('change', function () {
+            getOrCreateActivity(user).currentPlace = this.value;
+            // trigger again the same event
+            e.currentTarget.trigger(e);
+          });
+
+          // simplified approach to add new place
+          add.on('click', function () {
+            var
+              activity= getOrCreateActivity(user),
+              options = places.options,
+              place   = (activity.currentPlace = null) ||
+                        getOrCreatePlace(activity),
+              option  = places.appendChild(
+                          document.createElement('option')
+                        )
+            ;
+            option.append(' - ');
+            option.value = place.id;
+            places.selectedIndex = options.length - 1;
+            places.emit('change');
+          });
+
+          // same simplification for the remove action
+          remove.on('click', function () {
+            var activity = getOrCreateActivity(user);
+            activity.place.splice(
+              activity.place.indexOf(
+                getOrCreatePlace(activity)
+              ),
+              1
+            );
+            places.options[places.selectedIndex--].remove();
+            places.emit('change');
+          });
 
           // if asked, find the position
           findMe.on(
@@ -753,9 +811,49 @@ document.once('DOMContentLoaded', function () {
             this.onCategoryChange || (
             this.onCategoryChange = function (e) {
               icon.className = 'icon-' + category.value;
+              // TODO: map update
             }
           ));
         }
+        // clean up all places/locations
+        while (places.options.length) {
+          places.options[0].remove();
+        }
+        // and repopulate them
+        activity.place.forEach(function(place, i) {
+          var option = places.appendChild(
+            document.createElement('option')
+          );
+          option.value = place.id;
+          option.append(place.road + ' - ' + place.postcode);
+          if (place.id == activity.currentPlace) {
+            option.selected = 'selected';
+            places.selectedIndex = i;
+          }
+        });
+
+        // cleanup all fields
+        fields.forEach(function (input) {
+          input.value = place && place[input.name] || '';
+        });
+        // update relative user data when fields change
+        fields.on('keyup', updatePlaceData);
+        // but be sure only the right place is updated
+        updatePlaceData.target = place;
+
+        // position the map, if possible
+        if (place.latitude != null) {
+          this.map.setView(
+            [
+              place.latitude,
+              place.longitude
+            ],
+            Math.max(
+              14, this.map.getZoom()
+            )
+          );
+        }
+
       }
     },
 
@@ -813,7 +911,7 @@ document.once('DOMContentLoaded', function () {
       xhr.open('get', 'cgi/verify.php?email=' + encodeURIComponent(value), true);
       xhr.on('readystatechange', verifyEmailRequest).send(null);
       // save the user.email for further operations
-      user.email = email;
+      user.email = value;
     }
   }
 
@@ -949,6 +1047,49 @@ document.once('DOMContentLoaded', function () {
       this.push(input.value);
     }
   }
+
+
+
+///////////////////////////////////////////////////////////////////////
+////                    <<< LOCATION >>>
+///////////////////////////////////////////////////////////////////////
+
+  function getOrCreatePlace(activity) {
+    if (!activity.currentPlace) {
+      activity.place.push({
+        // create a temporary client side only place
+        id: (activity.currentPlace = 'new:'.concat(++uid)),
+        icon: '',
+        latitude: null,
+        longitude: null,
+        road: '',
+        extra: '',
+        postcode: '',
+        city: '',
+        county: '',
+        state: '',
+        country: '',
+        email: '',
+        phone: '',
+        website: '',
+        twitter: '',
+        facebook: ''
+      });
+    }
+    // same logic recycled
+    return findActivityById(
+      activity.place,
+      activity.currentPlace
+    );
+  }
+
+  // every time an input is changed
+  // the corresponding plce should be updated
+  function updatePlaceData(e) {
+    var input = e.currentTarget;
+    updatePlaceData.target[input.name] = input.value;
+  }
+
 
 ///////////////////////////////////////////////////////////////////////
 ////                        <<< INIT >>>
