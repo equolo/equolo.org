@@ -6,6 +6,12 @@ CREATE TABLE IF NOT EXISTS `activity` (
   KEY `auth-id` (`auth-id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
+CREATE TABLE IF NOT EXISTS `activity-criteria` (
+  `activity-id` int(10) unsigned NOT NULL,
+  `criteria-id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`activity-id`,`criteria-id`)
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
+
 CREATE TABLE IF NOT EXISTS `activity-certification` (
   `activity-id` int(10) unsigned NOT NULL,
   `certification-id` int(10) unsigned NOT NULL,

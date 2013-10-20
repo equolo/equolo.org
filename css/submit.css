@@ -1,3 +1,4 @@
+
 * {
   font-size: 16px;
   font-family: sans-serif;
@@ -6,13 +7,59 @@ button {
   font-size: 12px;
   padding: 4px;
 }
+button.next {
+  float: right;
+}
+hr {
+  clear: left;
+  border: 0;
+  border-bottom: 1px solid silver;
+  padding: 0;
+  margin: 0;
+  padding-top: 8px;
+  margin-bottom: 8px;
+}
+div.criteria {
+  clear: left;
+  padding: 16px;
+  font-size: 13px;
+}
+ul.criteria,
+ul.criteria > li {
+  list-style: none;
+  padding: 0;
+  margin: 4px 19px;
+  font-size: 12px;
+  cursor: pointer;
+}
+ul.criteria > li:hover {
+  background: #EEE;
+}
+ul.criteria > li:first-child {
+  cursor: normal;
+}
+ul.criteria > li > input {
+  margin-left: -28px;
+}
+div.criteria input + ul.criteria {
+  display: none;
+}
+div.criteria input:checked + ul.criteria {
+  display: block;
+}
+.criteria strong {
+  font-size: 14px;
+}
 input, textarea {
-  width: 314px;
+  width: 300px;
+}
+input[type=checkbox],
+input[type=radio] {
+  width: 24px;
 }
 html, body {
   padding: 0;
   margin: 0;
-  height: 100%;
   background: #286868;
 }
 body > div {
@@ -25,6 +72,7 @@ body > div {
   border-right: 8px solid #198A8A;
 }
 fieldset {
+  clear: all;
   margin-bottom: 12px;
   border: 4px solid #EEE;
 }
@@ -76,7 +124,9 @@ fieldset#step-3 div.lang > ul > li {
   list-style: none;
   font-size: 12px;
 }
-
+fieldset.disabled #map {
+  display: none;
+}
 fieldset.disabled,
 fieldset.disabled * {
   background: #EEE;
@@ -85,4 +135,20 @@ fieldset.disabled * {
 fieldset.disabled,
 fieldset.disabled * {
   cursor: default;
+}
+fieldset.category > i {
+  margin-left: 8px;
+}
+fieldset.address > div.fields > input {
+  font-family: 'FontAwesome';
+}
+fieldset.address > div {
+  float: left;
+}
+fieldset.address div.map {
+  margin-left: 30px;
+  width: 300px;
+}
+fieldset.address div#map {
+  height: 292px;
 }

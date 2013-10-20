@@ -1,2 +1,2 @@
 /*! )°(, equolo - https://github.com/equolo/equolo.org */
-html,body{padding:0;margin:0}
+.no-select{-webkit-user-select:none;-blink-user-select:none;-khtml-user-select:none;-moz-user-select:none;-ms-user-select:none;-o-user-select:none;user-select:none}html,body{padding:0;margin:0}

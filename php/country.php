@@ -22,9 +22,13 @@ if (isEquoloRequest()) {
   ) {
     // no need to disturb the database
     $country = base64_decode($_COOKIE['country']);
-  } else {
-    // let's find out the country
-    $country = json_encode(getIPv4Country($REMOTE_ADDR));
+  }
+  // let's find out the country
+  else {
+    // using a fake IP hwen in localhost
+    $country = json_encode(getIPv4Country(
+      DEVELOPMENT ? '172.1.1.1' : $REMOTE_ADDR
+    ));
   }
   // set cookies in a simple way
   // no need to make them visible, neither to use

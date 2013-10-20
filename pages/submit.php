@@ -126,15 +126,31 @@ foreach($languages as $row) {
   $selected = $row->value == $lang ? 'selected="selected"' : '';
   $languageOptions[] = '<option '.$selected.' value="'.$row->value.'">'.safer($row->description).'</option>';
 }
-
+$dictionary['dom-language-options'] = implode('', $languageOptions);
 //// <<< /LANGUAGE >>>
+
+
+
+//// <<< CRITERIA >>>
+$criteria = array();
+$stmt = query('criteria', array($lang));
+while($row = $stmt->fetch(PDO::FETCH_OBJ)) {
+  $criteria[] =
+    '<li class="no-select">'.
+      '<input type="checkbox" value="'.$row->id.'"/>'.safer($row->value).
+    '</li>'
+  ;
+}
+$dictionary['criteria'] = implode('', $criteria);
+//// <<< /CRITERIA >>>
+
+
 
 $dictionary['user.email'] = $active ? (
   isset($_GET['email']) ? $_GET['email'] : $_COOKIE['email']
 ) : '';
 $dictionary['MAX_JS'] = DEVELOPMENT ? '.max' : '';
 $dictionary['title'] = 'equolo.org - add your equobusiness here :-)';
-$dictionary['dom-language-options'] = implode('', $languageOptions);
 
 header('Content-Type: text/html; charset=UTF-8');
 echo template(

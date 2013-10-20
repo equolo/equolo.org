@@ -3,13 +3,16 @@
   <head>
     <title>{{title}}</title>
     <meta http-equiv="content-language" content="en-US"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
-    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0"/>
     <meta names="apple-mobile-web-app-status-bar-style" content="black"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link rel="stylesheet" href="css/font-awesome.css"/>
+    <link rel="stylesheet" href="css/leaflet.css"/>
     <link rel="stylesheet" href="css/submit.css"/>
     <!--[if IE 8]><script src="js/ie8.js"></script><![endif]-->
     <script src="cgi/country.php"></script>
     <script>{{jslang}}</script>
+    <script src="js/leaflet.js"></script>
     <script src="js/submit{{MAX_JS}}.js"></script>
   </head>
   <body>
@@ -20,24 +23,84 @@
       </fieldset>
       <fieldset id="step-2">
         <legend>{{email}}</legend>
-        <input placeholder="{{email}}" value="{{user.email}}"/>
+        <p>{{email-fieldset-description}}</p>
+        <input placeholder="{{email-field}}" value="{{user.email}}"/>
       </fieldset>
       <fieldset id="step-3">
         <legend>{{activity}}</legend>
+        <p>{{activity-fieldset-description}}</p>
         <div class="activity">
-          <select name="activity"></select>
+          <select name="activity" maxlength="127"></select>
           <button name="add">{{add}}</button>
           <button name="remove">{{remove}}</button>
         </div>
         <div class="description">
-          <input placeholder="{{activity.name}}" name="name"/>
-          <textarea placeholder="{{activity.description}}" name="description" maxlength="140"></textarea>
+          <input placeholder="{{activity-name}}" name="name"/>
+          <textarea placeholder="{{activity-description}}" name="description" maxlength="140"></textarea>
         </div>
         <div class="lang">
           <select name="lang">{{dom-language-options}}</select>
           <p><span>140</span> {{characters-counting}}</p>
-          <ul><li><strong>√</strong> English</li><li><strong>√</strong> Sticazzi</li></ul>
+          <ul></ul>
         </div>
+        <div class="criteria">
+          <input type="radio" name="certified"/> I declare I have certificates<br/>
+          <input type="radio" name="certified"/> I do not have certificates
+          <ul class="criteria">
+            <li>{{criteria-descriptions}}</li>
+            {{criteria}}
+          </ul>
+        </div>
+        <hr/>
+        <button class="next">{{next}}</button>
+      </fieldset>
+      <fieldset id="step-4">
+        <legend>{{location}}</legend>
+        <p>{{location-fieldset-description}}</p>
+        <select name="place"></select>
+        <button name="add">{{add}}</button>
+        <button name="remove">{{remove}}</button>
+        <hr/>
+        <fieldset class="category">
+          <legend>{{category}}</legend>
+          <p>{{category-description}}</p>
+          <select name="category">
+            <option value="question">-</option>
+            <option value="shopping-cart">everyday needs</option>
+            <option value="gift">shopping</option>
+            <option value="food">eating</option>
+            <option value="home">accommodation</option>
+            <option value="glass">going out</option>
+            <option value="briefcase">enterprise</option>
+            <option value="group">community</option>
+            <option value="truck">transport</option>
+            <option value="map-marker">other</option>
+          </select>
+          <i class="icon-question"></i>
+        </fieldset>
+        <fieldset class="address">
+          <legend>{{address}}</legend>
+          <div class="fields">
+            <input name="road" placeholder="Address/Street"/><br/>
+            <input name="extra" placeholder="Address Extra"/><br/>
+            <input name="postcode" placeholder="Post Code"/><br/>
+            <input name="city" placeholder="City"/><br/>
+            <input name="county" placeholder="County"/><br/>
+            <input name="state" placeholder="State/Region"/><br/>
+            <input name="country" placeholder="Country"/><br/>
+            <input name="email" placeholder="&#xf003; {{email}}"/><br/>
+            <input name="phone" placeholder="&#xf095; {{telephone}}"/><br/>
+            <input name="website" placeholder="&#xf0ac; www"/><br/>
+            <input name="twitter" placeholder="&#xf099; @twitter"/><br/>
+            <input name="facebook" placeholder="&#xf082; facebook"/>
+            <input type="hidden" name="latitude"/>
+            <input type="hidden" name="longitude"/>
+          </div>
+          <div class="map">
+            <button><i class="icon-location-arrow"></i> {{find-me}}</button>
+            <div id="map"></div>
+          </div>
+        </fieldset>
       </fieldset>
     </div>
   </body>

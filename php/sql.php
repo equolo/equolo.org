@@ -24,6 +24,17 @@ function sql($command) {
         `auth-login`.`auth-id` = auth.id
       AND
         auth.email = ?',
+    'criteria' =>
+      'SELECT
+        criteria.id,
+        criteria.value
+      FROM
+        criteria,
+        lang
+      WHERE
+        criteria.`lang-id` = lang.id
+      AND
+        lang.value = ?',
     'insert-notification' =>
       'INSERT INTO
         notifications
@@ -64,6 +75,24 @@ function sql($command) {
         activity.id,
         `activity-name`.value AS "name",
         `activity-description`.value AS "description",
+        (SELECT
+          GROUP_CONCAT(
+            DISTINCT `activity-criteria`.`criteria-id`
+          )
+        FROM
+          `activity-criteria`
+        WHERE
+          `activity-criteria`.`activity-id` = activity.id
+        ) AS "criteria",
+        (SELECT
+          GROUP_CONCAT(
+            DISTINCT `activity-certification`.`certification-id`
+          )
+        FROM
+          `activity-certification`
+        WHERE
+          `activity-certification`.`activity-id` = activity.id
+        ) AS "certification",
         lang.id AS "lid",
         lang.value AS "lang",
         category.icon,
@@ -92,7 +121,8 @@ function sql($command) {
         category,
         lang
       WHERE
-        auth.email = "ariannademario@hotmail.com"
+        # auth.email = "ariannademario@hotmail.com"
+        auth.email = ?
       AND
         `auth-login`.`auth-id` = auth.id
       AND
@@ -110,7 +140,8 @@ function sql($command) {
       AND
         category.id = `activity-geo`.`category-id`
       AND
-        `activity-place`.`activity-geo-id` = `activity-geo`.id',
+        `activity-place`.`activity-geo-id` = `activity-geo`.id
+      GROUP BY gid, lid',
     'user-authentication' =>
       'SELECT
         SHA1(CONCAT(email, token)) AS "token"

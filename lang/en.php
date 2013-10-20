@@ -10,13 +10,9 @@ $dictionary = array(
   'authentication-activation-text' =>
     'Please confirm your email in order to be able to add and edit all your activities, thank you!',
   'jslang' => 'this.jslang='.json_encode(array(
-    'sureAboutTheEmail' =>
-      'Your email address has never been confirmed.'."\n".
-      'Are you sure you want to go on?'."\n".
-      'This will remove any previous related data.',
     'seeYouLater' =>
-      'Please confirm your eamil address and related activities.'."\n".
-      'Feel free to come back whenever you want. Thank You!'
+      'An email has been sent to your account with the edit button/link'."\n".
+      'Please check your email inbox and feel free to come back whenever you want. Thank You!'
   ))
 );
 ?>

@@ -26,7 +26,8 @@ PINIT=js/normalizer.js\
       js/submit.js
 
 # make CSS files
-CSS = css/$(REPO).css
+CSS = css/utils.css\
+      css/$(REPO).css
 
 # move HTML files
 HTML = html/*
@@ -40,7 +41,6 @@ PHP = php/*
 
 # default build task
 build:
-	make clean
 	make structure
 	make html
 	make js
@@ -81,6 +81,7 @@ js:
 	cp build/submit.js www/js
 	cp build/submit.max.js www/js
 	cp eddy/build/ie8.js www/js
+	cp leaflet/leaflet.js www/js
 
 # build generic version
 css:
@@ -93,7 +94,12 @@ css:
 	rm -rf www/css/*
 	cp build/$(REPO).css www/css
 	cp build/$(REPO).max.css www/css
-	cp css/submit.css www/css
+	cp css/utils.css www/css/submit.css
+	cat css/submit.css >>www/css/submit.css
+	cp -r font www
+	mv www/font/font-awesome.min.css www/css/font-awesome.css
+	cp leaflet/leaflet.css www/css/leaflet.css
+	cp leaflet/leaflet.ie.min.css www/css/leaflet.ie.css
 
 # move all needed PHP files in the right folder
 php:
@@ -110,9 +116,8 @@ db:
 # including CDN files to avoid problems with some redefined CSS
 # this is mainly a Firefox behavior
 external:
-	java -jar node_modules/yuicompressor.jar --verbose --type css leaflet.css -o www/css/leaflet.css --charset utf-8
-	java -jar node_modules/yuicompressor.jar --verbose --type css leaflet.ie.css -o www/css/leaflet.ie.css --charset utf-8
-	cp leaflet.js www/js
+	java -jar node_modules/yuicompressor.jar --verbose --type css leaflet/leaflet.css -o leaflet/leaflet.min.css --charset utf-8
+	java -jar node_modules/yuicompressor.jar --verbose --type css leaflet/leaflet.ie.css -o leaflet/leaflet.ie.min.css --charset utf-8
 
 # keep an eye on the minified and gzipped size
 size:
@@ -129,11 +134,20 @@ dependencies:
 	curl -O -L http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css
 	curl -O -L http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.ie.css
 	curl -O -L http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js
+	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css
+	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/3.2.1/font/fontawesome-webfont.eot
+	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/3.2.1/font/fontawesome-webfont.woff
+	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/3.2.1/font/fontawesome-webfont.ttf
+	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/3.2.1/font/fontawesome-webfont.svg
+	mv leaflet*.* leaflet
+	mv font*.* font
 
 # every time something changes,
 # except for the runtime created www folder
 # calls the make procedure
 builder:
+	make clean
+	make external
 	make build
 	node -e "(function(require){\
 	var fs = require('fs'), exec = require('child_process').exec;\

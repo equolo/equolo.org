@@ -20,7 +20,12 @@ if (isEquoloRequest()) {
   ) {
     $commonParams = array($_GET['email']);
     // editing, case after authentication with same epxlicit email
-    if (isAuthenticated() && $_GET['email'] === $_COOKIE['email']) {
+    if (
+      // testing different accounts
+      DEVELOPMENT ||
+      // be sure online there is a better check
+      (isAuthenticated() && $_GET['email'] === $_COOKIE['email'])
+    ) {
       // grab all activities and all related info
       $stmt = query('user-activities', $commonParams);
       // used to group by activity
@@ -54,6 +59,10 @@ if (isEquoloRequest()) {
           $activity->id = $row->id;
           $activity->name = $row->name;
           $activity->description = array();
+          $activity->criteria = $row->criteria ?
+            explode(',', $row->criteria) : array();
+          $activity->certification = $row->certification ?
+            explode(',', $row->certification) : array();
           $activity->place = array();
           $activities_holder[$row->id] = $activity;
           // assign by reference to the next $result
