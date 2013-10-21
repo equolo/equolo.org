@@ -212,7 +212,7 @@ function query($command, $arguments = array()) {
 
 // utility: make HTML strings safe
 function safer($text) {
-  return htmlentities($text, ENT_QUOTES, 'UTF-8');
+  return htmlentities($text, ENT_QUOTES);
 }
 
 // utility: parse and translate a template
@@ -223,7 +223,7 @@ function template($file, $content, $path = 'tpl/') {
       $key = $matches[1];
       return isset($content[$key]) ? $content[$key] : $matches[0];
     },
-    file_get_contents($path.$file.'.html')
+    file_get_contents(__DIR__.'/../tpl/'.$file.'.html')
   );
 }
 

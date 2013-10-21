@@ -1462,7 +1462,7 @@ document.once('DOMContentLoaded', function () {
               // since places should be packed before being sent
               // gaining a relevant gain in bytes via JSONH
               clone.activities.forEach(packPlaces);
-              console.log(JSON.stringify(clone));console.log(clone);
+              // console.log(JSON.stringify(clone));console.log(clone);
               xhr = new XMLHttpRequest;
               xhr.open("POST", 'cgi/create.php', true);
               xhr.setRequestHeader("If-Modified-Since", "Mon, 26 Jul 1997 05:00:00 GMT");
@@ -1567,36 +1567,28 @@ document.once('DOMContentLoaded', function () {
   function verifyEmailCompleted(e) {
     var detail = e.detail;
     user.currentActivity = null;
-    switch(typeof detail) {
-      // user authed with all info received
-      case 'object':
-        user.activities = detail;
-        if (user.activities.length) {
-          // expand via JSONH
-          user.activities.forEach(unpackPlaces);
-          user.currentActivity = user.activities[0].id;
-        }
-        break;
-      case 'boolean':
-        // user in but not authenticated
-        // or never confirmed the email
-        // inform the user and
-        // ask if a new email should be sent
-        // silently failing in the backend
-        // if already sent in last 24 hours
-        if (confirm(jslang.seeYouLater)) {
-          // TODO: send the reminder
-        }
-        // nothing to do here, send the user
-        // back to equolo.org
-        return location.href = 'http://equolo.org/';
-      default:
-        // start from scratch new activities
-        user.activities = [];
+    if (detail == null) {
+      user.activities = [];
+    } else if(typeof detail == 'object') {
+      user.activities = detail;
+      if (user.activities.length) {
+        // expand via JSONH
+        user.activities.forEach(unpackPlaces);
+        user.currentActivity = user.activities[0].id;
+      }
+    } else {
+      // user in but not authenticated
+      // or never confirmed the email
+      // inform the user and
+      // ask if a new email should be sent
+      // silently failing in the backend
+      // if already sent in last 24 hours
+      return location.href = 'http://equolo.org/';
     }
     if (user.hasOwnProperty('activities')) {
       this.trigger('step-3', user);
     }
+    
   }
 
   // do not perform this check every keyup event

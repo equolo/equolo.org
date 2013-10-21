@@ -235,7 +235,7 @@ if (
       }
       // welcome to equolo new user!
       if (!$validUser) {
-        $link = '<a href="http://equolo.org/activate.php?'.
+        $link = '<a href="http://equolo.org/submit.php?'.
           'token='.rawurlencode(sha1($user->email.$user->token)).'&'.
           'email='.rawurlencode($user->email).
         '">clicking here</a>';
@@ -247,8 +247,7 @@ if (
             'welcome',
             array(
               'authentication-link' => $link
-            ),
-            '../tpl/'
+            )
           ),
           true
         ) or exit('bad-data');

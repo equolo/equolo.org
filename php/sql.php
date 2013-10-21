@@ -322,7 +322,8 @@ function sql($command) {
       AND
         country_range.end
       AND
-        country.id = country_range.country_id',
+        country.id = country_range.country_id
+      LIMIT 1',
     'verify-notification' =>
       'SELECT
         notifications.tstamp AS "when"
