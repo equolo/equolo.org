@@ -152,7 +152,7 @@ $dictionary['user.email'] = $active ? (
 $dictionary['MAX_JS'] = DEVELOPMENT ? '.max' : '';
 $dictionary['title'] = 'equolo.org - add your equobusiness here :-)';
 
-header('Content-Type: text/html; charset=UTF-8');
+header('Content-Type: text/html; charset=utf-8');
 echo template(
   // the template name
   'submit',

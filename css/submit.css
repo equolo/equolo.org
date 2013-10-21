@@ -1,15 +1,21 @@
-
 * {
   font-size: 16px;
   font-family: sans-serif;
 }
 
+input.save,
 button {
   font-size: 12px;
   padding: 4px;
 }
+input.save {
+  font-size: 14px;
+  font-weight: bold;
+}
+input.save,
 button.next {
   float: right;
+  width: 100px;
 }
 hr {
   clear: left;
@@ -50,6 +56,20 @@ div.criteria input:checked + ul.criteria {
 }
 .criteria strong {
   font-size: 14px;
+}
+div.terms-of-use {
+  padding: 8px;
+  border: 4px solid #EEE;
+  background: #F5F5F5;
+  height: 200px;
+  overflow: auto;
+  overflow-y: scroll;
+  margin-bottom: 16px;
+  font-weight: 100;
+}
+fieldset.disabled div.terms-of-use {
+  div.terms-of-use;
+  overflow: hidden;
 }
 input, textarea {
   width: 300px;
@@ -152,4 +172,7 @@ fieldset.address div.map {
 }
 fieldset.address div#map {
   height: 292px;
+}
+fieldset:last-child {
+  margin-bottom: 128px;
 }

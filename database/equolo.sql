@@ -1,3 +1,11 @@
+# the main purpose of this database is to be as fast as possible
+# so that main engine is MyISAM with static tables everywhere
+# it's porbably an old style/concept but when there are
+# many geo-objects in it might be handy
+# queries and structures are also kept simple
+# to preserve possible portability over SQLite
+# or any other relational database
+
 CREATE TABLE IF NOT EXISTS `activity` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `auth-id` int(10) unsigned NOT NULL,
@@ -6,16 +14,16 @@ CREATE TABLE IF NOT EXISTS `activity` (
   KEY `auth-id` (`auth-id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
-CREATE TABLE IF NOT EXISTS `activity-criteria` (
-  `activity-id` int(10) unsigned NOT NULL,
-  `criteria-id` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`activity-id`,`criteria-id`)
-) ENGINE=MyISAM DEFAULT CHARSET=ascii;
-
 CREATE TABLE IF NOT EXISTS `activity-certification` (
   `activity-id` int(10) unsigned NOT NULL,
   `certification-id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`activity-id`,`certification-id`)
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
+
+CREATE TABLE IF NOT EXISTS `activity-criteria` (
+  `activity-id` int(10) unsigned NOT NULL,
+  `criteria-id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`activity-id`,`criteria-id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
 CREATE TABLE IF NOT EXISTS `activity-description` (

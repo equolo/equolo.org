@@ -19,7 +19,19 @@
 document.once('DOMContentLoaded', function () {
   var
     RE_EMAIL = /^[^@]+?@[^\1@]+\.([a-z]{2,})$/,
+    RE_VALID_GEO = /^-?\d+(?:\.\d+)?$/, // well, sort of ..
     uid = 0,
+    JSONPid = 0,
+    JSONPrefix = '_JSONP',
+    // used as indicator for automatic searching
+    searchStateIcon = $('fieldset#step-4 fieldset.address > legend > i')[0],
+    searchState = {
+      no: 'icon-angle-down',
+      ok: 'icon-ok',
+      error: 'icon-exclamation-sign',
+      searching: 'icon-refresh icon-spin'
+    },
+    // the single user shared across all logic
     user = {},
     walkThrough = {
       // per each triggered event
@@ -59,6 +71,7 @@ document.once('DOMContentLoaded', function () {
 ///////////////////////////////////////////////////////////////////////
 
 
+
 // language
 ///////////////////////////////////////////////////////////////////////
       'step-1': function (e) {
@@ -73,6 +86,8 @@ document.once('DOMContentLoaded', function () {
         });
         this.trigger('step-2');
       },
+
+
 
 // email
 ///////////////////////////////////////////////////////////////////////
@@ -89,6 +104,8 @@ document.once('DOMContentLoaded', function () {
         // check it directly through events
         email.emit('keyup');
       },
+
+
 
 // activity
 ///////////////////////////////////////////////////////////////////////
@@ -326,19 +343,16 @@ document.once('DOMContentLoaded', function () {
             ;
             // those that were new already, no need to bother the database
             if (/^new:/.test(id)) {
-              for(i = 0; i < user.activities.length; i++) {
-                // update the list
-                if (user.activities[i].id == id) {
-                  // removing the current activity
-                  user.activities.splice(i, 1);
-                  break;
-                }
-              }
+              user.activities.splice(
+                user.activities.indexOf(activity),
+                1
+              );
             } else if(!/^remove:/.test(id)) {
               // somehow tell the server this activity should be removed
               // the prefix is good enough to ignore it here and inform
               // the backend about what to do
               activity.id = 'remove:' + id;
+              activity.place = [];
             }
             // no activity selected
             user.currentActivity = null;
@@ -363,6 +377,7 @@ document.once('DOMContentLoaded', function () {
             enableAddRemoveButtons();
           }
         ));
+
         // need to setup criterias too
         // not a criteria concern to create a new user
         // in this case a manual check is better
@@ -387,7 +402,12 @@ document.once('DOMContentLoaded', function () {
         criteria.on(
           'change',
           this.enableAddRemoveButtons || (
-          this.enableAddRemoveButtons = enableAddRemoveButtons
+          this.enableAddRemoveButtons = function() {
+            if (criteria.checked) {
+              getOrCreateActivity(user).certification = [];
+            }
+            enableAddRemoveButtons();
+          }
         ));
         // while certified should flag
         // the object as certified and
@@ -396,7 +416,10 @@ document.once('DOMContentLoaded', function () {
           'change',
           this.onCertifiedEnabled || (
           this.onCertifiedEnabled = function() {
-            getOrCreateActivity(user).certification = [true];
+            if (certified.checked) {
+              // right now the certification is just a static flag
+              getOrCreateActivity(user).certification = [1];
+            }
             enableAddRemoveButtons();
           }
         ));
@@ -420,6 +443,8 @@ document.once('DOMContentLoaded', function () {
         }
       },
 
+
+
 // location
 ///////////////////////////////////////////////////////////////////////
       'step-4': function (e) {
@@ -434,16 +459,44 @@ document.once('DOMContentLoaded', function () {
           ,
           fieldSet = $('fieldset#' + e.type)[0],
           icon = $('i', fieldSet)[0],
-          category = $('select[name=category]', fieldSet)[0],
           places = $('select[name=place]', fieldSet)[0],
           add = $('button[name=add]', fieldSet)[0],
           remove = $('button[name=remove]', fieldSet)[0],
+          next = $('button.next', fieldSet)[0],
           category = $('select[name=category]', fieldSet)[0],
           findMe = $('div.map > button', fieldSet)[0],
-          fields = $('div.fields > input', fieldSet)
+          fields = $('div.fields > input', fieldSet),
+          // fields that should trigger the search
+          searchRelevantFields = [
+            fields[0],
+            fields[2],
+            fields[3],
+            fields[4],
+            fields[5],
+            fields[6]
+          ],
+          optionRelevantFields = [
+            fields[0],
+            fields[2]
+          ],
+          enabledAddOrRemove = function () {
+            // if there's no latitude, longitude
+            // or the icon hasn't been set yet
+            next.disabled = add.disabled = (
+              place.latitude == null && icon.value != 'question'
+            );
+            remove.disabled = places.options.length < 2;
+          }
         ;
 
+        searchStateIcon.className = searchState.no;
+
+        // which is the currentPlace for this session?
         activity.currentPlace = place.id;
+
+        // be sure searches happen
+        // if the user came back to edit
+        this.hasExplicitPlace = false;
 
         // this one contains nested fieldSets
         $('fieldset', fieldSet).forEach(FieldSet.enable);
@@ -452,25 +505,73 @@ document.once('DOMContentLoaded', function () {
         // use this as flag to setup once
         // everything else too
         if (!this.hasOwnProperty('map')) {
-          this.map = L.map('map');
+
+          // bear in mind
+          // it's forbidden here to refer
+          // outer shortcut instead of fields
+          // so activity and place must be retrived each time
+
           L.tileLayer(
             'http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg',
             {
               attribution: 'Map Tiles &copy; Open MapQuest',
               maxZoom: 18
             }
-          ).addTo(this.map);
+          ).addTo(
+            // one map for all places of all activities
+            this.map = L.map('map')
+          );
 
-          // show curent country
-          this.map.setView([
-            navigator.country.geo.latitude,
-            navigator.country.geo.longitude
-          ], 5);
+          // helper for map position
+          this.setMapView = function setMapView(
+            coords, zoom  // zoom is optional
+          ) {
+            this.map.setView(
+              [
+                coords.latitude || coords.lat,
+                coords.longitude || coords.lng
+              ],
+              zoom || Math.max(
+                14, this.map.getZoom()
+              )
+            );
+          };
 
-          // bear in mind
-          // it's forbidden here to refer
-          // outer shortcut instead of fields
-          // so activity and place must be retrived each time
+          // helper for all places
+          this.setPlaceView = function setPlaceView(
+            place // same as coords
+          ) {
+            // remove the previous one
+            this.dropMarker();
+            // create a new marker
+            this.marker = L.marker(
+              [
+                place.latitude || place.lat,
+                place.longitude || place.lng
+              ],
+              {
+                icon:L.icon({
+                  iconUrl: fontAwesomeIcon(category.value, 36),
+                  // shouldn't be needed with display
+                  // iconRetinaUrl: fontAwesomeIcon(category.value, 36, 2),
+                  iconSize: [36, 36]
+                })
+              }
+            ).addTo(this.map);
+            this.setMapView(place);
+            enabledAddOrRemove();
+          };
+
+          // simple way to clean the current marker
+          this.dropMarker = function () {
+            if (this.marker) {
+              this.map.removeLayer(this.marker);
+              this.marker = null;
+            }
+          };
+
+          // show curent country by default
+          this.setMapView(navigator.country.geo, 5);
 
           // as it is for step-3, after change,
           // do everything again from the scratch
@@ -499,16 +600,133 @@ document.once('DOMContentLoaded', function () {
 
           // same simplification for the remove action
           remove.on('click', function () {
-            var activity = getOrCreateActivity(user);
-            activity.place.splice(
-              activity.place.indexOf(
-                getOrCreatePlace(activity)
-              ),
-              1
-            );
+            var
+              activity = getOrCreateActivity(user),
+              place = getOrCreatePlace(activity)
+            ;
+            // same logic used for activity
+            if (/^new:/.test(place.id)) {
+              activity.place.splice(
+                activity.place.indexOf(place), 1
+              );
+            } else if(!/^remove:/.test(id)) {
+              place.id = 'remove:' + place.id;
+            }
             places.options[places.selectedIndex--].remove();
             places.emit('change');
           });
+
+          // the usual procedure to move forward
+
+          // category should update the icon and whatever is on the map
+          // plus it should actually update the place icon too
+          category.on(
+            'change',
+            // same trick used in step-3
+            this.onCategoryChange || (
+            this.onCategoryChange = function (e) {
+              icon.className = 'icon-' + category.value;
+              getOrCreatePlace(
+                getOrCreateActivity(user)
+              ).icon = category.value;
+              if (this.marker) {
+                this.setPlaceView(this.marker.getLatLng());
+              }
+            }.bind(this)
+          ));
+
+          next.on('click', this.boundTo(function () {
+            var result = verifyAllUserData(user);
+            if (result === true) {
+              this.trigger('step-5', user);
+            } else {
+              notifyProblemsWithData(result);
+            }
+          }));
+
+          // perform a search if needed
+          searchRelevantFields.on(
+            'keyup',
+            function (e) {
+              if (!this.hasExplicitPlace) {
+                // this cannot be greedy since it's a request
+                // to an external site. 1 second shoul dbe good enough
+                clearTimeout(this.findPlaceTimer || 0);
+                searchStateIcon.className = searchState.searching;
+                this.findPlaceTimer = setTimeout(
+                  this.boundTo(checkBeforeSearchingPlace),
+                  1000,
+                  searchRelevantFields
+                );
+              }
+            }.bind(this)
+          );
+
+          // and once the search has been completed ..
+          this.on('search:place', function (e) {
+            // being asynchronous
+            // be sure there's no place explicilty set before
+            if (!this.hasExplicitPlace) {
+              // we can show the place now
+              this.setPlaceView(
+                // updating it first, of course
+                updatePlacePosition(
+                  getOrCreatePlace(
+                    getOrCreateActivity(user)
+                  ),
+                  fields,
+                  // will be the coordinates
+                  e.detail
+                )
+              );
+            }
+          });
+
+          // however, a place might be explicitly positioned
+          // through the right click of a mouse
+          $('#map').on(
+            'contextmenu',
+            function contextmenu(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              if (this.hasExplicitPlace) {
+                search.address = '';
+                searchStateIcon.className = searchState.no;
+                this.hasExplicitPlace = false;
+                // this is needed if the palce
+                // was set wrongly or by accident
+                // but we'd like to let the user
+                // search again through the fields
+                this.dropMarker();
+              } else if (
+                // inform the user that with right click
+                // it is possible to position the place directly
+                this.askedUserIfPutAPlaceOnMap ||
+                confirm('would like to pin it here ?')
+              ) {
+                this.hasExplicitPlace =
+                this.askedUserIfPutAPlaceOnMap = true;
+                e = this.map.containerPointToLatLng(
+                  this.map.mouseEventToContainerPoint(e)
+                );
+                if (!(isNaN(e.lat) || isNaN(e.lng))) {
+                  this.setPlaceView(
+                    updatePlacePosition(
+                      getOrCreatePlace(
+                        getOrCreateActivity(user)
+                      ),
+                      fields,
+                      {
+                        latitude: e.lat,
+                        longitude: e.lng
+                      }
+                    )
+                  );
+                  searchStateIcon.className = searchState.ok;
+                }
+              }
+            }.bind(this)
+          );
 
           // if asked, find the position
           findMe.on(
@@ -550,23 +768,39 @@ document.once('DOMContentLoaded', function () {
             }.bind(this.map)
           );
 
-          // category should update the icon and whatever is on the map
-          category.on(
-            'change',
-            // same trick used in step-3
-            this.onCategoryChange || (
-            this.onCategoryChange = function (e) {
-              icon.className = 'icon-' + category.value;
-              // TODO: map update
+          // when the first filed
+          // or the post code one change
+          optionRelevantFields.on(
+            'keyup',
+            function () {
+              // update the current option name
+              var option = places.options[
+                places.selectedIndex
+              ];
+              option.innerHTML = '';
+              option.append(
+                optionRelevantFields.map(
+                  mapTrimmedValue
+                ).join(' - ')
+              );
             }
-          ));
+          );
+
         }
+
+        // if there is a Marker displayed
+        // it's from another place so ...
+        this.dropMarker(); // drop it!
+
+
         // clean up all places/locations
         while (places.options.length) {
           places.options[0].remove();
         }
         // and repopulate them
         activity.place.forEach(function(place, i) {
+          // only places that have not been removed
+          if (/^remove:/.test(place.id)) return;
           var option = places.appendChild(
             document.createElement('option')
           );
@@ -580,28 +814,111 @@ document.once('DOMContentLoaded', function () {
 
         // cleanup all fields
         fields.forEach(function (input) {
-          input.value = place && place[input.name] || '';
+          var value = place && place[input.name] || '';
+          if (value.length && input.name === 'twitter') {
+            value = '@' + value;
+          }
+          input.value = value;
         });
         // update relative user data when fields change
         fields.on('keyup', updatePlaceData);
         // but be sure only the right place is updated
         updatePlaceData.target = place;
 
+        // if there is already an icon
+        // use it otherwise set it with the default
+        changePlaceCategory(
+          category,
+          place.icon ||
+          category.options[0].value,
+          icon
+        );
+
+        enabledAddOrRemove();
+
         // position the map, if possible
         if (place.latitude != null) {
-          this.map.setView(
-            [
-              place.latitude,
-              place.longitude
-            ],
-            Math.max(
-              14, this.map.getZoom()
-            )
-          );
+          this.setPlaceView(place);
         }
 
+      },
+
+
+
+// terms of use
+///////////////////////////////////////////////////////////////////////
+      'step-5': function (e) {
+        var
+          user = e.detail,
+          fieldSet = $('fieldset#' + e.type)[0],
+          termsOfService = $('div', fieldSet)[0],
+          agreed = $('input[type=checkbox]', fieldSet)[0],
+          submit = $('input[type=submit]', fieldSet)[0]
+        ;
+        submit.disabled = true;
+        agreed.on(
+          'change',
+          this.onAgreement || (
+          this.onAgreement = function () {
+            submit.disabled = !this.checked;
+          }
+        ));
+        submit.on(
+          'click',
+          this.onSaveAllTheData || (
+          this.onSaveAllTheData = function () {
+            var
+              // double/triple check before sending
+              result = verifyAllUserData(user),
+              clone,
+              xhr
+            ;
+            if (result === true) {
+              submit.disabled = true;
+              // quick and dirty way to clone the object
+              clone = JSON.parse(JSON.stringify(user));
+              // little cleanup
+              delete clone.currentActivity;
+              // since places should be packed before being sent
+              // gaining a relevant gain in bytes via JSONH
+              clone.activities.forEach(packPlaces);
+              console.log(JSON.stringify(clone));console.log(clone);
+              xhr = new XMLHttpRequest;
+              xhr.open("POST", 'cgi/create.php', true);
+              xhr.setRequestHeader("If-Modified-Since", "Mon, 26 Jul 1997 05:00:00 GMT");
+              xhr.setRequestHeader("Cache-Control", "no-cache");
+              xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+              xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+              xhr.on('readystatechange', function () {
+                if (xhr.readyState == 4) {
+                  $('fieldset').forEach(FieldSet.enable);
+                  switch(xhr.responseText) {
+                    case 'OK':          // yeah!
+                      alert(')°(,');
+                      return location.reload();
+                      break;
+
+                    case 'bad-data':    // something went terribly wrong!
+                      alert('bad data');
+                      break;
+
+                    default:            // probably connection error
+                                        // or server busy, or ... 
+                      alert(xhr.responseText || 'connection error');
+                      break;
+                  }
+                  submit.disabled = false;
+                }
+              });
+              xhr.send('info=' + encodeURIComponent(JSON.stringify(clone)));
+            } else {
+              notifyProblemsWithData(result);
+            }
+          }
+        ));
       }
     },
+
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -664,12 +981,14 @@ document.once('DOMContentLoaded', function () {
   // once the email is OK
   function verifyEmailCompleted(e) {
     var detail = e.detail;
+    user.currentActivity = null;
     switch(typeof detail) {
       // user authed with all info received
       case 'object':
         user.activities = detail;
-        // show all activities next field
-        // TODO: next ...
+        if (user.activities.length) {
+          user.currentActivity = user.activities[0].id;
+        }
         break;
       case 'boolean':
         // user in but not authenticated
@@ -682,9 +1001,8 @@ document.once('DOMContentLoaded', function () {
           // TODO: send the reminder
         }
         // nothing to do here, send the user
-        // to the equolo.org site
-        location.href = 'http://equolo.org/';
-        break;
+        // back to equolo.org
+        return location.href = 'http://equolo.org/';
       default:
         // start from scratch new activities
         user.activities = [];
@@ -800,6 +1118,115 @@ document.once('DOMContentLoaded', function () {
 ////                    <<< LOCATION >>>
 ///////////////////////////////////////////////////////////////////////
 
+  function changePlaceCategory(select, value, icon) {
+    for (var options = select.options, i = options.length; i--;) {
+      if (options[i].value == value) {
+        select.selectedIndex = i;
+        options[i].selected = true;
+        icon.className = 'icon-' + value;
+      } else {
+        options[i].selected = false;
+      }
+    }
+  }
+
+  function onSearchResult(result) {
+    // if there is actually a result
+    if (result && result.length) {
+      searchStateIcon.className = searchState.ok;
+      // notify the walkThrough object
+      this.trigger(
+        'search:place',
+        {
+          latitude: result[0].lat,
+          longitude: result[0].lon
+        }
+      );
+    } else if(
+      // maybe there was some problem
+      // with the way the address was written ?
+      /^[0-9][\w-]*|[0-9][\w-]*$/.test(
+        search.fields[0]
+      )
+    ) {
+      search.fields[0] = search.fields[0]
+        .replace(
+          RegExp.lastMatch, ''
+        )
+        .replace(
+          /[,;]/, ''
+        ).trim()
+      ;
+      // give it just another try without that part
+      search.call(this, search.fields);
+    } else {
+      searchStateIcon.className = searchState.error;
+    }
+  }
+
+  function search(fields, previousClassName) {
+    var
+      address = fields.join(', '),
+      script, i;
+    // avoid duplicated searches for the same address
+    if (search.address != address) {
+      // remember last search to avoid repeating same searches
+      search.address = address;
+      // also remember fields to change later on
+      // if necessary only the first one
+      search.fields = fields;
+      // if any previous result is still waiting for an answer
+      // just make its call pointless
+      i = JSONPid++;
+      while (i--) window[JSONPrefix + i] = Object;
+      // what to do once invoked ?
+      window[JSONPrefix + JSONPid] = this.boundTo(onSearchResult);
+      // common JSONP operations
+      script = document.body.appendChild(
+        document.createElement('script')
+      );
+      // drop the script once laoded
+      // or even if an error occurred
+      script
+        .on('load', script.remove)
+        .on('error', script.remove)
+      ;
+      script.type = 'text/javascript';
+      // special thanks to openstreetmap.org !
+      script.src =  'http://nominatim.openstreetmap.org/' +
+                    'search?format=json&json_callback=' +
+                    JSONPrefix + JSONPid +
+                    '&q=' + encodeURIComponent(address);
+    } else {
+      searchStateIcon.className = this.marker ?
+        searchState.ok : searchState.error;
+    }
+  }
+
+  // used to search via JSONP a place
+  function checkBeforeSearchingPlace(fields) {
+    var values = fields
+      .map(mapTrimmedValue)
+      .filter(filterTrimmedValue)
+    ;
+    
+    // JSONP calls are expensive for both client and server
+    // so let's try to avoid unnecessary calls. How ?
+    // If at least 4 values are not specified
+    // there's no reason to trigger any request
+    if (3 < values.length) {
+      // otherwise we can bother the remote server
+      // hoping these info will be enough
+      search.call(
+        // `this` is the walkThrough object
+        this,
+        // the address to search
+        values
+      );
+    }
+  }
+
+  // same Activity logic for place
   function getOrCreatePlace(activity) {
     if (!activity.currentPlace) {
       activity.place.push({
@@ -822,11 +1249,36 @@ document.once('DOMContentLoaded', function () {
         facebook: ''
       });
     }
-    // same logic recycled
+    // still same logic recycled
     return findActivityById(
       activity.place,
       activity.currentPlace
     );
+  }
+
+  // avoid empty fields in the search address
+  function filterTrimmedValue(value) {
+    return 0 < value.length;
+  }
+
+  // avoid unnecessary spaces
+  function mapTrimmedValue(input) {
+    return input.value.trim();
+  }
+
+  function notifyProblemsWithData(result) {
+    alert([
+      'uhm, something does not seem right',
+      '----------------------------------',
+      result.join('\n'),
+      '----------------------------------',
+      'it looks like something is wrong with the data',
+      'please verify the following:',
+      '  1. every activity has at least one place',
+      '  2. there are no places without a location',
+      '  3. every place has at least 4 address fields',
+      '  4. every place has a specific icon'
+    ].join('\n'));
   }
 
   // every time an input is changed
@@ -834,6 +1286,99 @@ document.once('DOMContentLoaded', function () {
   function updatePlaceData(e) {
     var input = e.currentTarget;
     updatePlaceData.target[input.name] = input.value;
+  }
+
+  // keeps in sync place position and relative field
+  function updatePlacePosition(place, fields, coords) {
+    var fLength = fields.length;
+    place.latitude = fields[fLength - 2].value = coords.latitude;
+    place.longitude = fields[fLength - 1].value = coords.longitude;
+    // just convinient
+    return place;
+  }
+
+  // used to check all user data
+  function verifyAllUserData(user) {
+    var result = [];
+    if (!RE_EMAIL.test(user.email)) {
+      return result.push('wrong email address') && result;
+    }
+    return  user.activities.every(verifyActivity, result) ||
+            result.reverse();
+  }
+
+  // helper for each activity
+  function verifyActivity(activity, i, arr) {
+    return (
+      // the activity has a name
+      activity.name.trim().length &&
+      // there is at least one description
+      (arr = Object.keys(activity.description)) && arr.length &&
+      // it is not empty
+      activity.description[arr[0]].trim().length &&
+      (
+        // the activity is certified
+        activity.certification.length ||
+        // the amount of criteria is reasonable
+        3 < activity.criteria.length
+      ) &&
+      // 
+      // there are places
+      activity.place.length &&
+      // and these are all valid
+      activity.place.every(verifyPlace, this) &&
+      // last but not least
+      !!activity.id
+    ) || !this.push('[activity] ' + (activity.name || '?'));
+  }
+
+  // helper for each place
+  function verifyPlace(place) {
+    /** debugging purpose only
+    console.log(
+      RE_VALID_GEO.test(place.latitude),
+      RE_VALID_GEO.test(place.longitude),
+      place.road.trim(),
+      place.postcode.trim().length +
+      place.city.trim().length +
+      place.county.trim().length +
+      place.state.trim().length +
+      place.country.trim().length,
+      place.icon,
+      place.id
+    );
+    //*/
+            // there is a palce and it's valid
+    return  (
+      RE_VALID_GEO.test(place.latitude) &&
+      RE_VALID_GEO.test(place.longitude) &&
+      // there is an address
+      place.road.trim().length &&
+      // at least 3 other fields
+      2 < (
+        place.postcode.trim().length +
+        place.city.trim().length +
+        place.county.trim().length +
+        place.state.trim().length +
+        place.country.trim().length
+      ) &&
+      // there is an icon and it's not the default one
+      place.icon && place.icon != 'question' &&
+      // last but not least
+      !!place.id
+    ) || !this.push('  ' +
+                    (place.road || '?') +
+                    ' - ' +
+                    (place.postcode || '?')
+                  );
+
+  }
+
+  // @link https://github.com/WebReflection/JSONH
+  function packPlaces(activity) {
+    activity.place = JSONH.pack(activity.place);
+    // some clean up here too ^_^
+    delete activity.currentPlace;
   }
 
 

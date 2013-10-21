@@ -14,8 +14,51 @@
 //    $stmt->closeCursor();
 function sql($command) {
   static $query = array(
+    'activity-create' =>
+      'INSERT INTO
+        activity
+      VALUES
+        (null, ?, NOW())',
+    'activity-delete' =>
+      'DELETE LOW_PRIORITY FROM
+        activity,
+        `activity-certification`,
+        `activity-criteria`,
+        `activity-description`,
+        `activity-name`,
+        `activity-geo`,
+        `activity-place`
+      USING
+        activity
+      INNER JOIN
+        `activity-certification`
+      INNER JOIN
+        `activity-criteria`
+      INNER JOIN
+        `activity-description`
+      INNER JOIN
+        `activity-name`
+      INNER JOIN
+        `activity-geo`
+      INNER JOIN
+        `activity-place`
+      WHERE
+        activity.id = ?
+      AND
+        `activity-certification`.`activity-id` = activity.id
+      AND
+        `activity-criteria`.`activity-id` = activity.id
+      AND
+        `activity-description`.`activity-id` = activity.id
+      AND
+        `activity-name`.`activity-id` = activity.id
+      AND
+        `activity-geo`.`activity-id` = activity.id
+      AND
+        `activity-place`.`activity-geo-id` = `activity-geo`.id',
     'auth-login-active' =>
       'SELECT
+        auth.id,
         `auth-login`.active
       FROM
         auth,
@@ -24,6 +67,114 @@ function sql($command) {
         `auth-login`.`auth-id` = auth.id
       AND
         auth.email = ?',
+    'activity-criteria-create' =>
+      'INSERT INTO
+        `activity-criteria`
+      VALUES
+        (?, ?)',
+    'activity-criteria-delete' =>
+      'DELETE FROM
+        `activity-criteria`
+      WHERE
+        `activity-id` = ?',
+
+
+
+    'activity-certification-create' =>
+      'INSERT INTO
+        `activity-certification`
+      VALUES
+        (?, ?)',
+    'activity-certification-delete' =>
+      'DELETE FROM
+        `activity-certification`
+      WHERE
+        `activity-id` = ?',
+
+
+
+    'activity-description-create' =>
+      'INSERT INTO
+        `activity-description`
+      VALUES
+        (?, ?, ?)',
+    'activity-description-delete' =>
+      'DELETE FROM
+        `activity-description`
+      WHERE
+        `activity-id` = ?',
+
+
+    'activity-geo-create-empty' =>
+      'INSERT INTO `activity-geo` (id) VALUES (null)',
+    'activity-geo-delete' =>
+      'DELETE LOW_PRIORITY FROM
+        `activity-geo`,
+        `activity-place`
+      USING
+        `activity-geo`
+      INNER JOIN
+        `activity-place`
+      WHERE
+        `activity-geo`.id = ?
+      AND
+        `activity-place`.`activity-geo-id` = `activity-geo`.id',
+    'activity-geo-update' =>
+      'UPDATE
+        `activity-geo`
+      SET
+        `activity-id` = ?,
+        `category-id` = ?,
+        latitude = ?,
+        longitude = ?
+      WHERE
+        id = ?',
+
+
+
+    'activity-name-create-empty' =>
+      'INSERT INTO
+        `activity-name`
+      VALUES
+        (?, "")',
+    'activity-name-update' =>
+      'UPDATE
+        `activity-name`
+      SET
+        value = ?
+      WHERE
+        `activity-id` = ?',
+
+
+
+    'activity-place-create-empty' =>
+      'INSERT INTO `activity-place` (`activity-geo-id`) VALUES (?)',
+    'activity-place-update' =>
+      'UPDATE
+        `activity-place`
+      SET
+        road = ?,
+        extra = ?,
+        postcode = ?,
+        city = ?,
+        county = ?,
+        state = ?,
+        country = ?,
+        email = ?,
+        phone = ?,
+        website = ?,
+        twitter = ?,
+        facebook = ?
+      WHERE
+        `activity-geo-id` = ?',
+
+
+
+    'auth-login-create' =>
+      'INSERT INTO
+        `auth-login`
+      VALUES
+        (?, 0, NOW())',
     'criteria' =>
       'SELECT
         criteria.id,
@@ -35,12 +186,14 @@ function sql($command) {
         criteria.`lang-id` = lang.id
       AND
         lang.value = ?',
+
     'insert-notification' =>
       'INSERT INTO
         notifications
       (`auth-id`)
         VALUES
       (SELECT id FROM auth WHERE email = ?)',
+
     'language' =>
       'SELECT
         lang.id,
@@ -51,8 +204,15 @@ function sql($command) {
         `lang-description`
       WHERE
         lang.id = `lang-description`.`lang-id`',
+
+      'category' =>
+      'SELECT
+        *
+      FROM
+        category',
+
     'remove-notification' =>
-      'DELETE FROM
+      'DELETE LOW_PRIORITY FROM
         notifications
       WHERE
         `auth-id` = (SELECT id FROM auth WHERE email = ?)',
@@ -63,6 +223,7 @@ function sql($command) {
         tstamp = NOW()
       WHERE
         `auth-id` = (SELECT id FROM auth WHERE email = ?)',
+
     'user-activation' =>
       'UPDATE
         `auth-login`
@@ -70,6 +231,7 @@ function sql($command) {
         active = 1
       WHERE
         `auth-id` = ?',
+
     'user-activities' =>
       'SELECT
         activity.id,
@@ -122,7 +284,6 @@ function sql($command) {
         category,
         lang
       WHERE
-        # auth.email = "ariannademario@hotmail.com"
         auth.email = ?
       AND
         `auth-login`.`auth-id` = auth.id
@@ -143,6 +304,7 @@ function sql($command) {
       AND
         `activity-place`.`activity-geo-id` = `activity-geo`.id
       GROUP BY gid, lid',
+
     'user-authentication' =>
       'SELECT
         SHA1(CONCAT(email, token)) AS "token"
@@ -150,6 +312,12 @@ function sql($command) {
         auth
       WHERE
         email = ?',
+    'user-create' =>
+      'INSERT INTO
+      auth
+      VALUES
+      (null, ?, ?)',
+
     'user-country' =>
       'SELECT
         country.*

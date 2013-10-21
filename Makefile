@@ -8,21 +8,26 @@ REPO = equolo
 YUI = 2.4.8
 
 # make JS files
-JS =  js/normalizer.js\
+JS =  js/display.js\
+      js/normalizer.js\
       eddy/build/dom4.js\
       eddy/build/eddy.dom.js\
       js/dollar.js\
       js/mercator.js\
       js/shows-scroll-bar.js\
       js/simple-kinetic.js\
+      js/font-awesome-icon.js\
       js/$(REPO).js
 
 # make pinit/submit section files
-PINIT=js/normalizer.js\
+PINIT=js/display.js\
+      js/normalizer.js\
+      js/jsonh.js\
       eddy/build/dom4.js\
       eddy/build/eddy.dom.js\
       js/dollar.js\
       js/simple-kinetic.js\
+      js/font-awesome-icon.js\
       js/submit.js
 
 # make CSS files
@@ -123,7 +128,6 @@ external:
 size:
 	wc -c build/$(REPO).js
 	gzip -c build/$(REPO).js | wc -c
-	ln -s ~/code/phpmyadmin www/phpmyadmin
 
 # modules used in this repo
 dependencies:

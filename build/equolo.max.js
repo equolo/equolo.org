@@ -39,7 +39,119 @@ IEMobile=/*@cc_on/\bIEMobile\b/.test(navigator.userAgent)||@*/false,
 IE9Mobile=/*@cc_on(IEMobile&&@_jscript_version<10)||@*/false,
 IE10Mobile=/*@cc_on(IEMobile&&@_jscript_version/10>=1)||@*/false
 ;
-IE9Mobile&&document.write('<link rel="stylesheet" href="css/IE9Mobile.css"/><script src="js/IE9Mobile.js"></script>');(function(window){(function(Array, Function, String){
+IE9Mobile&&document.write('<link rel="stylesheet" href="css/IE9Mobile.css"/><script src="js/IE9Mobile.js"></script>');(function(window){
+/*! display v0.1.3 - MIT license */
+/** easy way to obtain the full window size and some other prop */
+var display = function (global) {
+
+  var
+    Math = global.Math,
+    abs = Math.abs,
+    max = Math.max,
+    min = Math.min,
+    Infinity = global.Infinity,
+    screen = global.screen || Infinity,
+    matchMedia = window.matchMedia,
+    addEventListener = 'addEventListener',
+    documentElement = global.document.documentElement,
+    shouldBeMobile  = /\bMobile\b/.test(navigator.userAgent),
+    handlers = {
+      change: []
+    },
+    display = {
+      width: 0,
+      height: 0,
+      ratio: 0,
+      on: function (type, callback) {
+        // right now only change is supported
+        // throws otherwise
+        handlers[type].push(callback);
+      }
+    },
+    forEach = handlers.change.forEach || function (callback, self) {
+      // partial polyfill for this case only
+      for(var i = 0; i < this.length; i++) {
+        callback.call(self, this[i], i, this);
+      }
+    },
+    timer
+  ;
+
+  function notify(callback) {
+    callback.call(display, display.width, display.height);
+  }
+
+  function delayed(e) {
+    if (timer) {
+      clearTimeout(timer);
+    }
+    timer = setTimeout(recalc, 300, e);
+  }
+
+  function recalc(e) {
+    timer = 0;
+    var
+      devicePixelRatio = global.devicePixelRatio || 1,
+      hasOrientation = 'orientation' in this,
+      landscape = hasOrientation ?
+        abs(this.orientation || 0) === 90 :
+        !!matchMedia && matchMedia("(orientation:landscape)").matches
+      ,
+      swidth = screen.width,    // TODO: verify screen.availWidth in some device
+      sheight = screen.height,  // only if width/height not working as expected
+      width = min(
+        global.innerWidth || documentElement.clientWidth,
+        // some Android has 0.75 ratio
+        devicePixelRatio < 1 ? Infinity : (
+          // Android flips screen width and height size in landscape
+          // Find biggest dimension in landscape otherwise width is OK
+          (shouldBeMobile && landscape ? max(swidth, sheight) : swidth) || Infinity
+        )
+      ),
+      height = min(
+        global.innerHeight || documentElement.clientHeight,
+        // some Android has 0.75 ratio
+        devicePixelRatio < 1 ? Infinity : (
+          // Android flips screen width and height size in landscape
+          // Find biggest dimension in landscape otherwise width is OK
+          (shouldBeMobile && landscape ? min(swidth, sheight) : sheight) || Infinity
+        )
+      )
+    ;
+
+    if (width !== display.width || height !== display.height) {
+      display.width = width;
+      display.height = height;
+      forEach.call(handlers.change, notify);
+    }
+  }
+
+  // 
+  if (addEventListener in global) {
+    global[addEventListener]('orientationchange', delayed, true);
+    global[addEventListener]('resize', delayed, true);
+    try {
+      // W3C proposal
+      screen[addEventListener]('orientationchange', delayed, true);
+    } catch(e) {}
+  } else {
+    global.attachEvent('onresize', recalc);
+  }
+
+  recalc.call(global);
+
+  // calculated only once
+  // works with MS Tablets/Phones too
+  display.ratio = global.devicePixelRatio ||
+                  screen.width / display.width ||
+                  (screen.deviceXDPI || 1) / (screen.logicalXDPI || 1);
+
+  return display;
+
+// ---------------------------------------------------------------------------
+
+}(window);
+(function(Array, Function, String){
   'indexOf' in Array || (Array.indexOf = function (v){
     for(var i = this.length; i-- && this[i] !== v;);
     return i;
@@ -334,4 +446,75 @@ var timer = setInterval(function(one){
 
 return SimpleKinetic;
 
-}(this);}(this));
+}(this);// creates a png Map icon SRC out of FontAwesome
+var fontAwesomeIcon = function(canvas){
+  var
+    context = canvas.getContext('2d'),
+    // all names mapped to code
+    // right now I need only these icons
+    code = {
+      question: 0xf128,
+      'shopping-cart': 0xf07a,
+      gift: 0xf06b,
+      food: 0xf0f5,
+      home: 0xf015,
+      glass: 0xf000,
+      briefcase: 0xf0b1,
+      group: 0xf0c0,
+      truck: 0xf0d1,
+      'map-marker': 32 //0xf041
+    },
+    cache = {}
+  ;
+  function ellipse(x, y, r) {
+    context.beginPath();
+    context.arc(x, y, r, 0, Math.PI * 2, true); 
+    context.closePath();
+    context.fill();
+  }
+  function icon(chr, size) {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    canvas.width = canvas.height = size;
+    context.textBaseline = 'bottom';
+    context.fillStyle = "rgb(25,138,138)";
+    ellipse(size / 2, size / 2.5, size / 2.5);
+    triangle(size, size / 4.9);
+    //context.fillStyle = "rgb(40,104,104)";
+    context.fillStyle = "rgb(240,240,240)";
+    ellipse(size / 2, size / 2.5, size / 2.8);
+    context.font = context.mozTextStyle =
+      Math.round(size / 2) + "px FontAwesome";
+    context.translate((canvas.width - (
+      context.measureText || context.mozMeasureText
+    ).call(context, chr).width) / 2, 0);
+    //context.fillStyle = "rgb(0,0,0)";
+    context.fillStyle = "rgb(40,104,104)";
+    context.fillText(chr, 0, size / 1.5);
+    return canvas.toDataURL();
+  }
+  function triangle(size, delta) {
+    context.beginPath();
+    context.moveTo(size / 2, size);
+    context.lineTo(delta, size / 1.5);
+    context.lineTo(size - delta, size / 1.5);
+    context.lineTo(size / 2, size);
+    context.closePath();
+    context.fill();
+  }
+  return function fontAwesomeIcon(chr, size, ratio) {
+    return cache[chr + size + ratio] || (
+      cache[chr + size + ratio] = icon(
+        String.fromCharCode(code[chr]),
+        Math.round(size * (
+          ratio || (
+            typeof display === 'undefined' ?
+              1 : display.ratio
+          )
+        ))
+      )
+    );
+  };
+}(
+  document.createElement('canvas')
+);
+}(this));

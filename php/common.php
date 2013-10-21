@@ -104,15 +104,16 @@ function getLanguage($lang = 'en') {
 }
 
 // utility: returns true if the user has valid cookies
-function isAuthenticated() {
+function isAuthenticated($returnId = false) {
   $authenticated = false;
   if (isset($_COOKIE['email'], $_COOKIE['token'])) {
     $stmt = query('verify-user', array($_COOKIE['email'], $_COOKIE['token']));
     while($row = $stmt->fetch(PDO::FETCH_OBJ)) {
       $authenticated = $row->active == 1;
+      $id = $row->id;
     }
   }
-  return $authenticated;
+  return $authenticated && $returnId ? $id : $authenticated;
 }
 
 // utility: returns true if localhost env or real website
@@ -193,6 +194,17 @@ function prepare($command) {
 // @example
 //  foreach(query('user-country')->fetch(PDO::FETCH_OBJ) as $row) {...}
 function query($command, $arguments = array()) {
+  static $dafuq;
+  if (DEVELOPMENT) {
+    // verify queries on the database
+    if (!isset($dafuq)) {
+      $dafuq = fopen('/tmp/queries.txt', 'w+');
+    }
+    for($sql = explode('?', sql($command)), $i = 0; $i < count($arguments); $i++) {
+      $sql[$i] .= '"'.addslashes($arguments[$i]).'"';
+    }
+    fwrite($dafuq, implode('', $sql).PHP_EOL.PHP_EOL);
+  }
   $stmt = prepare($command);
   $stmt->execute($arguments);
   return $stmt;
@@ -204,14 +216,14 @@ function safer($text) {
 }
 
 // utility: parse and translate a template
-function template($file, $content) {
+function template($file, $content, $path = 'tpl/') {
   return preg_replace_callback(
     '/\{\{([^\}]+?)\}\}/',
     function ($matches) use (&$content) {
       $key = $matches[1];
       return isset($content[$key]) ? $content[$key] : $matches[0];
     },
-    file_get_contents('tpl/'.$file.'.html')
+    file_get_contents($path.$file.'.html')
   );
 }
 

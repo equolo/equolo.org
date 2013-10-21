@@ -39,7 +39,119 @@ IEMobile=/*@cc_on/\bIEMobile\b/.test(navigator.userAgent)||@*/false,
 IE9Mobile=/*@cc_on(IEMobile&&@_jscript_version<10)||@*/false,
 IE10Mobile=/*@cc_on(IEMobile&&@_jscript_version/10>=1)||@*/false
 ;
-IE9Mobile&&document.write('<link rel="stylesheet" href="css/IE9Mobile.css"/><script src="js/IE9Mobile.js"></script>');(function(window){(function(Array, Function, String){
+IE9Mobile&&document.write('<link rel="stylesheet" href="css/IE9Mobile.css"/><script src="js/IE9Mobile.js"></script>');(function(window){
+/*! display v0.1.3 - MIT license */
+/** easy way to obtain the full window size and some other prop */
+var display = function (global) {
+
+  var
+    Math = global.Math,
+    abs = Math.abs,
+    max = Math.max,
+    min = Math.min,
+    Infinity = global.Infinity,
+    screen = global.screen || Infinity,
+    matchMedia = window.matchMedia,
+    addEventListener = 'addEventListener',
+    documentElement = global.document.documentElement,
+    shouldBeMobile  = /\bMobile\b/.test(navigator.userAgent),
+    handlers = {
+      change: []
+    },
+    display = {
+      width: 0,
+      height: 0,
+      ratio: 0,
+      on: function (type, callback) {
+        // right now only change is supported
+        // throws otherwise
+        handlers[type].push(callback);
+      }
+    },
+    forEach = handlers.change.forEach || function (callback, self) {
+      // partial polyfill for this case only
+      for(var i = 0; i < this.length; i++) {
+        callback.call(self, this[i], i, this);
+      }
+    },
+    timer
+  ;
+
+  function notify(callback) {
+    callback.call(display, display.width, display.height);
+  }
+
+  function delayed(e) {
+    if (timer) {
+      clearTimeout(timer);
+    }
+    timer = setTimeout(recalc, 300, e);
+  }
+
+  function recalc(e) {
+    timer = 0;
+    var
+      devicePixelRatio = global.devicePixelRatio || 1,
+      hasOrientation = 'orientation' in this,
+      landscape = hasOrientation ?
+        abs(this.orientation || 0) === 90 :
+        !!matchMedia && matchMedia("(orientation:landscape)").matches
+      ,
+      swidth = screen.width,    // TODO: verify screen.availWidth in some device
+      sheight = screen.height,  // only if width/height not working as expected
+      width = min(
+        global.innerWidth || documentElement.clientWidth,
+        // some Android has 0.75 ratio
+        devicePixelRatio < 1 ? Infinity : (
+          // Android flips screen width and height size in landscape
+          // Find biggest dimension in landscape otherwise width is OK
+          (shouldBeMobile && landscape ? max(swidth, sheight) : swidth) || Infinity
+        )
+      ),
+      height = min(
+        global.innerHeight || documentElement.clientHeight,
+        // some Android has 0.75 ratio
+        devicePixelRatio < 1 ? Infinity : (
+          // Android flips screen width and height size in landscape
+          // Find biggest dimension in landscape otherwise width is OK
+          (shouldBeMobile && landscape ? min(swidth, sheight) : sheight) || Infinity
+        )
+      )
+    ;
+
+    if (width !== display.width || height !== display.height) {
+      display.width = width;
+      display.height = height;
+      forEach.call(handlers.change, notify);
+    }
+  }
+
+  // 
+  if (addEventListener in global) {
+    global[addEventListener]('orientationchange', delayed, true);
+    global[addEventListener]('resize', delayed, true);
+    try {
+      // W3C proposal
+      screen[addEventListener]('orientationchange', delayed, true);
+    } catch(e) {}
+  } else {
+    global.attachEvent('onresize', recalc);
+  }
+
+  recalc.call(global);
+
+  // calculated only once
+  // works with MS Tablets/Phones too
+  display.ratio = global.devicePixelRatio ||
+                  screen.width / display.width ||
+                  (screen.deviceXDPI || 1) / (screen.logicalXDPI || 1);
+
+  return display;
+
+// ---------------------------------------------------------------------------
+
+}(window);
+(function(Array, Function, String){
   'indexOf' in Array || (Array.indexOf = function (v){
     for(var i = this.length; i-- && this[i] !== v;);
     return i;
@@ -53,7 +165,177 @@ IE9Mobile&&document.write('<link rel="stylesheet" href="css/IE9Mobile.css"/><scr
   'trim' in String || (String.trim = function(){
     return this.replace(/^[^\S]+|[^\S]+$/g, '');
   });
-}(Array.prototype, Function.prototype, String.prototype));/*! (C) WebReflection Mit Style License */
+}(Array.prototype, Function.prototype, String.prototype));// both UPPER and lower, you choose
+var JSONH, jsonh = JSONH = function (Array, JSON) {"use strict"; // if you want
+
+    /**
+     * Copyright (C) 2011 by Andrea Giammarchi, @WebReflection
+     * 
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+     * 
+     * The above copyright notice and this permission notice shall be included in
+     * all copies or substantial portions of the Software.
+     * 
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     * THE SOFTWARE.
+     */
+
+    // transforms [{a:"A"},{a:"B"}] to [1,"a","A","B"]
+    function hpack(list) {
+        for (var
+            length = list.length,
+            // defined properties (out of one object is enough)
+            keys = Object_keys(length ? list[0] : {}),
+            klength = keys.length,
+            // static length stack of JS values
+            result = Array(length * klength),
+            i = 0,
+            j = 0,
+            ki, o;
+            i < length; ++i
+        ) {
+            for (
+                o = list[i], ki = 0;
+                ki < klength;
+                result[j++] = o[keys[ki++]]
+            );
+        }
+        // keys.length, keys, result
+        return concat.call([klength], keys, result);
+    }
+
+    // transforms [1,"a","A","B"] to [{a:"A"},{a:"B"}]
+    function hunpack(hlist) {
+        for (var
+            length = hlist.length,
+            klength = hlist[0],
+            result = Array(((length - klength - 1) / klength) || 0),
+            i = 1 + klength,
+            j = 0,
+            ki, o;
+            i < length;
+        ) {
+            for (
+                result[j++] = (o = {}), ki = 0;
+                ki < klength;
+                o[hlist[++ki]] = hlist[i++]
+            );
+        }
+        return result;
+    }
+
+    // recursive: called via map per each item h(pack|unpack)ing each entry through the schema
+    function iteratingWith(method) {
+        return function iterate(item) {
+            for (var
+                path = this,
+                current = item,
+                i = 0, length = path.length,
+                j, k, tmp;
+                i < length; ++i
+            ) {
+                if (isArray(tmp = current[k = path[i]])) {
+                    j = i + 1;
+                    current[k] = j < length ?
+                        map.call(tmp, method, path.slice(j)) :
+                        method(tmp)
+                    ;
+                }
+                current = current[k];
+            }
+            return item;
+        };
+    }
+
+    // called per each schema (pack|unpack)ing each schema
+    function packOrUnpack(method) {
+        return function parse(o, schema) {
+            for (var
+                wasArray = isArray(o),
+                result = concat.call(arr, o),
+                path = concat.call(arr, schema),
+                i = 0, length = path.length;
+                i < length; ++i
+            ) {
+                result = map.call(result, method, path[i].split("."));
+            }
+            return wasArray ? result : result[0];
+        };
+    }
+
+    // JSONH.pack
+    function pack(list, schema) {
+        return schema ? packSchema(list, schema) : hpack(list);
+    }
+
+    // JSONH unpack
+    function unpack(hlist, schema) {
+        return schema ? unpackSchema(hlist, schema) : hunpack(hlist);
+    }
+
+    // JSON.stringify after JSONH.pack
+    function stringify(list, replacer, space, schema) {
+        return JSON_stringify(pack(list, schema), replacer, space);
+    }
+
+    // JSONH.unpack after JSON.parse
+    function parse(hlist, reviver, schema) {
+        return unpack(JSON_parse(hlist, reviver), schema);
+    }
+
+    var
+        // recycled for different operations
+        arr = [],
+        // trapped once reused forever
+        concat = arr.concat,
+        // addressed cross platform Object.keys shim
+        Object_keys = Object.keys || function (o) {
+            var keys = [], key;
+            for (key in o) o.hasOwnProperty(key) && keys.push(key);
+            return keys;
+        },
+        // addressed cross platform Array.isArray shim
+        isArray = Array.isArray || (function (toString, arrayToString) {
+            arrayToString = toString.call(arr);
+            return function isArray(o) {
+                return toString.call(o) == arrayToString;
+            };
+        }({}.toString)),
+        // fast and partial Array#map shim
+        map = arr.map || function (callback, context) {
+            for (var
+                self = this, i = self.length, result = Array(i);
+                i--;
+                result[i] = callback.call(context, self[i], i, self)
+            );
+            return result;
+        },
+        // schema related (pack|unpack)ing operations
+        packSchema = packOrUnpack(iteratingWith(hpack)),
+        unpackSchema = packOrUnpack(iteratingWith(hunpack)),
+        // JSON object shortcuts
+        JSON_stringify = JSON.stringify,
+        JSON_parse = JSON.parse
+    ;
+
+    return {
+        pack: pack,
+        parse: parse,
+        stringify: stringify,
+        unpack: unpack
+    };
+
+}(Array, JSON);/*! (C) WebReflection Mit Style License */
 (function(e){"use strict";function t(t){return typeof t=="string"?e.document.createTextNode(t):t}function n(n){if(n.length===1)return t(n[0]);for(var r=e.document.createDocumentFragment(),i=h.call(n),s=0;s<n.length;s++)r.appendChild(t(i[s]));return r}for(var r,i,s,o=/^\s+|\s+$/g,u=/\s+/,a=" ",f=function(t,n){return this.contains(t)?n||this.remove(t):n&&this.add(t),!!n},l=(e.Element||e.Node||e.HTMLElement).prototype,c=["prepend",function(){var t=this.firstChild,r=n(arguments);t?this.insertBefore(r,t):this.appendChild(r)},"append",function(){this.appendChild(n(arguments))},"before",function(){var t=this.parentNode;t&&t.insertBefore(n(arguments),this)},"after",function(){var t=this.parentNode,r=this.nextSibling,i=n(arguments);t&&(r?t.insertBefore(i,r):t.appendChild(i))},"replace",function(){var t=this.parentNode;t&&t.replaceChild(n(arguments),this)},"remove",function(){var t=this.parentNode;t&&t.removeChild(this)}],h=c.slice,p=c.length;p;p-=2)r=c[p-2],r in l||(l[r]=c[p-1]);"classList"in document.documentElement?(s=document.createElement("div").classList,s.add("a","b"),"a b"!=s&&(l=s.constructor.prototype,"add"in l||(l=e.DOMTokenList.prototype),i=function(e){return function(){var t=0;while(t<arguments.length)e.call(this,arguments[t++])}},l.add=i(l.add),l.remove=i(l.remove),l.toggle=f)):(i=function(e){if(!e)throw"SyntaxError";if(u.test(e))throw"InvalidCharacterError";return e},s=function(e){var t=e.className.replace(o,"");t.length&&c.push.apply(this,t.split(u)),this._=e},s.prototype={length:0,add:function(){for(var t=0,n;t<arguments.length;t++)n=arguments[t],this.contains(n)||c.push.call(this,r);this._.className=""+this},contains:function(e){return function(n){return p=e.call(this,r=i(n)),-1<p}}([].indexOf||function(e){p=this.length;while(p--&&this[p]!==e);return p}),item:function(t){return this[t]||null},remove:function(){for(var t=0,n;t<arguments.length;t++)n=arguments[t],this.contains(n)&&c.splice.call(this,p,1);this._.className=""+this},toggle:f,toString:function v(){return c.join.call(this,a)}},(Object.defineProperty||function(e,t,n){e.__defineGetter__(t,n.get)})(l,"classList",{get:function(){return new s(this)},set:function(){}}));try{new e.CustomEvent("?")}catch(d){e.CustomEvent=function(e,t){function n(n,i){var s=document.createEvent(e);if(typeof n!="string")throw new Error("An event name must be provided");return e=="Event"&&(s.initCustomEvent=r),i==null&&(i=t),s.initCustomEvent(n,i.bubbles,i.cancelable,i.detail),s}function r(e,t,n,r){this.initEvent(e,t,n),this.detail=r}return n}(e.CustomEvent?"CustomEvent":"Event",{bubbles:!1,cancelable:!1,detail:null})}})(window);/*! (C) Andrea Giammarchi Mit Style License */
 (function(e){"use strict";function E(){return{l:{},m:[],b:[]}}function S(e){var t=E();return c.value=t,p(e,f,c),c.value=null,t}function x(e,t,n){typeof t=="function"?t.apply(e,n):t.handleEvent.apply(t,n)}function T(e,t,n){n&&y(this,"detail",n),y(this,"type",t),y(this,"target",e),y(this,"timeStamp",m())}if(e.eddy)return;e.eddy=!0;var t=Array.prototype,n=e.prototype,r=T.prototype,i=n.hasOwnProperty,s=t.push,o=t.slice,u=t.unshift,a="toLocaleString",f={toLocaleString:1}.propertyIsEnumerable(a)?"_@eddy"+Math.random():a,l=f===a,c=(e.create||e)(null),h=[],p=l?function(e,t,n){e[t]=n.value}:e.defineProperty,d=function(e){var t=this;return function(){return t.apply(e,arguments)}},v=t.indexOf||function(e){var t=this.length;while(t--&&this[t]!==e);return t},m=Date.now||function(){return(new Date).getTime()},g={boundTo:function(t){var n=i.call(this,f)?this[f]:S(this),r=n.m,o=n.b,u=typeof t=="string"?this[t]:t,a=v.call(r,u);return a<0?o[s.call(r,u)-1]=d.call(u,this):o[a]},emit:function(t){var n=i.call(this,f),r=n&&this[f].l,s=n&&i.call(r,t),u=s&&r[t],a=s&&o.call(arguments,1),l=0,c=s?u.length:l;while(l<c)x(this,u[l++],a);return s},listeners:function(t){return i.call(this,f)&&i.call(this[f].l,t)&&this[f].l[t].slice()||[]},off:function(t,n){var r=i.call(this,f),s=r&&this[f].l,o=r&&i.call(s,t)&&s[t],u;return o&&(u=v.call(o,n),-1<u&&(o.splice(u,1),o.length||delete s[t])),this},on:function(t,n,r){var o=i.call(this,f),a=(o?this[f]:S(this)).l,l=o&&i.call(a,t)?a[t]:a[t]=[];return v.call(l,n)<0&&(r?u:s).call(l,n),this},once:function(t,n,r){var i=function(e){s.off(t,i,r),x(s,n,arguments)},s=this;return s.on(t,i,r)},trigger:function(t,n){var s=i.call(this,f),o=s&&this[f].l,u=typeof t=="string",a=u?t:t.type,l=s&&i.call(o,a),c=l&&o[a].slice(0),p=u?new T(this,a,n):t,d=0,v=l?c.length:d,m=!(p instanceof T);m&&(p._active=!0,p.stopImmediatePropagation=r.stopImmediatePropagation),p.currentTarget=this,h[0]=p;while(p._active&&d<v)x(this,c[d++],h);return m&&(delete p._active,delete p.stopImmediatePropagation),!p.defaultPrevented}},y=function(e,t,n){i.call(e,t)||(e[t]=n)},b=!1,w;r.defaultPrevented=!1,r._active=r.cancelable=!0,r.preventDefault=function(){this.defaultPrevented=!0},r.stopImmediatePropagation=function(){this._active=!1};for(w in g)i.call(g,w)&&p(n,w,{enumerable:!1,configurable:!0,writable:!0,value:g[w]});(function(e){function n(t){function n(e){e[t].apply(e,this)}return function(){return e.call(this,n,arguments),this}}for(var r in g)g.hasOwnProperty(r)&&!/^listeners|boundTo$/.test(r)&&p(t,r,{enumerable:!1,configurable:!0,writable:!0,value:n(r)})})(t.forEach);var N={boundTo:g.boundTo,data:function k(e,t){var n="dataset"in this;return arguments.length<2?n?this.dataset[e]:(t=this.getAttribute("data-"+e.replace(k.gre||(k.gre=/-[a-z]/g),k.gplace||(k.gplace=function(e,t){return t.toUpperCase()}))))==null?void 0:t:n?t==null?delete this.dataset[e]:(this.dataset[e]=t,t):(k.sre||(k.sre=/([a-z])([A-Z])/g,k.splace=function(e,t,n){return t+"-"+n.toLowerCase()}),e="data-"+e.replace(k.sre,k.splace),t==null?!this.removeAttribute(e):(this.setAttribute(e,t),t))},emit:function(n){var r=new CustomEvent(n);return r.arguments=t.slice.call(arguments,1),this.dispatchEvent(r)},listeners:function(t){return[]},off:function(e,t,n){return this.removeEventListener(e,t,n),this},on:function(e,t,n){return this.addEventListener(e,t,n),this},once:g.once,trigger:function(t,n){var r=typeof t=="string",i=r?t:t.type,s=r?new CustomEvent(i,(c.detail=n,c)):t;return c.detail=null,T.call(s,this,i),this.dispatchEvent(s)}};c.cancelable=!0,c.bubbles=!0;try{document.createEvent("Event").target=document}catch(C){b=!0,y=function(e,t,n){if(!i.call(e,t))try{e[t]=n}catch(r){}}}(function(e){var t=e.Window,n=t?t.prototype:e,r=(e.Node||e.Element||e.HTMLElement).prototype,s=(e.Document||e.HTMLDocument).prototype,o=(e.XMLHttpRequest||function(){}).prototype,u,a;for(u in N)i.call(N,u)&&(a={enumerable:!1,configurable:!0,writable:!0,value:N[u]},p(n,u,a),p(r,u,a),p(s,u,a),u!=="data"&&p(o,u,a))})(window)})(Object);window.$=function(a){return function(c,p){return a.slice.call(a.concat(p||document)[0].querySelectorAll(c))}}([]);/*! SimpleKinetic v0.1.1 - MIT license */
 
@@ -252,7 +534,78 @@ var timer = setInterval(function(one){
 
 return SimpleKinetic;
 
-}(this);/**
+}(this);// creates a png Map icon SRC out of FontAwesome
+var fontAwesomeIcon = function(canvas){
+  var
+    context = canvas.getContext('2d'),
+    // all names mapped to code
+    // right now I need only these icons
+    code = {
+      question: 0xf128,
+      'shopping-cart': 0xf07a,
+      gift: 0xf06b,
+      food: 0xf0f5,
+      home: 0xf015,
+      glass: 0xf000,
+      briefcase: 0xf0b1,
+      group: 0xf0c0,
+      truck: 0xf0d1,
+      'map-marker': 32 //0xf041
+    },
+    cache = {}
+  ;
+  function ellipse(x, y, r) {
+    context.beginPath();
+    context.arc(x, y, r, 0, Math.PI * 2, true); 
+    context.closePath();
+    context.fill();
+  }
+  function icon(chr, size) {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    canvas.width = canvas.height = size;
+    context.textBaseline = 'bottom';
+    context.fillStyle = "rgb(25,138,138)";
+    ellipse(size / 2, size / 2.5, size / 2.5);
+    triangle(size, size / 4.9);
+    //context.fillStyle = "rgb(40,104,104)";
+    context.fillStyle = "rgb(240,240,240)";
+    ellipse(size / 2, size / 2.5, size / 2.8);
+    context.font = context.mozTextStyle =
+      Math.round(size / 2) + "px FontAwesome";
+    context.translate((canvas.width - (
+      context.measureText || context.mozMeasureText
+    ).call(context, chr).width) / 2, 0);
+    //context.fillStyle = "rgb(0,0,0)";
+    context.fillStyle = "rgb(40,104,104)";
+    context.fillText(chr, 0, size / 1.5);
+    return canvas.toDataURL();
+  }
+  function triangle(size, delta) {
+    context.beginPath();
+    context.moveTo(size / 2, size);
+    context.lineTo(delta, size / 1.5);
+    context.lineTo(size - delta, size / 1.5);
+    context.lineTo(size / 2, size);
+    context.closePath();
+    context.fill();
+  }
+  return function fontAwesomeIcon(chr, size, ratio) {
+    return cache[chr + size + ratio] || (
+      cache[chr + size + ratio] = icon(
+        String.fromCharCode(code[chr]),
+        Math.round(size * (
+          ratio || (
+            typeof display === 'undefined' ?
+              1 : display.ratio
+          )
+        ))
+      )
+    );
+  };
+}(
+  document.createElement('canvas')
+);
+/**
  * Hello There,
  *  this area is specific for equolo and it's born
  *  from a quick and fast prototype.
@@ -273,7 +626,19 @@ return SimpleKinetic;
 document.once('DOMContentLoaded', function () {
   var
     RE_EMAIL = /^[^@]+?@[^\1@]+\.([a-z]{2,})$/,
+    RE_VALID_GEO = /^-?\d+(?:\.\d+)?$/, // well, sort of ..
     uid = 0,
+    JSONPid = 0,
+    JSONPrefix = '_JSONP',
+    // used as indicator for automatic searching
+    searchStateIcon = $('fieldset#step-4 fieldset.address > legend > i')[0],
+    searchState = {
+      no: 'icon-angle-down',
+      ok: 'icon-ok',
+      error: 'icon-exclamation-sign',
+      searching: 'icon-refresh icon-spin'
+    },
+    // the single user shared across all logic
     user = {},
     walkThrough = {
       // per each triggered event
@@ -313,6 +678,7 @@ document.once('DOMContentLoaded', function () {
 ///////////////////////////////////////////////////////////////////////
 
 
+
 // language
 ///////////////////////////////////////////////////////////////////////
       'step-1': function (e) {
@@ -327,6 +693,8 @@ document.once('DOMContentLoaded', function () {
         });
         this.trigger('step-2');
       },
+
+
 
 // email
 ///////////////////////////////////////////////////////////////////////
@@ -343,6 +711,8 @@ document.once('DOMContentLoaded', function () {
         // check it directly through events
         email.emit('keyup');
       },
+
+
 
 // activity
 ///////////////////////////////////////////////////////////////////////
@@ -580,19 +950,16 @@ document.once('DOMContentLoaded', function () {
             ;
             // those that were new already, no need to bother the database
             if (/^new:/.test(id)) {
-              for(i = 0; i < user.activities.length; i++) {
-                // update the list
-                if (user.activities[i].id == id) {
-                  // removing the current activity
-                  user.activities.splice(i, 1);
-                  break;
-                }
-              }
+              user.activities.splice(
+                user.activities.indexOf(activity),
+                1
+              );
             } else if(!/^remove:/.test(id)) {
               // somehow tell the server this activity should be removed
               // the prefix is good enough to ignore it here and inform
               // the backend about what to do
               activity.id = 'remove:' + id;
+              activity.place = [];
             }
             // no activity selected
             user.currentActivity = null;
@@ -617,6 +984,7 @@ document.once('DOMContentLoaded', function () {
             enableAddRemoveButtons();
           }
         ));
+
         // need to setup criterias too
         // not a criteria concern to create a new user
         // in this case a manual check is better
@@ -641,7 +1009,12 @@ document.once('DOMContentLoaded', function () {
         criteria.on(
           'change',
           this.enableAddRemoveButtons || (
-          this.enableAddRemoveButtons = enableAddRemoveButtons
+          this.enableAddRemoveButtons = function() {
+            if (criteria.checked) {
+              getOrCreateActivity(user).certification = [];
+            }
+            enableAddRemoveButtons();
+          }
         ));
         // while certified should flag
         // the object as certified and
@@ -650,7 +1023,10 @@ document.once('DOMContentLoaded', function () {
           'change',
           this.onCertifiedEnabled || (
           this.onCertifiedEnabled = function() {
-            getOrCreateActivity(user).certification = [true];
+            if (certified.checked) {
+              // right now the certification is just a static flag
+              getOrCreateActivity(user).certification = [1];
+            }
             enableAddRemoveButtons();
           }
         ));
@@ -674,6 +1050,8 @@ document.once('DOMContentLoaded', function () {
         }
       },
 
+
+
 // location
 ///////////////////////////////////////////////////////////////////////
       'step-4': function (e) {
@@ -688,16 +1066,44 @@ document.once('DOMContentLoaded', function () {
           ,
           fieldSet = $('fieldset#' + e.type)[0],
           icon = $('i', fieldSet)[0],
-          category = $('select[name=category]', fieldSet)[0],
           places = $('select[name=place]', fieldSet)[0],
           add = $('button[name=add]', fieldSet)[0],
           remove = $('button[name=remove]', fieldSet)[0],
+          next = $('button.next', fieldSet)[0],
           category = $('select[name=category]', fieldSet)[0],
           findMe = $('div.map > button', fieldSet)[0],
-          fields = $('div.fields > input', fieldSet)
+          fields = $('div.fields > input', fieldSet),
+          // fields that should trigger the search
+          searchRelevantFields = [
+            fields[0],
+            fields[2],
+            fields[3],
+            fields[4],
+            fields[5],
+            fields[6]
+          ],
+          optionRelevantFields = [
+            fields[0],
+            fields[2]
+          ],
+          enabledAddOrRemove = function () {
+            // if there's no latitude, longitude
+            // or the icon hasn't been set yet
+            next.disabled = add.disabled = (
+              place.latitude == null && icon.value != 'question'
+            );
+            remove.disabled = places.options.length < 2;
+          }
         ;
 
+        searchStateIcon.className = searchState.no;
+
+        // which is the currentPlace for this session?
         activity.currentPlace = place.id;
+
+        // be sure searches happen
+        // if the user came back to edit
+        this.hasExplicitPlace = false;
 
         // this one contains nested fieldSets
         $('fieldset', fieldSet).forEach(FieldSet.enable);
@@ -706,25 +1112,73 @@ document.once('DOMContentLoaded', function () {
         // use this as flag to setup once
         // everything else too
         if (!this.hasOwnProperty('map')) {
-          this.map = L.map('map');
+
+          // bear in mind
+          // it's forbidden here to refer
+          // outer shortcut instead of fields
+          // so activity and place must be retrived each time
+
           L.tileLayer(
             'http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg',
             {
               attribution: 'Map Tiles &copy; Open MapQuest',
               maxZoom: 18
             }
-          ).addTo(this.map);
+          ).addTo(
+            // one map for all places of all activities
+            this.map = L.map('map')
+          );
 
-          // show curent country
-          this.map.setView([
-            navigator.country.geo.latitude,
-            navigator.country.geo.longitude
-          ], 5);
+          // helper for map position
+          this.setMapView = function setMapView(
+            coords, zoom  // zoom is optional
+          ) {
+            this.map.setView(
+              [
+                coords.latitude || coords.lat,
+                coords.longitude || coords.lng
+              ],
+              zoom || Math.max(
+                14, this.map.getZoom()
+              )
+            );
+          };
 
-          // bear in mind
-          // it's forbidden here to refer
-          // outer shortcut instead of fields
-          // so activity and place must be retrived each time
+          // helper for all places
+          this.setPlaceView = function setPlaceView(
+            place // same as coords
+          ) {
+            // remove the previous one
+            this.dropMarker();
+            // create a new marker
+            this.marker = L.marker(
+              [
+                place.latitude || place.lat,
+                place.longitude || place.lng
+              ],
+              {
+                icon:L.icon({
+                  iconUrl: fontAwesomeIcon(category.value, 36),
+                  // shouldn't be needed with display
+                  // iconRetinaUrl: fontAwesomeIcon(category.value, 36, 2),
+                  iconSize: [36, 36]
+                })
+              }
+            ).addTo(this.map);
+            this.setMapView(place);
+            enabledAddOrRemove();
+          };
+
+          // simple way to clean the current marker
+          this.dropMarker = function () {
+            if (this.marker) {
+              this.map.removeLayer(this.marker);
+              this.marker = null;
+            }
+          };
+
+          // show curent country by default
+          this.setMapView(navigator.country.geo, 5);
 
           // as it is for step-3, after change,
           // do everything again from the scratch
@@ -753,16 +1207,133 @@ document.once('DOMContentLoaded', function () {
 
           // same simplification for the remove action
           remove.on('click', function () {
-            var activity = getOrCreateActivity(user);
-            activity.place.splice(
-              activity.place.indexOf(
-                getOrCreatePlace(activity)
-              ),
-              1
-            );
+            var
+              activity = getOrCreateActivity(user),
+              place = getOrCreatePlace(activity)
+            ;
+            // same logic used for activity
+            if (/^new:/.test(place.id)) {
+              activity.place.splice(
+                activity.place.indexOf(place), 1
+              );
+            } else if(!/^remove:/.test(id)) {
+              place.id = 'remove:' + place.id;
+            }
             places.options[places.selectedIndex--].remove();
             places.emit('change');
           });
+
+          // the usual procedure to move forward
+
+          // category should update the icon and whatever is on the map
+          // plus it should actually update the place icon too
+          category.on(
+            'change',
+            // same trick used in step-3
+            this.onCategoryChange || (
+            this.onCategoryChange = function (e) {
+              icon.className = 'icon-' + category.value;
+              getOrCreatePlace(
+                getOrCreateActivity(user)
+              ).icon = category.value;
+              if (this.marker) {
+                this.setPlaceView(this.marker.getLatLng());
+              }
+            }.bind(this)
+          ));
+
+          next.on('click', this.boundTo(function () {
+            var result = verifyAllUserData(user);
+            if (result === true) {
+              this.trigger('step-5', user);
+            } else {
+              notifyProblemsWithData(result);
+            }
+          }));
+
+          // perform a search if needed
+          searchRelevantFields.on(
+            'keyup',
+            function (e) {
+              if (!this.hasExplicitPlace) {
+                // this cannot be greedy since it's a request
+                // to an external site. 1 second shoul dbe good enough
+                clearTimeout(this.findPlaceTimer || 0);
+                searchStateIcon.className = searchState.searching;
+                this.findPlaceTimer = setTimeout(
+                  this.boundTo(checkBeforeSearchingPlace),
+                  1000,
+                  searchRelevantFields
+                );
+              }
+            }.bind(this)
+          );
+
+          // and once the search has been completed ..
+          this.on('search:place', function (e) {
+            // being asynchronous
+            // be sure there's no place explicilty set before
+            if (!this.hasExplicitPlace) {
+              // we can show the place now
+              this.setPlaceView(
+                // updating it first, of course
+                updatePlacePosition(
+                  getOrCreatePlace(
+                    getOrCreateActivity(user)
+                  ),
+                  fields,
+                  // will be the coordinates
+                  e.detail
+                )
+              );
+            }
+          });
+
+          // however, a place might be explicitly positioned
+          // through the right click of a mouse
+          $('#map').on(
+            'contextmenu',
+            function contextmenu(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              if (this.hasExplicitPlace) {
+                search.address = '';
+                searchStateIcon.className = searchState.no;
+                this.hasExplicitPlace = false;
+                // this is needed if the palce
+                // was set wrongly or by accident
+                // but we'd like to let the user
+                // search again through the fields
+                this.dropMarker();
+              } else if (
+                // inform the user that with right click
+                // it is possible to position the place directly
+                this.askedUserIfPutAPlaceOnMap ||
+                confirm('would like to pin it here ?')
+              ) {
+                this.hasExplicitPlace =
+                this.askedUserIfPutAPlaceOnMap = true;
+                e = this.map.containerPointToLatLng(
+                  this.map.mouseEventToContainerPoint(e)
+                );
+                if (!(isNaN(e.lat) || isNaN(e.lng))) {
+                  this.setPlaceView(
+                    updatePlacePosition(
+                      getOrCreatePlace(
+                        getOrCreateActivity(user)
+                      ),
+                      fields,
+                      {
+                        latitude: e.lat,
+                        longitude: e.lng
+                      }
+                    )
+                  );
+                  searchStateIcon.className = searchState.ok;
+                }
+              }
+            }.bind(this)
+          );
 
           // if asked, find the position
           findMe.on(
@@ -804,23 +1375,39 @@ document.once('DOMContentLoaded', function () {
             }.bind(this.map)
           );
 
-          // category should update the icon and whatever is on the map
-          category.on(
-            'change',
-            // same trick used in step-3
-            this.onCategoryChange || (
-            this.onCategoryChange = function (e) {
-              icon.className = 'icon-' + category.value;
-              // TODO: map update
+          // when the first filed
+          // or the post code one change
+          optionRelevantFields.on(
+            'keyup',
+            function () {
+              // update the current option name
+              var option = places.options[
+                places.selectedIndex
+              ];
+              option.innerHTML = '';
+              option.append(
+                optionRelevantFields.map(
+                  mapTrimmedValue
+                ).join(' - ')
+              );
             }
-          ));
+          );
+
         }
+
+        // if there is a Marker displayed
+        // it's from another place so ...
+        this.dropMarker(); // drop it!
+
+
         // clean up all places/locations
         while (places.options.length) {
           places.options[0].remove();
         }
         // and repopulate them
         activity.place.forEach(function(place, i) {
+          // only places that have not been removed
+          if (/^remove:/.test(place.id)) return;
           var option = places.appendChild(
             document.createElement('option')
           );
@@ -834,28 +1421,111 @@ document.once('DOMContentLoaded', function () {
 
         // cleanup all fields
         fields.forEach(function (input) {
-          input.value = place && place[input.name] || '';
+          var value = place && place[input.name] || '';
+          if (value.length && input.name === 'twitter') {
+            value = '@' + value;
+          }
+          input.value = value;
         });
         // update relative user data when fields change
         fields.on('keyup', updatePlaceData);
         // but be sure only the right place is updated
         updatePlaceData.target = place;
 
+        // if there is already an icon
+        // use it otherwise set it with the default
+        changePlaceCategory(
+          category,
+          place.icon ||
+          category.options[0].value,
+          icon
+        );
+
+        enabledAddOrRemove();
+
         // position the map, if possible
         if (place.latitude != null) {
-          this.map.setView(
-            [
-              place.latitude,
-              place.longitude
-            ],
-            Math.max(
-              14, this.map.getZoom()
-            )
-          );
+          this.setPlaceView(place);
         }
 
+      },
+
+
+
+// terms of use
+///////////////////////////////////////////////////////////////////////
+      'step-5': function (e) {
+        var
+          user = e.detail,
+          fieldSet = $('fieldset#' + e.type)[0],
+          termsOfService = $('div', fieldSet)[0],
+          agreed = $('input[type=checkbox]', fieldSet)[0],
+          submit = $('input[type=submit]', fieldSet)[0]
+        ;
+        submit.disabled = true;
+        agreed.on(
+          'change',
+          this.onAgreement || (
+          this.onAgreement = function () {
+            submit.disabled = !this.checked;
+          }
+        ));
+        submit.on(
+          'click',
+          this.onSaveAllTheData || (
+          this.onSaveAllTheData = function () {
+            var
+              // double/triple check before sending
+              result = verifyAllUserData(user),
+              clone,
+              xhr
+            ;
+            if (result === true) {
+              submit.disabled = true;
+              // quick and dirty way to clone the object
+              clone = JSON.parse(JSON.stringify(user));
+              // little cleanup
+              delete clone.currentActivity;
+              // since places should be packed before being sent
+              // gaining a relevant gain in bytes via JSONH
+              clone.activities.forEach(packPlaces);
+              console.log(JSON.stringify(clone));console.log(clone);
+              xhr = new XMLHttpRequest;
+              xhr.open("POST", 'cgi/create.php', true);
+              xhr.setRequestHeader("If-Modified-Since", "Mon, 26 Jul 1997 05:00:00 GMT");
+              xhr.setRequestHeader("Cache-Control", "no-cache");
+              xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+              xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+              xhr.on('readystatechange', function () {
+                if (xhr.readyState == 4) {
+                  $('fieldset').forEach(FieldSet.enable);
+                  switch(xhr.responseText) {
+                    case 'OK':          // yeah!
+                      alert(')°(,');
+                      return location.reload();
+                      break;
+
+                    case 'bad-data':    // something went terribly wrong!
+                      alert('bad data');
+                      break;
+
+                    default:            // probably connection error
+                                        // or server busy, or ... 
+                      alert(xhr.responseText || 'connection error');
+                      break;
+                  }
+                  submit.disabled = false;
+                }
+              });
+              xhr.send('info=' + encodeURIComponent(JSON.stringify(clone)));
+            } else {
+              notifyProblemsWithData(result);
+            }
+          }
+        ));
       }
     },
+
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -918,12 +1588,14 @@ document.once('DOMContentLoaded', function () {
   // once the email is OK
   function verifyEmailCompleted(e) {
     var detail = e.detail;
+    user.currentActivity = null;
     switch(typeof detail) {
       // user authed with all info received
       case 'object':
         user.activities = detail;
-        // show all activities next field
-        // TODO: next ...
+        if (user.activities.length) {
+          user.currentActivity = user.activities[0].id;
+        }
         break;
       case 'boolean':
         // user in but not authenticated
@@ -936,9 +1608,8 @@ document.once('DOMContentLoaded', function () {
           // TODO: send the reminder
         }
         // nothing to do here, send the user
-        // to the equolo.org site
-        location.href = 'http://equolo.org/';
-        break;
+        // back to equolo.org
+        return location.href = 'http://equolo.org/';
       default:
         // start from scratch new activities
         user.activities = [];
@@ -1054,6 +1725,115 @@ document.once('DOMContentLoaded', function () {
 ////                    <<< LOCATION >>>
 ///////////////////////////////////////////////////////////////////////
 
+  function changePlaceCategory(select, value, icon) {
+    for (var options = select.options, i = options.length; i--;) {
+      if (options[i].value == value) {
+        select.selectedIndex = i;
+        options[i].selected = true;
+        icon.className = 'icon-' + value;
+      } else {
+        options[i].selected = false;
+      }
+    }
+  }
+
+  function onSearchResult(result) {
+    // if there is actually a result
+    if (result && result.length) {
+      searchStateIcon.className = searchState.ok;
+      // notify the walkThrough object
+      this.trigger(
+        'search:place',
+        {
+          latitude: result[0].lat,
+          longitude: result[0].lon
+        }
+      );
+    } else if(
+      // maybe there was some problem
+      // with the way the address was written ?
+      /^[0-9][\w-]*|[0-9][\w-]*$/.test(
+        search.fields[0]
+      )
+    ) {
+      search.fields[0] = search.fields[0]
+        .replace(
+          RegExp.lastMatch, ''
+        )
+        .replace(
+          /[,;]/, ''
+        ).trim()
+      ;
+      // give it just another try without that part
+      search.call(this, search.fields);
+    } else {
+      searchStateIcon.className = searchState.error;
+    }
+  }
+
+  function search(fields, previousClassName) {
+    var
+      address = fields.join(', '),
+      script, i;
+    // avoid duplicated searches for the same address
+    if (search.address != address) {
+      // remember last search to avoid repeating same searches
+      search.address = address;
+      // also remember fields to change later on
+      // if necessary only the first one
+      search.fields = fields;
+      // if any previous result is still waiting for an answer
+      // just make its call pointless
+      i = JSONPid++;
+      while (i--) window[JSONPrefix + i] = Object;
+      // what to do once invoked ?
+      window[JSONPrefix + JSONPid] = this.boundTo(onSearchResult);
+      // common JSONP operations
+      script = document.body.appendChild(
+        document.createElement('script')
+      );
+      // drop the script once laoded
+      // or even if an error occurred
+      script
+        .on('load', script.remove)
+        .on('error', script.remove)
+      ;
+      script.type = 'text/javascript';
+      // special thanks to openstreetmap.org !
+      script.src =  'http://nominatim.openstreetmap.org/' +
+                    'search?format=json&json_callback=' +
+                    JSONPrefix + JSONPid +
+                    '&q=' + encodeURIComponent(address);
+    } else {
+      searchStateIcon.className = this.marker ?
+        searchState.ok : searchState.error;
+    }
+  }
+
+  // used to search via JSONP a place
+  function checkBeforeSearchingPlace(fields) {
+    var values = fields
+      .map(mapTrimmedValue)
+      .filter(filterTrimmedValue)
+    ;
+    
+    // JSONP calls are expensive for both client and server
+    // so let's try to avoid unnecessary calls. How ?
+    // If at least 4 values are not specified
+    // there's no reason to trigger any request
+    if (3 < values.length) {
+      // otherwise we can bother the remote server
+      // hoping these info will be enough
+      search.call(
+        // `this` is the walkThrough object
+        this,
+        // the address to search
+        values
+      );
+    }
+  }
+
+  // same Activity logic for place
   function getOrCreatePlace(activity) {
     if (!activity.currentPlace) {
       activity.place.push({
@@ -1076,11 +1856,36 @@ document.once('DOMContentLoaded', function () {
         facebook: ''
       });
     }
-    // same logic recycled
+    // still same logic recycled
     return findActivityById(
       activity.place,
       activity.currentPlace
     );
+  }
+
+  // avoid empty fields in the search address
+  function filterTrimmedValue(value) {
+    return 0 < value.length;
+  }
+
+  // avoid unnecessary spaces
+  function mapTrimmedValue(input) {
+    return input.value.trim();
+  }
+
+  function notifyProblemsWithData(result) {
+    alert([
+      'uhm, something does not seem right',
+      '----------------------------------',
+      result.join('\n'),
+      '----------------------------------',
+      'it looks like something is wrong with the data',
+      'please verify the following:',
+      '  1. every activity has at least one place',
+      '  2. there are no places without a location',
+      '  3. every place has at least 4 address fields',
+      '  4. every place has a specific icon'
+    ].join('\n'));
   }
 
   // every time an input is changed
@@ -1088,6 +1893,99 @@ document.once('DOMContentLoaded', function () {
   function updatePlaceData(e) {
     var input = e.currentTarget;
     updatePlaceData.target[input.name] = input.value;
+  }
+
+  // keeps in sync place position and relative field
+  function updatePlacePosition(place, fields, coords) {
+    var fLength = fields.length;
+    place.latitude = fields[fLength - 2].value = coords.latitude;
+    place.longitude = fields[fLength - 1].value = coords.longitude;
+    // just convinient
+    return place;
+  }
+
+  // used to check all user data
+  function verifyAllUserData(user) {
+    var result = [];
+    if (!RE_EMAIL.test(user.email)) {
+      return result.push('wrong email address') && result;
+    }
+    return  user.activities.every(verifyActivity, result) ||
+            result.reverse();
+  }
+
+  // helper for each activity
+  function verifyActivity(activity, i, arr) {
+    return (
+      // the activity has a name
+      activity.name.trim().length &&
+      // there is at least one description
+      (arr = Object.keys(activity.description)) && arr.length &&
+      // it is not empty
+      activity.description[arr[0]].trim().length &&
+      (
+        // the activity is certified
+        activity.certification.length ||
+        // the amount of criteria is reasonable
+        3 < activity.criteria.length
+      ) &&
+      // 
+      // there are places
+      activity.place.length &&
+      // and these are all valid
+      activity.place.every(verifyPlace, this) &&
+      // last but not least
+      !!activity.id
+    ) || !this.push('[activity] ' + (activity.name || '?'));
+  }
+
+  // helper for each place
+  function verifyPlace(place) {
+    /** debugging purpose only
+    console.log(
+      RE_VALID_GEO.test(place.latitude),
+      RE_VALID_GEO.test(place.longitude),
+      place.road.trim(),
+      place.postcode.trim().length +
+      place.city.trim().length +
+      place.county.trim().length +
+      place.state.trim().length +
+      place.country.trim().length,
+      place.icon,
+      place.id
+    );
+    //*/
+            // there is a palce and it's valid
+    return  (
+      RE_VALID_GEO.test(place.latitude) &&
+      RE_VALID_GEO.test(place.longitude) &&
+      // there is an address
+      place.road.trim().length &&
+      // at least 3 other fields
+      2 < (
+        place.postcode.trim().length +
+        place.city.trim().length +
+        place.county.trim().length +
+        place.state.trim().length +
+        place.country.trim().length
+      ) &&
+      // there is an icon and it's not the default one
+      place.icon && place.icon != 'question' &&
+      // last but not least
+      !!place.id
+    ) || !this.push('  ' +
+                    (place.road || '?') +
+                    ' - ' +
+                    (place.postcode || '?')
+                  );
+
+  }
+
+  // @link https://github.com/WebReflection/JSONH
+  function packPlaces(activity) {
+    activity.place = JSONH.pack(activity.place);
+    // some clean up here too ^_^
+    delete activity.currentPlace;
   }
 
 
