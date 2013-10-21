@@ -336,30 +336,11 @@ document.once('DOMContentLoaded', function () {
           'click',
           this.onRemoveActivity || (
           this.onRemoveActivity = function (e) {
-            var
-              activity = getOrCreateActivity(user),
-              id = activity.id,
-              i
-            ;
-            // those that were new already, no need to bother the database
-            if (/^new:/.test(id)) {
-              user.activities.splice(
-                user.activities.indexOf(activity),
-                1
-              );
-            } else if(!/^remove:/.test(id)) {
-              // somehow tell the server this activity should be removed
-              // the prefix is good enough to ignore it here and inform
-              // the backend about what to do
-              activity.id = 'remove:' + id;
-              activity.place = [];
-            }
-            // no activity selected
             user.currentActivity = null;
-            // if there is an activity before go for it
-            // otherwise the next one is fine
-            activities.selectedIndex--;
-            activities.emit('change');
+            removeGenericObject(
+              user.activities,
+              activities
+            );
           }
         ));
         // checkbox should notify buttons that maybe the user can go on
@@ -600,20 +581,12 @@ document.once('DOMContentLoaded', function () {
 
           // same simplification for the remove action
           remove.on('click', function () {
-            var
-              activity = getOrCreateActivity(user),
-              place = getOrCreatePlace(activity)
-            ;
-            // same logic used for activity
-            if (/^new:/.test(place.id)) {
-              activity.place.splice(
-                activity.place.indexOf(place), 1
-              );
-            } else if(!/^remove:/.test(id)) {
-              place.id = 'remove:' + place.id;
-            }
-            places.options[places.selectedIndex--].remove();
-            places.emit('change');
+            var activity = getOrCreateActivity(user);
+            activity.currentPlace = null;
+            removeGenericObject(
+              activity.place,
+              places
+            );
           });
 
           // the usual procedure to move forward
@@ -1102,6 +1075,24 @@ document.once('DOMContentLoaded', function () {
     }
   }
 
+  // used to drop activities and later on places too
+  function removeGenericObject(collection, select) {
+    var object = findActivityById(
+      collection,
+      select.value
+    );
+    // same logic used for activity
+    if (/^new:/.test(object.id)) {
+      collection.splice(
+        collection.indexOf(object), 1
+      );
+    } else if(!/^remove:/.test(object.id)) {
+      object.id = 'remove:' + object.id;
+    }
+    select.options[select.selectedIndex--].remove();
+    select.emit('change');
+  }
+
   function selectOptionByValue(option) {
     option.selected = option.value == this ? 'selected' : '';
   }
@@ -1322,11 +1313,21 @@ document.once('DOMContentLoaded', function () {
         // the amount of criteria is reasonable
         3 < activity.criteria.length
       ) &&
-      // 
-      // there are places
-      activity.place.length &&
-      // and these are all valid
-      activity.place.every(verifyPlace, this) &&
+      (
+        (
+          // there are no palces
+          !activity.place.length &&
+          // 'cause the activity should be removed
+          /^remove:/.test(activity.id)
+        )
+        || // or .. 
+        (
+          // there are places
+          activity.place.length &&
+          // and these are all valid
+          activity.place.every(verifyPlace, this)
+        )
+      ) &&
       // last but not least
       !!activity.id
     ) || !this.push('[activity] ' + (activity.name || '?'));

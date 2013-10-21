@@ -22,18 +22,12 @@ function sql($command) {
     'activity-delete' =>
       'DELETE LOW_PRIORITY FROM
         activity,
-        `activity-certification`,
-        `activity-criteria`,
         `activity-description`,
         `activity-name`,
         `activity-geo`,
         `activity-place`
       USING
         activity
-      INNER JOIN
-        `activity-certification`
-      INNER JOIN
-        `activity-criteria`
       INNER JOIN
         `activity-description`
       INNER JOIN
@@ -44,10 +38,6 @@ function sql($command) {
         `activity-place`
       WHERE
         activity.id = ?
-      AND
-        `activity-certification`.`activity-id` = activity.id
-      AND
-        `activity-criteria`.`activity-id` = activity.id
       AND
         `activity-description`.`activity-id` = activity.id
       AND

@@ -60,6 +60,20 @@ if (
     }
     if ($proceed) {
 
+      $activities = array();
+      $places = array();
+      // let's be sure that the user owns ids is trying to modify
+      // each operation should be double validated in this procedure
+      // activities, as well as palces, should be already known
+      // or at least should be new (then added to these lists)
+      if ($validUser) {
+        $stmt = query('user-activities', array($user->email));
+        while($row = $stmt->fetch(PDO::FETCH_OBJ)) {
+          $activities[$row->id] = true;
+          $places[$row->gid] = true;
+        }
+      }
+
       // simplifies the language => id map
       $language = array();
       $stmt = query('language');
@@ -105,12 +119,18 @@ if (
       foreach($user->activities as $activity) {
         // removed activities, just drop data
         if(substr($activity->id, 0, 7) === 'remove:') {
-          // WARNING: this query might deeply hurt
-          //          it removes everything at once, watch out
-          //          if playing while debugging
-          query('activity-delete', array(
-            substr($activity->id, 7)
-          ));
+          $id = substr($activity->id, 7);
+          if (isset($activities[$id])) {
+            // WARNING: this query might deeply hurt
+            //          it removes everything at once, watch out
+            //          if playing while debugging
+            $commonParam = array($id);
+            query('activity-delete', $commonParam);
+            query('activity-certification-delete', $commonParam);
+            query('activity-criteria-delete', $commonParam);
+          } else {
+            exit('bad-data');
+          }
         } else {
           // new activities need to be created
           if (substr($activity->id, 0, 4) === 'new:') {
@@ -120,73 +140,95 @@ if (
               $activity->id = db()->lastInsertId()
             );
             query('activity-name-create-empty', $commonParam);
+            $activities[$activity->id] = true;
           } else {
             $commonParam = array($activity->id);
           }
-          query('activity-certification-delete', $commonParam);
-          foreach($activity->certification as $certificationID) {
-            query('activity-certification-create', array(
-              $activity->id, $certificationID
+          // only if owned
+          if (isset($activities[$activity->id])) {
+            // drop and put all certifications
+            query('activity-certification-delete', $commonParam);
+            foreach($activity->certification as $certificationID) {
+              query('activity-certification-create', array(
+                $activity->id, $certificationID
+              ));
+            }
+            // drop and put all criteria
+            query('activity-criteria-delete', $commonParam);
+            foreach($activity->criteria as $criteriaID) {
+              query('activity-criteria-create', array(
+                $activity->id, $criteriaID
+              ));
+            }
+            // update the name
+            query('activity-name-update', array(
+              trim($activity->name), $activity->id
             ));
-          }
-          query('activity-criteria-delete', $commonParam);
-          foreach($activity->criteria as $criteriaID) {
-            query('activity-criteria-create', array(
-              $activity->id, $criteriaID
-            ));
-          }
-          query('activity-name-update', array(
-            trim($activity->name), $activity->id
-          ));
-          query('activity-description-delete', $commonParam);
-          foreach($activity->description as $lang => $description) {
-            query('activity-description-create', array(
-              $activity->id, $language[$lang], trim($description)
-            ));
-          }
-          foreach(JSONH::unpack($activity->place) as $place) {
-            if(substr($place->id, 0, 7) === 'remove:') {
-              query('activity-geo-delete', array($place->id));
-            } else {
-              if (substr($place->id, 0, 4) === 'new:') {
-                // create the new geo location
-                query('activity-geo-create-empty');
-                query('activity-place-create-empty', array(
-                  $place->id = db()->lastInsertId()
-                ));
+            // drop all descriptions
+            query('activity-description-delete', $commonParam);
+            foreach($activity->description as $lang => $description) {
+              // and insert again them
+              query('activity-description-create', array(
+                $activity->id, $language[$lang], trim($description)
+              ));
+            }
+            // per each place ... basically do the same
+            foreach(JSONH::unpack($activity->place) as $place) {
+              // only if owned
+              if(substr($place->id, 0, 7) === 'remove:') {
+                $id = substr($place->id, 7);
+                if (isset($places[$id])) {
+                  // WARNING: this query might hurt too
+                  query('activity-geo-delete', array($id));
+                } else {
+                  exit('bad-data');
+                }
+              } else {
+                if (substr($place->id, 0, 4) === 'new:') {
+                  // create the new geo location
+                  query('activity-geo-create-empty');
+                  query('activity-place-create-empty', array(
+                    $place->id = db()->lastInsertId()
+                  ));
+                  $places[$place->id] = true;
+                }
+                if (isset($places[$place->id])) {
+                  query('activity-geo-update', array(
+                    $activity->id,
+                    $category[$place->icon],
+                    $place->latitude,
+                    $place->longitude,
+                    $place->id
+                  ));
+                  query('activity-place-update', array(
+                    trim($place->road),
+                    trim($place->extra),
+                    trim($place->postcode),
+                    trim($place->city),
+                    trim($place->county),
+                    trim($place->state),
+                    trim($place->country),
+                    trim($place->email),
+                    trim($place->phone),
+                    trim($place->website),
+                    // grab possible handler only
+                    trim(preg_replace(
+                      '#^.*?(?:@|twitter\.[a-z]{2,}/)#',
+                      '',
+                      $place->twitter
+                    )),
+                    // remove initial part of the link
+                    trim(preg_replace(
+                      '#^.*?facebook\.[a-z]{2,}/#',
+                      '',
+                      $place->facebook
+                    )),
+                    $place->id
+                  ));
+                } else {
+                  exit('bad-data');
+                }
               }
-              query('activity-geo-update', array(
-                $activity->id,
-                $category[$place->icon],
-                $place->latitude,
-                $place->longitude,
-                $place->id
-              ));
-              query('activity-place-update', array(
-                trim($place->road),
-                trim($place->extra),
-                trim($place->postcode),
-                trim($place->city),
-                trim($place->county),
-                trim($place->state),
-                trim($place->country),
-                trim($place->email),
-                trim($place->phone),
-                trim($place->website),
-                // grab possible handler only
-                trim(preg_replace(
-                  '#^.*?(?:@|twitter\.[a-z]{2,}/)#',
-                  '',
-                  $place->twitter
-                )),
-                // remove initial part of the link
-                trim(preg_replace(
-                  '#^.*?facebook\.[a-z]{2,}/#',
-                  '',
-                  $place->facebook
-                )),
-                $place->id
-              ));
             }
           }
         }
