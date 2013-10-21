@@ -1538,6 +1538,11 @@ document.once('DOMContentLoaded', function () {
 ////                        <<< EMAIL >>>
 ///////////////////////////////////////////////////////////////////////
 
+  // used to expand JSONH records once verified
+  function unpackPlaces(activity) {
+    activity.place = JSONH.unpack(activity.place);
+  }
+
   // used to save and check the user email
   function verifyEmail(controller, input) {
     var
@@ -1567,6 +1572,8 @@ document.once('DOMContentLoaded', function () {
       case 'object':
         user.activities = detail;
         if (user.activities.length) {
+          // expand via JSONH
+          user.activities.forEach(unpackPlaces);
           user.currentActivity = user.activities[0].id;
         }
         break;

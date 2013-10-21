@@ -7,6 +7,7 @@
  *
  */
 
+require_once('jsonh.php');
 require_once('common.php');
 
 // only for verified requests
@@ -83,6 +84,9 @@ if (isEquoloRequest()) {
           $places_holder[$row->gid] = $place;
           $activity->place[] = $place;
         }
+      }
+      foreach($result as &$activity) {
+        $activity->place = JSONH::pack($activity->place);
       }
     } else {
       // check if the user never authenticated
