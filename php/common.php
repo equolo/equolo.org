@@ -152,7 +152,7 @@ function jsHeader(
 
 // in case some smart person is trying to use
 // equolo.org service from the outside
-function jsTroll($message = ')°(, equolo') {
+function jsTroll($message = 'equolo') {
   jsHeader('javascript');
   echo "while(1){window.console&&console.log('".addslashes($message)."')}";
 }
@@ -167,7 +167,7 @@ function mailTo(
   // common prefix for all email subjects
   // users can create a rule in this case
   // and decide how to be notified
-  static $logo = ')°(, equolo - ';
+  static $logo = 'equolo - ';
 
   // if no-reply, the user should not be able to reply indeed
   $name = $from === 'no-reply' ? $from : 'equolo - '.$from;
