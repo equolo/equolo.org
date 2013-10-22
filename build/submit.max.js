@@ -673,6 +673,8 @@ document.once('DOMContentLoaded', function () {
         this[type](e);
       },
 
+
+
 ///////////////////////////////////////////////////////////////////////
 //        sections: each one a step-N name for simplicity ^_^
 ///////////////////////////////////////////////////////////////////////
@@ -748,7 +750,7 @@ document.once('DOMContentLoaded', function () {
           },
           // if there was something in the textarea and it has a name
           enableAddRemoveButtons = function () {
-            remove.disabled = !activities.options.length;
+            remove.disabled = activities.options.length < 2;
             next.disabled = add.disabled =
               !(description.value && name.value && (
                 // the company is certified
@@ -910,18 +912,15 @@ document.once('DOMContentLoaded', function () {
           this.onAnotherActivity = function (e) {
             var
               options = activities.options,
-              activityName
+              onlyOne = !options.length
             ;
             // reset current activity
             user.currentActivity = null;
             // new entry in the main list
             activities.appendChild(
               document.createElement('option')
-            ).append(
-              // temporary name to show
-              activityName =  name.placeholder ||
-                              name.getAttribute('placeholder')
-            );
+            ).append(' - ');
+            activities.disabled = onlyOne;
             // clean up name and description
             name.value = description.value = '';
             // let the description handle the rest
@@ -1420,6 +1419,9 @@ document.once('DOMContentLoaded', function () {
         if (place.latitude != null) {
           this.setPlaceView(place);
         }
+
+        // no place or just one? no need to bother
+        places.disabled = places.options.length < 2;
 
       },
 
