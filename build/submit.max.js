@@ -1231,7 +1231,6 @@ document.once('DOMContentLoaded', function () {
                 // this cannot be greedy since it's a request
                 // to an external site. 1 second shoul dbe good enough
                 clearTimeout(this.findPlaceTimer || 0);
-                searchStateIcon.className = searchState.searching;
                 this.findPlaceTimer = setTimeout(
                   this.boundTo(checkBeforeSearchingPlace),
                   1000,
@@ -1808,12 +1807,13 @@ document.once('DOMContentLoaded', function () {
       .map(mapTrimmedValue)
       .filter(filterTrimmedValue)
     ;
-    
+
     // JSONP calls are expensive for both client and server
     // so let's try to avoid unnecessary calls. How ?
     // If at least 4 values are not specified
     // there's no reason to trigger any request
     if (3 < values.length) {
+      searchStateIcon.className = searchState.searching;
       // otherwise we can bother the remote server
       // hoping these info will be enough
       search.call(
