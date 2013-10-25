@@ -18,7 +18,7 @@
  */
 document.once('DOMContentLoaded', function () {
   var
-    RE_EMAIL = /^[^@]+?@[^\1@]+\.([a-z]{2,})$/,
+    RE_EMAIL = /^[^@]+?@[^\1@]+\.([a-zA-Z]{2,})$/,
     RE_VALID_GEO = /^-?\d+(?:\.\d+)?$/, // well, sort of ..
     uid = 0,
     JSONPid = 0,
@@ -26,10 +26,10 @@ document.once('DOMContentLoaded', function () {
     // used as indicator for automatic searching
     searchStateIcon = $('fieldset#step-4 fieldset.address > legend > i')[0],
     searchState = {
-      no: 'icon-angle-down',
-      ok: 'icon-ok',
-      error: 'icon-exclamation-sign',
-      searching: 'icon-refresh icon-spin'
+      no: 'fa-angle-down',
+      ok: 'fa-check',
+      error: 'fa-exclamation-triangle',
+      searching: 'fa fa-refresh fa-spin'
     },
     // the single user shared across all logic
     user = {},
@@ -597,7 +597,7 @@ document.once('DOMContentLoaded', function () {
             // same trick used in step-3
             this.onCategoryChange || (
             this.onCategoryChange = function (e) {
-              icon.className = 'icon-' + category.value;
+              icon.className = 'fa-' + category.value;
               getOrCreatePlace(
                 getOrCreateActivity(user)
               ).icon = category.value;
@@ -673,7 +673,7 @@ document.once('DOMContentLoaded', function () {
                 // inform the user that with right click
                 // it is possible to position the place directly
                 this.askedUserIfPutAPlaceOnMap ||
-                confirm('would like to pin it here ?')
+                confirm(jslang.pinit)
               ) {
                 this.hasExplicitPlace =
                 this.askedUserIfPutAPlaceOnMap = true;
@@ -776,7 +776,7 @@ document.once('DOMContentLoaded', function () {
             document.createElement('option')
           );
           option.value = place.id;
-          option.append(place.road + ' - ' + place.postcode);
+          option.append(place.address + ' - ' + place.postcode);
           if (place.id == activity.currentPlace) {
             option.selected = 'selected';
             places.selectedIndex = i;
@@ -940,7 +940,7 @@ document.once('DOMContentLoaded', function () {
   // used to save and check the user email
   function verifyEmail(controller, input) {
     var
-      value = input.value.trim(),
+      value = input.value.trim().toLowerCase(),
       email = input.data('email'),
       xhr
     ;
@@ -977,7 +977,8 @@ document.once('DOMContentLoaded', function () {
       // ask if a new email should be sent
       // silently failing in the backend
       // if already sent in last 24 hours
-      return location.href = 'http://equolo.org/';
+      // TODO: inform the user something went wrong
+      return (location.href = 'http://equolo.org/');
     }
     if (user.hasOwnProperty('activities')) {
       this.trigger('step-3', user);
@@ -1114,7 +1115,7 @@ document.once('DOMContentLoaded', function () {
       if (options[i].value == value) {
         select.selectedIndex = i;
         options[i].selected = true;
-        icon.className = 'icon-' + value;
+        icon.className = 'fa-' + value;
       } else {
         options[i].selected = false;
       }
@@ -1205,7 +1206,7 @@ document.once('DOMContentLoaded', function () {
     // so let's try to avoid unnecessary calls. How ?
     // If at least 4 values are not specified
     // there's no reason to trigger any request
-    if (3 < values.length) {
+    if (2 < values.length) {
       searchStateIcon.className = searchState.searching;
       // otherwise we can bother the remote server
       // hoping these info will be enough
@@ -1227,7 +1228,7 @@ document.once('DOMContentLoaded', function () {
         icon: '',
         latitude: null,
         longitude: null,
-        road: '',
+        address: '',
         extra: '',
         postcode: '',
         city: '',
@@ -1238,6 +1239,7 @@ document.once('DOMContentLoaded', function () {
         phone: '',
         website: '',
         twitter: '',
+        gplus: '',
         facebook: ''
       });
     }
@@ -1340,7 +1342,7 @@ document.once('DOMContentLoaded', function () {
     console.log(
       RE_VALID_GEO.test(place.latitude),
       RE_VALID_GEO.test(place.longitude),
-      place.road.trim(),
+      place.address.trim(),
       place.postcode.trim().length +
       place.city.trim().length +
       place.county.trim().length +
@@ -1355,7 +1357,7 @@ document.once('DOMContentLoaded', function () {
       RE_VALID_GEO.test(place.latitude) &&
       RE_VALID_GEO.test(place.longitude) &&
       // there is an address
-      place.road.trim().length &&
+      place.address.trim().length &&
       // at least 3 other fields
       2 < (
         place.postcode.trim().length +
@@ -1369,7 +1371,7 @@ document.once('DOMContentLoaded', function () {
       // last but not least
       !!place.id
     ) || !this.push('  ' +
-                    (place.road || '?') +
+                    (place.address || '?') +
                     ' - ' +
                     (place.postcode || '?')
                   );

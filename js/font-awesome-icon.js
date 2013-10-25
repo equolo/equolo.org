@@ -13,8 +13,8 @@ var fontAwesomeIcon = function(canvas){
       glass: 0xf000,
       briefcase: 0xf0b1,
       group: 0xf0c0,
-      truck: 0xf0d1,
-      'map-marker': 32 //0xf041
+      truck: 0xf0d1
+      //,'map-marker': 32 //0xf041
     },
     cache = {}
   ;
@@ -31,7 +31,6 @@ var fontAwesomeIcon = function(canvas){
     context.fillStyle = "rgb(25,138,138)";
     ellipse(size / 2, size / 2.5, size / 2.5);
     triangle(size, size / 4.9);
-    //context.fillStyle = "rgb(40,104,104)";
     context.fillStyle = "rgb(240,240,240)";
     ellipse(size / 2, size / 2.5, size / 2.8);
     context.font = context.mozTextStyle =
@@ -39,9 +38,20 @@ var fontAwesomeIcon = function(canvas){
     context.translate((canvas.width - (
       context.measureText || context.mozMeasureText
     ).call(context, chr).width) / 2, 0);
-    //context.fillStyle = "rgb(0,0,0)";
     context.fillStyle = "rgb(40,104,104)";
-    context.fillText(chr, 0, size / 1.5);
+    if (chr.length) {
+      context.fillText(chr, 0, size / 1.5);
+    } else {
+      context.drawImage(
+        equoloIcon(
+          document.createElement('canvas'),
+          size / 2
+        ),
+        -size / 4,
+        size / 10
+      );
+      document.body.appendChild(canvas);
+    }
     return canvas.toDataURL();
   }
   function triangle(size, delta) {
@@ -56,7 +66,9 @@ var fontAwesomeIcon = function(canvas){
   return function fontAwesomeIcon(chr, size, ratio) {
     return cache[chr + size + ratio] || (
       cache[chr + size + ratio] = icon(
-        String.fromCharCode(code[chr]),
+        code.hasOwnProperty(chr) ?
+          String.fromCharCode(code[chr]) : ''
+        ,
         Math.round(size * (
           ratio || (
             typeof display === 'undefined' ?

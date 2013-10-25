@@ -201,7 +201,7 @@ if (
                     $place->id
                   ));
                   query('activity-place-update', array(
-                    trim($place->road),
+                    trim($place->address),
                     trim($place->extra),
                     trim($place->postcode),
                     trim($place->city),
@@ -216,6 +216,12 @@ if (
                       '#^.*?(?:@|twitter\.[a-z]{2,}/)#',
                       '',
                       $place->twitter
+                    )),
+                    // remove initial part of the link
+                    trim(preg_replace(
+                      '#^.*?plus\.google\.[a-z]{2,}/#',
+                      '',
+                      $place->gplus
                     )),
                     // remove initial part of the link
                     trim(preg_replace(

@@ -44,8 +44,8 @@
           <ul></ul>
         </div>
         <div class="criteria">
-          <input type="radio" name="certified"/> I declare I have certificates<br/>
-          <input type="radio" name="certified"/> I do not have certificates
+          <input type="radio" name="certified"/> {{certificates-yes}}<br/>
+          <input type="radio" name="certified"/> {{certificates-no}}
           <ul class="criteria">
             <li>{{criteria-descriptions}}</li>
             {{criteria}}
@@ -76,28 +76,29 @@
             <option value="truck">transport</option>
             <option value="map-marker">other</option>
           </select>
-          <i class="icon-question"></i>
+          <i class="fa-question"></i>
         </fieldset>
         <fieldset class="address">
-          <legend>{{address}} <i class='icon-angle-down'></i></legend>
+          <legend>{{address}} <i class='fa-angle-down'></i></legend>
           <div class="fields">
-            <input name="road" placeholder="Address/Street"/><br/>
-            <input name="extra" placeholder="Address Extra"/><br/>
-            <input name="postcode" placeholder="Post Code" maxlength="10"/><br/>
-            <input name="city" placeholder="City"/><br/>
-            <input name="county" placeholder="County"/><br/>
-            <input name="state" placeholder="State/Region"/><br/>
-            <input name="country" placeholder="Country"/><br/>
+            <input name="address" placeholder="{{road}}"/><br/>
+            <input name="extra" placeholder="{{extra}}"/><br/>
+            <input name="postcode" placeholder="{{postcode}}" maxlength="10"/><br/>
+            <input name="city" placeholder="{{city}}"/><br/>
+            <input type="{{county-field}}" name="county" placeholder="{{county}}"/><br/>
+            <input name="state" placeholder="{{state}}"/><br/>
+            <input name="country" placeholder="{{country}}"/><br/>
             <input name="email" placeholder="&#xf003; {{email}}"/><br/>
-            <input name="phone" placeholder="&#xf095; {{telephone}}"/><br/>
-            <input name="website" placeholder="&#xf0ac; www"/><br/>
-            <input name="twitter" placeholder="&#xf099; @twitter"/><br/>
-            <input name="facebook" placeholder="&#xf082; facebook"/>
+            <input name="phone" placeholder="&#xf095; {{phone}}"/><br/>
+            <input name="website" placeholder="&#xf0ac; {{website}}"/><br/>
+            <input name="twitter" placeholder="&#xf099; @{{twitter}}"/><br/>
+            <input name="gplus" placeholder="&#xf0d4; {{gplus}}"/><br/>
+            <input name="facebook" placeholder="&#xf082; {{facebook}}"/>
             <input type="hidden" name="latitude"/>
             <input type="hidden" name="longitude"/>
           </div>
           <div class="map">
-            <button><i class="icon-location-arrow"></i> {{find-me}}</button>
+            <button><i class="fa-location-arrow"></i> {{find-me}}</button>
             <div id="map"></div>
           </div>
         </fieldset>
@@ -105,24 +106,16 @@
         <button class="next">{{next}}</button>
       </fieldset>
       <fieldset id="step-5">
-        <legend>{{terms-of-use}}</legend>
+        <legend>{{terms-of-service}}</legend>
         <div class="terms-of-use">
-          <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi porttitor turpis felis, at pellentesque nisl feugiat eu. Phasellus dapibus dignissim convallis. Nam facilisis fermentum elit at volutpat. Quisque porttitor sem vitae leo scelerisque, eu euismod dolor commodo. Curabitur quis tempor lacus. Pellentesque sed turpis nisi. Nunc rhoncus lorem et risus pulvinar lacinia. Nulla tincidunt, diam a imperdiet molestie, est erat tempor metus, at volutpat erat libero ut mauris. Duis vulputate fringilla rutrum. Pellentesque quis tempor leo. Nam sit amet sagittis lectus. Praesent non augue tristique enim malesuada volutpat. Nulla et est sit amet mauris consequat ultrices. Nulla euismod nisi at erat vulputate molestie.
-          </p>
-          <p>
-          Quisque congue semper commodo. Cras augue ante, dignissim vitae libero in, mollis suscipit felis. Donec congue nibh felis, vitae sodales sapien pellentesque ac. Cras ultricies erat augue, eget hendrerit nulla ullamcorper eget. Fusce congue vestibulum enim, a interdum mi feugiat non. Sed ullamcorper faucibus neque, at varius nibh ultrices quis. Mauris eget enim a erat dignissim suscipit eget sit amet sem. Aenean bibendum pulvinar quam, at facilisis ligula fringilla in. In eget mauris sed eros congue varius eget non sem. Morbi vitae lorem sed est tempus accumsan sed eu risus. Maecenas ut sodales justo, at lacinia dui. Donec vel tortor felis. Pellentesque semper, velit in gravida mattis, lectus nisl tempor dolor, ac adipiscing nisi velit a magna.
-
-          Duis dictum sagittis orci ac auctor. Donec vitae euismod sem. Integer volutpat tempor dui vitae lobortis. Nunc pretium venenatis tellus id vulputate. Integer tristique nibh id euismod mattis. Etiam vestibulum, mi sed volutpat fermentum, tortor justo fermentum leo, egestas vulputate urna odio sit amet dui. Fusce sed egestas libero. Donec mattis, leo id lacinia auctor, dui nulla tempor massa, a rhoncus metus erat ut felis. Fusce eget eros et dolor pulvinar posuere nec in orci. Pellentesque nec ullamcorper diam. Nam quis mi quam. Ut consectetur non nulla nec facilisis. Etiam vestibulum est non lorem venenatis rutrum. Proin non sem viverra, ornare metus quis, facilisis est.
-          </p>
-          <p>
-          In sed est non purus dictum fermentum id id tortor. In vehicula sed ligula in porttitor. Nulla nec purus nibh. Quisque viverra venenatis varius. Duis nec quam vulputate, ultricies tortor sed, sodales arcu. Vivamus ut purus nunc. Vestibulum tincidunt magna leo, id convallis tellus interdum non. Donec a fringilla leo. Praesent tincidunt ornare leo, vehicula tincidunt urna. Duis sed sapien quis nisl ornare pharetra. Aenean non diam sit amet enim mollis commodo ut vel dolor.
-          </p>
-          <p>
-          Quisque tempus magna ut purus facilisis, quis faucibus nisl faucibus. Maecenas dignissim congue quam, at fermentum odio volutpat nec. Cras suscipit metus vitae interdum sodales. Vivamus neque lacus, semper sit amet tortor id, iaculis malesuada risus. Vestibulum magna erat, ornare in ligula et, feugiat porta erat. Sed eu pharetra risus, a egestas eros. Nunc semper, risus ac tincidunt varius, tellus leo mollis nulla, non commodo purus quam vel urna. Nulla sed malesuada quam. Curabitur nec ante id risus sollicitudin sagittis nec quis nibh. Praesent convallis augue quis ipsum aliquet ornare. In dapibus tempor turpis. Sed vulputate sapien augue, nec tincidunt orci feugiat ac.
-          </p>
+          <h3>{{terms-of-service-about}}</h3>
+          <p>{{terms-of-service-about-description}}</p>
+          <h3>{{terms-of-service-privacy}}</h3>
+          <p>{{terms-of-service-privacy-description}}</p>
+          <h3>{{terms-of-service-liability}}</h3>
+          <p>{{terms-of-service-liability-description}}</p>
         </div>
-        <input type="checkbox"/>{{terms-of-use-agreement}}
+        <input type="checkbox"/>{{terms-of-use-agreement}}{{terms-of-service}}
         <hr/>
         <input type="submit" class="save"/>
       </fieldset>

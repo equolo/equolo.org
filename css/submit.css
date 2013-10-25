@@ -44,6 +44,10 @@ ul.criteria > li:hover {
 }
 ul.criteria > li:first-child {
   cursor: normal;
+  color: #333;
+}
+ul.criteria > li:first-child strong span {
+  color: #339;
 }
 ul.criteria > li > input {
   margin-left: -28px;
@@ -73,6 +77,8 @@ fieldset.disabled div.terms-of-use {
 }
 input, textarea {
   width: 300px;
+  margin: 2px 0;
+  padding: 2px;
 }
 input[type=checkbox],
 input[type=radio] {
@@ -160,8 +166,9 @@ fieldset.disabled * {
 fieldset.category > i {
   margin-left: 8px;
 }
-fieldset.address > div.fields > input {
+fieldset.address > div.fields > input, i {
   font-family: 'FontAwesome';
+  font-style: normal;
 }
 fieldset.address > div {
   float: left;
@@ -175,4 +182,11 @@ fieldset.address div#map {
 }
 fieldset:last-child {
   margin-bottom: 128px;
+}
+#step-1 label, p, p a, div.terms-of-use ul li {
+  font-weight: 100;
+  font-size: 12px;
+}
+div.terms-of-use ul li {
+  margin: 8px 0;
 }

@@ -16,6 +16,7 @@ JS =  js/display.js\
       js/mercator.js\
       js/shows-scroll-bar.js\
       js/simple-kinetic.js\
+      js/equolo-icon.js\
       js/font-awesome-icon.js\
       js/$(REPO).js
 
@@ -27,6 +28,7 @@ PINIT=js/display.js\
       eddy/build/eddy.dom.js\
       js/dollar.js\
       js/simple-kinetic.js\
+      js/equolo-icon.js\
       js/font-awesome-icon.js\
       js/submit.js
 
@@ -101,8 +103,8 @@ css:
 	cp build/$(REPO).max.css www/css
 	cp css/utils.css www/css/submit.css
 	cat css/submit.css >>www/css/submit.css
-	cp -r font www
-	mv www/font/font-awesome.min.css www/css/font-awesome.css
+	cp -r fonts www
+	mv www/fonts/font-awesome.min.css www/css/font-awesome.css
 	cp leaflet/leaflet.css www/css/leaflet.css
 	cp leaflet/leaflet.ie.min.css www/css/leaflet.ie.css
 
@@ -141,13 +143,13 @@ dependencies:
 	curl -O -L http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css
 	curl -O -L http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.ie.css
 	curl -O -L http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js
-	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css
-	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/3.2.1/font/fontawesome-webfont.eot
-	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/3.2.1/font/fontawesome-webfont.woff
-	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/3.2.1/font/fontawesome-webfont.ttf
-	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/3.2.1/font/fontawesome-webfont.svg
+	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.min.css
+	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/4.0.0/fonts/fontawesome-webfont.eot
+	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/4.0.0/fonts/fontawesome-webfont.woff
+	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/4.0.0/fonts/fontawesome-webfont.ttf
+	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/4.0.0/fonts/fontawesome-webfont.svg
 	mv leaflet*.* leaflet
-	mv font*.* font
+	mv font*.* fonts
 
 # every time something changes,
 # except for the runtime created www folder

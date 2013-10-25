@@ -154,6 +154,7 @@ function sql($command) {
         phone = ?,
         website = ?,
         twitter = ?,
+        gplus = ?,
         facebook = ?
       WHERE
         `activity-geo-id` = ?',
@@ -251,7 +252,7 @@ function sql($command) {
         `activity-geo`.id AS "gid",
         `activity-geo`.latitude,
         `activity-geo`.longitude,
-        `activity-place`.road,
+        `activity-place`.road AS "address",
         `activity-place`.extra,
         `activity-place`.postcode,
         `activity-place`.city,
@@ -262,6 +263,7 @@ function sql($command) {
         `activity-place`.phone,
         `activity-place`.website,
         `activity-place`.twitter,
+        `activity-place`.gplus,
         `activity-place`.facebook
       FROM
         auth,

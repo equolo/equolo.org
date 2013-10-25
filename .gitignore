@@ -2,6 +2,6 @@
 node_modules/
 www/
 leaflet/
-font/
+fonts/
 db.php
 leaflet.*

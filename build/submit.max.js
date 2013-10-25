@@ -534,7 +534,67 @@ var timer = setInterval(function(one){
 
 return SimpleKinetic;
 
-}(this);// creates a png Map icon SRC out of FontAwesome
+}(this);function equoloIcon(canvas, width, fillColor) {
+  /*! (C) equolo.org */
+  var
+    originalWidth = 162,
+    originalHeight = 192,
+    ratio = width / originalWidth,
+    fillStyle = fillColor || '#286868',
+    context = canvas.getContext('2d')
+  ;
+  function moveTo(x, y) {
+    context.moveTo(x * ratio, y * ratio);
+  }
+  function bezierCurveTo(a, b, c, d, e, f) {
+    context.bezierCurveTo(
+      a * ratio,
+      b * ratio,
+      c * ratio,
+      d * ratio,
+      e * ratio,
+      f * ratio
+    );
+  }
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  canvas.width = width;
+  canvas.height = Math.round(width * originalHeight / originalWidth);
+  context.fillStyle = fillStyle;
+  context.save();
+  context.scale(1.25, 1.25);
+  context.beginPath();
+  moveTo(95.32,10.21);
+  bezierCurveTo(101.05, 7.85, 108.56, 12.68, 108.09, 19.01);
+  bezierCurveTo(108.39, 25.61, 100.46, 30.49, 94.67, 27.28);
+  bezierCurveTo(87.81, 24.1, 88.04, 12.79, 95.32, 10.21);
+  context.closePath();
+  context.fill();
+  context.beginPath();
+  moveTo(67.01,7.48);
+  bezierCurveTo(72.33, 20.59, 82.54, 31.7, 95.46, 37.57);
+  bezierCurveTo(104.17, 41.72, 113.89, 43.25, 123.47, 43.1);
+  bezierCurveTo(108.12, 48.29, 96.34, 60.6, 88.32, 74.31);
+  bezierCurveTo(79.91, 88.85, 78.34, 106.86, 83.29, 122.84);
+  bezierCurveTo(72.84, 106.64, 59.08, 91.84, 41.39, 83.57);
+  bezierCurveTo(30.55, 78.74, 18.41, 76.4, 6.58, 77.64);
+  bezierCurveTo(24.52, 73.08, 42.99, 65.59, 54.74, 50.61);
+  bezierCurveTo(64.15, 38.49, 68.55, 22.74, 67.01, 7.48);
+  context.closePath();
+  context.fill();
+  context.beginPath();
+  moveTo(43.22, 119.97);
+  bezierCurveTo(43.75, 102.87, 43.89, 94.92, 48.72, 89.2);
+  bezierCurveTo(50.5, 93.22, 49.73, 97.67, 50.54, 101.88);
+  bezierCurveTo(51.34, 107.31, 53.13, 112.93, 57.29, 116.73);
+  bezierCurveTo(61.3, 121.01, 68.71, 121.41, 70.94, 127.44);
+  bezierCurveTo(72.27, 133.19, 66.42, 138.03, 61.08, 138.09);
+  bezierCurveTo(54.7, 138.64, 49.47, 133.66, 46.69, 128.39);
+  bezierCurveTo(43.41, 122.84, 43.52, 116.2, 43.22, 109.97);
+  context.closePath();
+  context.fill();
+  context.restore();
+  return canvas;
+}// creates a png Map icon SRC out of FontAwesome
 var fontAwesomeIcon = function(canvas){
   var
     context = canvas.getContext('2d'),
@@ -549,8 +609,8 @@ var fontAwesomeIcon = function(canvas){
       glass: 0xf000,
       briefcase: 0xf0b1,
       group: 0xf0c0,
-      truck: 0xf0d1,
-      'map-marker': 32 //0xf041
+      truck: 0xf0d1
+      //,'map-marker': 32 //0xf041
     },
     cache = {}
   ;
@@ -567,7 +627,6 @@ var fontAwesomeIcon = function(canvas){
     context.fillStyle = "rgb(25,138,138)";
     ellipse(size / 2, size / 2.5, size / 2.5);
     triangle(size, size / 4.9);
-    //context.fillStyle = "rgb(40,104,104)";
     context.fillStyle = "rgb(240,240,240)";
     ellipse(size / 2, size / 2.5, size / 2.8);
     context.font = context.mozTextStyle =
@@ -575,9 +634,20 @@ var fontAwesomeIcon = function(canvas){
     context.translate((canvas.width - (
       context.measureText || context.mozMeasureText
     ).call(context, chr).width) / 2, 0);
-    //context.fillStyle = "rgb(0,0,0)";
     context.fillStyle = "rgb(40,104,104)";
-    context.fillText(chr, 0, size / 1.5);
+    if (chr.length) {
+      context.fillText(chr, 0, size / 1.5);
+    } else {
+      context.drawImage(
+        equoloIcon(
+          document.createElement('canvas'),
+          size / 2
+        ),
+        -size / 4,
+        size / 10
+      );
+      document.body.appendChild(canvas);
+    }
     return canvas.toDataURL();
   }
   function triangle(size, delta) {
@@ -592,7 +662,9 @@ var fontAwesomeIcon = function(canvas){
   return function fontAwesomeIcon(chr, size, ratio) {
     return cache[chr + size + ratio] || (
       cache[chr + size + ratio] = icon(
-        String.fromCharCode(code[chr]),
+        code.hasOwnProperty(chr) ?
+          String.fromCharCode(code[chr]) : ''
+        ,
         Math.round(size * (
           ratio || (
             typeof display === 'undefined' ?
@@ -625,7 +697,7 @@ var fontAwesomeIcon = function(canvas){
  */
 document.once('DOMContentLoaded', function () {
   var
-    RE_EMAIL = /^[^@]+?@[^\1@]+\.([a-z]{2,})$/,
+    RE_EMAIL = /^[^@]+?@[^\1@]+\.([a-zA-Z]{2,})$/,
     RE_VALID_GEO = /^-?\d+(?:\.\d+)?$/, // well, sort of ..
     uid = 0,
     JSONPid = 0,
@@ -633,10 +705,10 @@ document.once('DOMContentLoaded', function () {
     // used as indicator for automatic searching
     searchStateIcon = $('fieldset#step-4 fieldset.address > legend > i')[0],
     searchState = {
-      no: 'icon-angle-down',
-      ok: 'icon-ok',
-      error: 'icon-exclamation-sign',
-      searching: 'icon-refresh icon-spin'
+      no: 'fa-angle-down',
+      ok: 'fa-check',
+      error: 'fa-exclamation-triangle',
+      searching: 'fa fa-refresh fa-spin'
     },
     // the single user shared across all logic
     user = {},
@@ -1204,7 +1276,7 @@ document.once('DOMContentLoaded', function () {
             // same trick used in step-3
             this.onCategoryChange || (
             this.onCategoryChange = function (e) {
-              icon.className = 'icon-' + category.value;
+              icon.className = 'fa-' + category.value;
               getOrCreatePlace(
                 getOrCreateActivity(user)
               ).icon = category.value;
@@ -1280,7 +1352,7 @@ document.once('DOMContentLoaded', function () {
                 // inform the user that with right click
                 // it is possible to position the place directly
                 this.askedUserIfPutAPlaceOnMap ||
-                confirm('would like to pin it here ?')
+                confirm(jslang.pinit)
               ) {
                 this.hasExplicitPlace =
                 this.askedUserIfPutAPlaceOnMap = true;
@@ -1383,7 +1455,7 @@ document.once('DOMContentLoaded', function () {
             document.createElement('option')
           );
           option.value = place.id;
-          option.append(place.road + ' - ' + place.postcode);
+          option.append(place.address + ' - ' + place.postcode);
           if (place.id == activity.currentPlace) {
             option.selected = 'selected';
             places.selectedIndex = i;
@@ -1547,7 +1619,7 @@ document.once('DOMContentLoaded', function () {
   // used to save and check the user email
   function verifyEmail(controller, input) {
     var
-      value = input.value.trim(),
+      value = input.value.trim().toLowerCase(),
       email = input.data('email'),
       xhr
     ;
@@ -1584,7 +1656,8 @@ document.once('DOMContentLoaded', function () {
       // ask if a new email should be sent
       // silently failing in the backend
       // if already sent in last 24 hours
-      return location.href = 'http://equolo.org/';
+      // TODO: inform the user something went wrong
+      return (location.href = 'http://equolo.org/');
     }
     if (user.hasOwnProperty('activities')) {
       this.trigger('step-3', user);
@@ -1721,7 +1794,7 @@ document.once('DOMContentLoaded', function () {
       if (options[i].value == value) {
         select.selectedIndex = i;
         options[i].selected = true;
-        icon.className = 'icon-' + value;
+        icon.className = 'fa-' + value;
       } else {
         options[i].selected = false;
       }
@@ -1812,7 +1885,7 @@ document.once('DOMContentLoaded', function () {
     // so let's try to avoid unnecessary calls. How ?
     // If at least 4 values are not specified
     // there's no reason to trigger any request
-    if (3 < values.length) {
+    if (2 < values.length) {
       searchStateIcon.className = searchState.searching;
       // otherwise we can bother the remote server
       // hoping these info will be enough
@@ -1834,7 +1907,7 @@ document.once('DOMContentLoaded', function () {
         icon: '',
         latitude: null,
         longitude: null,
-        road: '',
+        address: '',
         extra: '',
         postcode: '',
         city: '',
@@ -1845,6 +1918,7 @@ document.once('DOMContentLoaded', function () {
         phone: '',
         website: '',
         twitter: '',
+        gplus: '',
         facebook: ''
       });
     }
@@ -1947,7 +2021,7 @@ document.once('DOMContentLoaded', function () {
     console.log(
       RE_VALID_GEO.test(place.latitude),
       RE_VALID_GEO.test(place.longitude),
-      place.road.trim(),
+      place.address.trim(),
       place.postcode.trim().length +
       place.city.trim().length +
       place.county.trim().length +
@@ -1962,7 +2036,7 @@ document.once('DOMContentLoaded', function () {
       RE_VALID_GEO.test(place.latitude) &&
       RE_VALID_GEO.test(place.longitude) &&
       // there is an address
-      place.road.trim().length &&
+      place.address.trim().length &&
       // at least 3 other fields
       2 < (
         place.postcode.trim().length +
@@ -1976,7 +2050,7 @@ document.once('DOMContentLoaded', function () {
       // last but not least
       !!place.id
     ) || !this.push('  ' +
-                    (place.road || '?') +
+                    (place.address || '?') +
                     ' - ' +
                     (place.postcode || '?')
                   );

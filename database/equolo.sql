@@ -65,6 +65,7 @@ CREATE TABLE IF NOT EXISTS `activity-place` (
   `phone` varchar(60) DEFAULT NULL,
   `website` varchar(60) DEFAULT NULL,
   `twitter` varchar(60) DEFAULT NULL,
+  `gplus` varchar(60) DEFAULT NULL,
   `facebook` varchar(60) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `activity-geo-id` (`activity-geo-id`)

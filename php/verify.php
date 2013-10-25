@@ -40,7 +40,7 @@ if (isEquoloRequest()) {
         'icon',
         'latitude',
         'longitude',
-        'road',
+        'address',
         'extra',
         'postcode',
         'city',
@@ -51,6 +51,7 @@ if (isEquoloRequest()) {
         'phone',
         'website',
         'twitter',
+        'gplus',
         'facebook'
       );
       while($row = $stmt->fetch(PDO::FETCH_OBJ)) {

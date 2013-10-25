@@ -124,7 +124,7 @@ cookieSetter('lang', $lang);
 $languageOptions = array();
 foreach($languages as $row) {
   $selected = $row->value == $lang ? 'selected="selected"' : '';
-  $languageOptions[] = '<option '.$selected.' value="'.$row->value.'">'.safer($row->description).'</option>';
+  $languageOptions[] = '<option '.$selected.' value="'.$row->value.'">'.$row->description.'</option>';
 }
 $dictionary['dom-language-options'] = implode('', $languageOptions);
 //// <<< /LANGUAGE >>>
@@ -137,7 +137,7 @@ $stmt = query('criteria', array($lang));
 while($row = $stmt->fetch(PDO::FETCH_OBJ)) {
   $criteria[] =
     '<li class="no-select">'.
-      '<input type="checkbox" value="'.$row->id.'"/>'.safer($row->value).
+      '<input type="checkbox" value="'.$row->id.'"/>'.$row->value.
     '</li>'
   ;
 }
@@ -151,6 +151,9 @@ $dictionary['user.email'] = $active ? (
 ) : '';
 $dictionary['MAX_JS'] = DEVELOPMENT ? '.max' : '';
 $dictionary['title'] = 'equolo.org - add your equobusiness here :-)';
+
+// is the province needed ?
+$dictionary['county-field'] = in_array($lang, array('de', 'fr')) ? 'hidden' : 'text';
 
 header('Content-Type: text/html; charset=utf-8');
 echo template(
