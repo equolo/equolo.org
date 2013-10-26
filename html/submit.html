@@ -1,17 +1,17 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
     <title>)&#x00b0;(, {{title}}</title>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0"/>
-    <meta names="apple-mobile-web-app-status-bar-style" content="black"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <link rel="stylesheet" href="css/font-awesome.css"/>
     <link rel="stylesheet" href="css/leaflet.css"/>
     <link rel="stylesheet" href="css/submit.css"/>
     <!--[if IE 8]><script src="js/ie8.js"></script><![endif]-->
-    <script src="cgi/country.php"></script>
     <script>{{jslang}}</script>
+    <script>{{navigator.country}}</script>
     <script src="js/leaflet.js"></script>
     <script src="js/submit{{MAX_JS}}.js"></script>
   </head>
@@ -19,7 +19,7 @@
     <div>
       <fieldset id="step-1">
         <select name="lang">{{dom-language-options}}</select>
-        <label for="lang">{{language-selection}}</label>
+        <label>{{language-selection}}</label>
       </fieldset>
       <fieldset id="step-2">
         <legend>{{email}}</legend>
@@ -30,12 +30,12 @@
         <legend>{{activity}}</legend>
         <p>{{activity-fieldset-description}}</p>
         <div class="activity">
-          <select name="activity" maxlength="127"></select>
+          <select name="activity"></select>
           <button name="add">{{add}}</button>
           <button name="remove">{{remove}}</button>
         </div>
         <div class="description">
-          <input placeholder="{{activity-name}}" name="name"/>
+          <input placeholder="{{activity-name}}" name="name" maxlength="127"/>
           <textarea placeholder="{{activity-description}}" name="description" maxlength="140"></textarea>
         </div>
         <div class="lang">
@@ -81,19 +81,19 @@
         <fieldset class="address">
           <legend>{{address}} <i class='fa-angle-down'></i></legend>
           <div class="fields">
-            <input name="address" placeholder="{{road}}"/><br/>
+            <input required name="address" placeholder="{{road}}"/><br/>
             <input name="extra" placeholder="{{extra}}"/><br/>
-            <input name="postcode" placeholder="{{postcode}}" maxlength="10"/><br/>
-            <input name="city" placeholder="{{city}}"/><br/>
+            <input required name="postcode" placeholder="{{postcode}}" maxlength="10"/><br/>
+            <input required name="city" placeholder="{{city}}"/><br/>
             <input type="{{county-field}}" name="county" placeholder="{{county}}"/><br/>
             <input name="state" placeholder="{{state}}"/><br/>
             <input name="country" placeholder="{{country}}"/><br/>
-            <input name="email" placeholder="&#xf003; {{email}}"/><br/>
-            <input name="phone" placeholder="&#xf095; {{phone}}"/><br/>
-            <input name="website" placeholder="&#xf0ac; {{website}}"/><br/>
-            <input name="twitter" placeholder="&#xf099; @{{twitter}}"/><br/>
-            <input name="gplus" placeholder="&#xf0d4; {{gplus}}"/><br/>
-            <input name="facebook" placeholder="&#xf082; {{facebook}}"/>
+            <input type="email" name="email" placeholder="{{email}}"/><br/>
+            <input name="phone" placeholder="{{phone}}"/><br/>
+            <input type="url" name="website" placeholder="{{website}}"/><br/>
+            <input name="twitter" placeholder="@{{twitter}}"/><br/>
+            <input name="gplus" placeholder="{{gplus}}"/><br/>
+            <input name="facebook" placeholder="{{facebook}}"/>
             <input type="hidden" name="latitude"/>
             <input type="hidden" name="longitude"/>
           </div>

@@ -9,12 +9,14 @@ YUI = 2.4.8
 
 # make JS files
 JS =  js/display.js\
+      js/restyle.js\
       js/normalizer.js\
+      js/jsonh.js\
       eddy/build/dom4.js\
       eddy/build/eddy.dom.js\
       js/dollar.js\
       js/mercator.js\
-      js/shows-scroll-bar.js\
+      js/scrollbar-size.js\
       js/simple-kinetic.js\
       js/equolo-icon.js\
       js/font-awesome-icon.js\
@@ -33,8 +35,9 @@ PINIT=js/display.js\
       js/submit.js
 
 # make CSS files
-CSS = css/utils.css\
-      css/$(REPO).css
+CSS = css/$(REPO).css\
+      css/utils.css\
+      css/leaflet.css
 
 # move HTML files
 HTML = html/*
@@ -89,6 +92,7 @@ js:
 	cp build/submit.max.js www/js
 	cp eddy/build/ie8.js www/js
 	cp leaflet/leaflet.js www/js
+	cp js/base64Icon.js www/js
 
 # build generic version
 css:
@@ -158,6 +162,7 @@ builder:
 	make clean
 	make external
 	make build
+	cp -r img www
 	node -e "(function(require){\
 	var fs = require('fs'), exec = require('child_process').exec;\
 	fs.readdirSync('.').filter(function(name){\

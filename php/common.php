@@ -26,6 +26,10 @@ if (DEVELOPMENT) {
   error_reporting(-1);
 }
 
+// all pages should be forced to use the proper encoding
+ini_set('default_charset', 'UTF-8');
+mb_internal_encoding('UTF-8');
+
 // the database is needed most of the time
 require_once('db.php');
 
@@ -62,30 +66,32 @@ function cookieSetter($key, $value, $expires = 31536000) {
 // utility: returns the country associated with an IPv4 address
 function getIPv4Country($REMOTE_ADDR) {
   $country = null;
-  $ip = explode('.', $REMOTE_ADDR);
-  // and only if it contains an IPv4 address
-  if (count($ip) === 4) {
-    // prepare the query
-    $stmt = query(
-      'user-country',
-      array(
-        ($ip[0] * 0x1000000) +
-        ($ip[1] * 0x10000) +
-        ($ip[2] * 0x100) +
-        ($ip[3] * 0x1)
-      )
-    );
-    // only if there is a row
-    while($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-      $object = new StdClass;
-      $object->id = intval($row->id);
-      $object->lang = $row->lang_id;
-      $object->name = $row->name;
-      $object->iso2 = $row->iso2;
-      $object->geo = new StdClass;
-      $object->geo->latitude = floatval($row->latitude);
-      $object->geo->longitude = floatval($row->longitude);
-      $country = $object;
+  if (filter_var($REMOTE_ADDR, FILTER_VALIDATE_IP)) {
+    $ip = explode('.', $REMOTE_ADDR);
+    // and only if it contains an IPv4 address
+    if (count($ip) === 4) {
+      // prepare the query
+      $stmt = query(
+        'user-country',
+        array(
+          ($ip[0] * 0x1000000) +
+          ($ip[1] * 0x10000) +
+          ($ip[2] * 0x100) +
+          ($ip[3] * 0x1)
+        )
+      );
+      // only if there is a row
+      while($row = $stmt->fetch(PDO::FETCH_OBJ)) {
+        $object = new StdClass;
+        $object->id = intval($row->id);
+        $object->lang = $row->lang;
+        $object->name = $row->name;
+        $object->iso2 = $row->iso2;
+        $object->geo = new StdClass;
+        $object->geo->latitude = floatval($row->latitude);
+        $object->geo->longitude = floatval($row->longitude);
+        $country = $object;
+      }
     }
   }
   return $country;
@@ -128,14 +134,6 @@ function isEquoloRequest() {
   (
     $_SERVER['HTTP_HOST'] === 'equolo.org' ||
     (DEVELOPMENT && $_SERVER['HTTP_HOST'] === 'localhost')
-  );
-}
-
-// utility: does a simple check for emails
-function isValidEmail($email) {
-  return preg_match(
-    '/^[^@]+?@[^\1@]+\.([a-z]{2,})$/',
-    $email
   );
 }
 
@@ -193,17 +191,11 @@ function prepare($command) {
 // utility: returns a prepared and executed PDOStatement
 // @example
 //  foreach(query('user-country')->fetch(PDO::FETCH_OBJ) as $row) {...}
-function query($command, $arguments = array()) {
-  static $dafuq;
-  if (DEVELOPMENT) {
-    // verify queries on the database
-    if (!isset($dafuq)) {
-      $dafuq = fopen('/tmp/queries.txt', 'w+');
-    }
-    for($sql = explode('?', sql($command)), $i = 0; $i < count($arguments); $i++) {
-      $sql[$i] .= '"'.addslashes($arguments[$i]).'"';
-    }
-    fwrite($dafuq, implode('', $sql).PHP_EOL.PHP_EOL);
+function query($command, $arguments = array(), $convert = false) {
+  if ($convert) {
+    //foreach($arguments as &$value) {
+    //  $value = mb_convert_encoding($value, 'UTF-8');
+    //}
   }
   $stmt = prepare($command);
   $stmt->execute($arguments);
@@ -213,6 +205,34 @@ function query($command, $arguments = array()) {
 // utility: make HTML strings safe
 function safer($text) {
   return htmlentities($text, ENT_QUOTES);
+}
+
+
+// utility: look for the country once and set it
+function searchSetAndGetCountry() {
+  // shortcut to avoid multiple access
+  $REMOTE_ADDR = $_SERVER['REMOTE_ADDR'];
+  // if already set and same as it was before
+  if (
+    isset($_COOKIE['ip']) &&
+    $_COOKIE['ip'] === base64_encode($REMOTE_ADDR)
+  ) {
+    // no need to disturb the database
+    $country = base64_decode($_COOKIE['country']);
+  }
+  // let's find out the country
+  else {
+    // using a fake IP hwen in localhost
+    $country = json_encode(getIPv4Country(
+      DEVELOPMENT ? '172.1.1.1' : $REMOTE_ADDR
+    ));
+  }
+  // set cookies in a simple way
+  // no need to make them visible, neither to use
+  // full enccryption for this data. Is already public
+  cookieSetter('ip', base64_encode($REMOTE_ADDR), 3600);
+  cookieSetter('country', base64_encode($country), 3600);
+  return $country;
 }
 
 // utility: parse and translate a template

@@ -7,8 +7,8 @@
  *
  */
 
-require_once('jsonh.php');
 require_once('common.php');
+require_once('jsonh.php');
 
 // only for verified requests
 if (isEquoloRequest()) {
@@ -17,7 +17,7 @@ if (isEquoloRequest()) {
     // email must be provided
     isset($_GET['email']) &&
     // it's a must to also verify on the server
-    isValidEmail($_GET['email'])
+    filter_var($_GET['email'], FILTER_VALIDATE_EMAIL)
   ) {
     $commonParams = array($_GET['email']);
     // editing, case after authentication with same epxlicit email

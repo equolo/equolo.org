@@ -27,7 +27,7 @@ if (
     $_GET['email'],
     $_GET['token']
   ) &&
-  isValidEmail($_GET['email']) &&
+  filter_var($_GET['email'], FILTER_VALIDATE_EMAIL) &&
   preg_match(
     // expected SHA1
     '/^[a-f0-9]{40}$/',
@@ -73,14 +73,14 @@ $lang = isset($_GET['lang']) ?
     ''
 );
 
-if (empty($lang)) {
+if (empty($lang) || !preg_match('/^[a-z]{2}$/', $lang)) {
   // try to figure out the country
   $country = getIPv4Country($_SERVER['REMOTE_ADDR']);
   if (!empty($country)) {
     // set the country spoken language
     // assuming we flagged all of them in order
     // to match available languages
-    $lang = $country->lang_id;
+    $lang = $country->value;
   }
 }
 
@@ -92,10 +92,6 @@ $stmt = query('language');
 while($row = $stmt->fetch(PDO::FETCH_OBJ)) {
   $languages[] = $row;
   if ($notFound) {
-    // in case the lang comes from the country
-    if ($lang == $row->id) {
-      $lang = $row->value;
-    }
     if ($lang == $row->value) {
       $notFound = false;
     }
@@ -124,7 +120,9 @@ cookieSetter('lang', $lang);
 $languageOptions = array();
 foreach($languages as $row) {
   $selected = $row->value == $lang ? 'selected="selected"' : '';
-  $languageOptions[] = '<option '.$selected.' value="'.$row->value.'">'.$row->description.'</option>';
+  $languageOptions[] = '<option '.$selected.' value="'.$row->value.'">'.
+    mb_convert_encoding($row->description, 'UTF-8').
+  '</option>';
 }
 $dictionary['dom-language-options'] = implode('', $languageOptions);
 //// <<< /LANGUAGE >>>
@@ -149,7 +147,10 @@ $dictionary['criteria'] = implode('', $criteria);
 $dictionary['user.email'] = $active ? (
   isset($_GET['email']) ? $_GET['email'] : $_COOKIE['email']
 ) : '';
+
 $dictionary['MAX_JS'] = DEVELOPMENT ? '.max' : '';
+$dictionary['navigator.country'] = 'navigator.country='.searchSetAndGetCountry().';';
+
 $dictionary['title'] = 'equolo.org - add your equobusiness here :-)';
 
 // is the province needed ?

@@ -45,112 +45,171 @@ IE9Mobile&&document.write('<link rel="stylesheet" href="css/IE9Mobile.css"/><scr
 var display = function (global) {
 
   var
-    Math = global.Math,
-    abs = Math.abs,
-    max = Math.max,
-    min = Math.min,
-    Infinity = global.Infinity,
-    screen = global.screen || Infinity,
-    matchMedia = window.matchMedia,
-    addEventListener = 'addEventListener',
-    documentElement = global.document.documentElement,
-    shouldBeMobile  = /\bMobile\b/.test(navigator.userAgent),
-    handlers = {
-      change: []
-    },
-    display = {
-      width: 0,
-      height: 0,
-      ratio: 0,
-      on: function (type, callback) {
-        // right now only change is supported
-        // throws otherwise
-        handlers[type].push(callback);
-      }
-    },
-    forEach = handlers.change.forEach || function (callback, self) {
-      // partial polyfill for this case only
-      for(var i = 0; i < this.length; i++) {
-        callback.call(self, this[i], i, this);
-      }
-    },
-    timer
-  ;
-
-  function notify(callback) {
-    callback.call(display, display.width, display.height);
-  }
-
-  function delayed(e) {
-    if (timer) {
-      clearTimeout(timer);
-    }
-    timer = setTimeout(recalc, 300, e);
-  }
-
-  function recalc(e) {
-    timer = 0;
-    var
-      devicePixelRatio = global.devicePixelRatio || 1,
-      hasOrientation = 'orientation' in this,
-      landscape = hasOrientation ?
-        abs(this.orientation || 0) === 90 :
-        !!matchMedia && matchMedia("(orientation:landscape)").matches
-      ,
-      swidth = screen.width,    // TODO: verify screen.availWidth in some device
-      sheight = screen.height,  // only if width/height not working as expected
-      width = min(
-        global.innerWidth || documentElement.clientWidth,
-        // some Android has 0.75 ratio
-        devicePixelRatio < 1 ? Infinity : (
-          // Android flips screen width and height size in landscape
-          // Find biggest dimension in landscape otherwise width is OK
-          (shouldBeMobile && landscape ? max(swidth, sheight) : swidth) || Infinity
-        )
-      ),
-      height = min(
-        global.innerHeight || documentElement.clientHeight,
-        // some Android has 0.75 ratio
-        devicePixelRatio < 1 ? Infinity : (
-          // Android flips screen width and height size in landscape
-          // Find biggest dimension in landscape otherwise width is OK
-          (shouldBeMobile && landscape ? min(swidth, sheight) : sheight) || Infinity
-        )
-      )
+      Math = global.Math,
+      abs = Math.abs,
+      max = Math.max,
+      min = Math.min,
+      Infinity = global.Infinity,
+      screen = global.screen || Infinity,
+      matchMedia = window.matchMedia,
+      addEventListener = 'addEventListener',
+      documentElement = global.document.documentElement,
+      shouldBeMobile  = /\bMobile\b/.test(navigator.userAgent),
+      handlers = {
+        change: []
+      },
+      display = {
+        width: 0,
+        height: 0,
+        ratio: 0,
+        on: function (type, callback) {
+          // right now only change is supported
+          // throws otherwise
+          handlers[type].push(callback);
+        }
+      },
+      forEach = handlers.change.forEach || function (callback, self) {
+        // partial polyfill for this case only
+        for(var i = 0; i < this.length; i++) {
+          callback.call(self, this[i], i, this);
+        }
+      },
+      timer
     ;
 
-    if (width !== display.width || height !== display.height) {
-      display.width = width;
-      display.height = height;
-      forEach.call(handlers.change, notify);
+    function notify(callback) {
+      callback.call(display, display.width, display.height);
     }
-  }
 
-  // 
-  if (addEventListener in global) {
-    global[addEventListener]('orientationchange', delayed, true);
-    global[addEventListener]('resize', delayed, true);
-    try {
-      // W3C proposal
-      screen[addEventListener]('orientationchange', delayed, true);
-    } catch(e) {}
-  } else {
-    global.attachEvent('onresize', recalc);
-  }
+    function delayed(e) {
+      if (timer) {
+        clearTimeout(timer);
+      }
+      timer = setTimeout(recalc, 300, e);
+    }
 
-  recalc.call(global);
+    function recalc(e) {
+      timer = 0;
+      var
+        devicePixelRatio = global.devicePixelRatio || 1,
+        hasOrientation = 'orientation' in this,
+        landscape = hasOrientation ?
+          abs(this.orientation || 0) === 90 :
+          !!matchMedia && matchMedia("(orientation:landscape)").matches
+        ,
+        swidth = screen.width,    // TODO: verify screen.availWidth in some device
+        sheight = screen.height,  // only if width/height not working as expected
+        width = min(
+          global.innerWidth || documentElement.clientWidth,
+          // some Android has 0.75 ratio
+          devicePixelRatio < 1 ? Infinity : (
+            // Android flips screen width and height size in landscape
+            // Find biggest dimension in landscape otherwise width is OK
+            (shouldBeMobile && landscape ? max(swidth, sheight) : swidth) || Infinity
+          )
+        ),
+        height = min(
+          global.innerHeight || documentElement.clientHeight,
+          // some Android has 0.75 ratio
+          devicePixelRatio < 1 ? Infinity : (
+            // Android flips screen width and height size in landscape
+            // Find biggest dimension in landscape otherwise width is OK
+            (shouldBeMobile && landscape ? min(swidth, sheight) : sheight) || Infinity
+          )
+        )
+      ;
 
-  // calculated only once
-  // works with MS Tablets/Phones too
-  display.ratio = global.devicePixelRatio ||
-                  screen.width / display.width ||
-                  (screen.deviceXDPI || 1) / (screen.logicalXDPI || 1);
+      if (width !== display.width || height !== display.height) {
+        display.width = width;
+        display.height = height;
+        forEach.call(handlers.change, notify);
+      }
+    }
+
+    // 
+    if (addEventListener in global) {
+      global[addEventListener]('orientationchange', delayed, true);
+      global[addEventListener]('resize', delayed, true);
+      try {
+        // W3C proposal
+        screen[addEventListener]('orientationchange', delayed, true);
+      } catch(e) {}
+    } else {
+      global.attachEvent('onresize', recalc);
+    }
+
+    recalc.call(global);
+
+    // calculated only once
+    // works with MS Tablets/Phones too
+    display.ratio = global.devicePixelRatio ||
+                    screen.width / display.width ||
+                    (screen.deviceXDPI || 1) / (screen.logicalXDPI || 1);
 
   return display;
 
 // ---------------------------------------------------------------------------
 
 }(window);
+/*jslint browser: true, plusplus: true, indent: 2 */
+// @link https://gist.github.com/WebReflection/6924133
+function restyle(
+  rules,  // an object containing selectors and
+          // a collection of key/value pairs per each
+          // selector, i.e.
+          //  restyle({
+          //    'body > section.main': {
+          //      color: '#EEE',
+          //      'margin-left': (innerWidth - 200) + 'px'
+          //    }
+          //  });
+  doc     // the document, if necessary
+) {
+  'use strict';
+  /*! (C) Andrea Giammarchi - Mit Style License */
+  //  somehow inspired by the fully featured absurd.js
+  //  https://github.com/krasimir/absurd#absurdjs
+  if (!doc) {
+    doc = document;
+  }
+  doc.getElementsByTagName('head')[0].appendChild(
+    doc.createElement('style')
+  ).appendChild(doc.createTextNode(''));
+  var
+    styleSheets = doc.styleSheets,
+    styleSheet = styleSheets[styleSheets.length - 1],
+    add = styleSheet.addRule || function (selector, rule, index) {
+      this.insertRule(selector + '{' + rule + '}', index);
+    },
+    i = 0,
+    selector, // the CSS selector, i.e. body > section.main
+    current,  // the current style with one or more key value pairs
+    key,      // each property, i.e. transition or color or margin-left
+    value,    // the value associated, i.e. #EEDDF0, 20px
+    css;      // the list of all rules per each selector
+  for (selector in rules) {
+    if (rules.hasOwnProperty(selector)) {
+      css = [];
+      current = rules[selector];
+      for (key in current) {
+        if (current.hasOwnProperty(key)) {
+          value = current[key];
+          css.push(
+            '-webkit-' + key + ':' + value,
+            '-khtml-' + key + ':' + value,
+            '-blink-' + key + ':' + value,
+            '-moz-' + key + ':' + value,
+            '-ms-' + key + ':' + value,
+            '-o-' + key + ':' + value,
+            key + ':' + value
+          );
+        }
+      }
+      add.call(styleSheet, selector, css.join(';') + ';', i++);
+    }
+  }
+}// quite an ambitious name
+// however, this is all we might need/want to normalize
 (function(Array, Function, String){
   'indexOf' in Array || (Array.indexOf = function (v){
     for(var i = this.length; i-- && this[i] !== v;);
@@ -165,9 +224,180 @@ var display = function (global) {
   'trim' in String || (String.trim = function(){
     return this.replace(/^[^\S]+|[^\S]+$/g, '');
   });
-}(Array.prototype, Function.prototype, String.prototype));/*! (C) WebReflection Mit Style License */
+}(Array.prototype, Function.prototype, String.prototype));// both UPPER and lower, you choose
+var JSONH, jsonh = JSONH = function (Array, JSON) {"use strict"; // if you want
+
+    /**
+     * Copyright (C) 2011 by Andrea Giammarchi, @WebReflection
+     * 
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+     * 
+     * The above copyright notice and this permission notice shall be included in
+     * all copies or substantial portions of the Software.
+     * 
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     * THE SOFTWARE.
+     */
+
+    // transforms [{a:"A"},{a:"B"}] to [1,"a","A","B"]
+    function hpack(list) {
+        for (var
+            length = list.length,
+            // defined properties (out of one object is enough)
+            keys = Object_keys(length ? list[0] : {}),
+            klength = keys.length,
+            // static length stack of JS values
+            result = Array(length * klength),
+            i = 0,
+            j = 0,
+            ki, o;
+            i < length; ++i
+        ) {
+            for (
+                o = list[i], ki = 0;
+                ki < klength;
+                result[j++] = o[keys[ki++]]
+            );
+        }
+        // keys.length, keys, result
+        return concat.call([klength], keys, result);
+    }
+
+    // transforms [1,"a","A","B"] to [{a:"A"},{a:"B"}]
+    function hunpack(hlist) {
+        for (var
+            length = hlist.length,
+            klength = hlist[0],
+            result = Array(((length - klength - 1) / klength) || 0),
+            i = 1 + klength,
+            j = 0,
+            ki, o;
+            i < length;
+        ) {
+            for (
+                result[j++] = (o = {}), ki = 0;
+                ki < klength;
+                o[hlist[++ki]] = hlist[i++]
+            );
+        }
+        return result;
+    }
+
+    // recursive: called via map per each item h(pack|unpack)ing each entry through the schema
+    function iteratingWith(method) {
+        return function iterate(item) {
+            for (var
+                path = this,
+                current = item,
+                i = 0, length = path.length,
+                j, k, tmp;
+                i < length; ++i
+            ) {
+                if (isArray(tmp = current[k = path[i]])) {
+                    j = i + 1;
+                    current[k] = j < length ?
+                        map.call(tmp, method, path.slice(j)) :
+                        method(tmp)
+                    ;
+                }
+                current = current[k];
+            }
+            return item;
+        };
+    }
+
+    // called per each schema (pack|unpack)ing each schema
+    function packOrUnpack(method) {
+        return function parse(o, schema) {
+            for (var
+                wasArray = isArray(o),
+                result = concat.call(arr, o),
+                path = concat.call(arr, schema),
+                i = 0, length = path.length;
+                i < length; ++i
+            ) {
+                result = map.call(result, method, path[i].split("."));
+            }
+            return wasArray ? result : result[0];
+        };
+    }
+
+    // JSONH.pack
+    function pack(list, schema) {
+        return schema ? packSchema(list, schema) : hpack(list);
+    }
+
+    // JSONH unpack
+    function unpack(hlist, schema) {
+        return schema ? unpackSchema(hlist, schema) : hunpack(hlist);
+    }
+
+    // JSON.stringify after JSONH.pack
+    function stringify(list, replacer, space, schema) {
+        return JSON_stringify(pack(list, schema), replacer, space);
+    }
+
+    // JSONH.unpack after JSON.parse
+    function parse(hlist, reviver, schema) {
+        return unpack(JSON_parse(hlist, reviver), schema);
+    }
+
+    var
+        // recycled for different operations
+        arr = [],
+        // trapped once reused forever
+        concat = arr.concat,
+        // addressed cross platform Object.keys shim
+        Object_keys = Object.keys || function (o) {
+            var keys = [], key;
+            for (key in o) o.hasOwnProperty(key) && keys.push(key);
+            return keys;
+        },
+        // addressed cross platform Array.isArray shim
+        isArray = Array.isArray || (function (toString, arrayToString) {
+            arrayToString = toString.call(arr);
+            return function isArray(o) {
+                return toString.call(o) == arrayToString;
+            };
+        }({}.toString)),
+        // fast and partial Array#map shim
+        map = arr.map || function (callback, context) {
+            for (var
+                self = this, i = self.length, result = Array(i);
+                i--;
+                result[i] = callback.call(context, self[i], i, self)
+            );
+            return result;
+        },
+        // schema related (pack|unpack)ing operations
+        packSchema = packOrUnpack(iteratingWith(hpack)),
+        unpackSchema = packOrUnpack(iteratingWith(hunpack)),
+        // JSON object shortcuts
+        JSON_stringify = JSON.stringify,
+        JSON_parse = JSON.parse
+    ;
+
+    return {
+        pack: pack,
+        parse: parse,
+        stringify: stringify,
+        unpack: unpack
+    };
+
+}(Array, JSON);/*! (C) WebReflection Mit Style License */
 (function(e){"use strict";function t(t){return typeof t=="string"?e.document.createTextNode(t):t}function n(n){if(n.length===1)return t(n[0]);for(var r=e.document.createDocumentFragment(),i=h.call(n),s=0;s<n.length;s++)r.appendChild(t(i[s]));return r}for(var r,i,s,o=/^\s+|\s+$/g,u=/\s+/,a=" ",f=function(t,n){return this.contains(t)?n||this.remove(t):n&&this.add(t),!!n},l=(e.Element||e.Node||e.HTMLElement).prototype,c=["prepend",function(){var t=this.firstChild,r=n(arguments);t?this.insertBefore(r,t):this.appendChild(r)},"append",function(){this.appendChild(n(arguments))},"before",function(){var t=this.parentNode;t&&t.insertBefore(n(arguments),this)},"after",function(){var t=this.parentNode,r=this.nextSibling,i=n(arguments);t&&(r?t.insertBefore(i,r):t.appendChild(i))},"replace",function(){var t=this.parentNode;t&&t.replaceChild(n(arguments),this)},"remove",function(){var t=this.parentNode;t&&t.removeChild(this)}],h=c.slice,p=c.length;p;p-=2)r=c[p-2],r in l||(l[r]=c[p-1]);"classList"in document.documentElement?(s=document.createElement("div").classList,s.add("a","b"),"a b"!=s&&(l=s.constructor.prototype,"add"in l||(l=e.DOMTokenList.prototype),i=function(e){return function(){var t=0;while(t<arguments.length)e.call(this,arguments[t++])}},l.add=i(l.add),l.remove=i(l.remove),l.toggle=f)):(i=function(e){if(!e)throw"SyntaxError";if(u.test(e))throw"InvalidCharacterError";return e},s=function(e){var t=e.className.replace(o,"");t.length&&c.push.apply(this,t.split(u)),this._=e},s.prototype={length:0,add:function(){for(var t=0,n;t<arguments.length;t++)n=arguments[t],this.contains(n)||c.push.call(this,r);this._.className=""+this},contains:function(e){return function(n){return p=e.call(this,r=i(n)),-1<p}}([].indexOf||function(e){p=this.length;while(p--&&this[p]!==e);return p}),item:function(t){return this[t]||null},remove:function(){for(var t=0,n;t<arguments.length;t++)n=arguments[t],this.contains(n)&&c.splice.call(this,p,1);this._.className=""+this},toggle:f,toString:function v(){return c.join.call(this,a)}},(Object.defineProperty||function(e,t,n){e.__defineGetter__(t,n.get)})(l,"classList",{get:function(){return new s(this)},set:function(){}}));try{new e.CustomEvent("?")}catch(d){e.CustomEvent=function(e,t){function n(n,i){var s=document.createEvent(e);if(typeof n!="string")throw new Error("An event name must be provided");return e=="Event"&&(s.initCustomEvent=r),i==null&&(i=t),s.initCustomEvent(n,i.bubbles,i.cancelable,i.detail),s}function r(e,t,n,r){this.initEvent(e,t,n),this.detail=r}return n}(e.CustomEvent?"CustomEvent":"Event",{bubbles:!1,cancelable:!1,detail:null})}})(window);/*! (C) Andrea Giammarchi Mit Style License */
-(function(e){"use strict";function E(){return{l:{},m:[],b:[]}}function S(e){var t=E();return c.value=t,p(e,f,c),c.value=null,t}function x(e,t,n){typeof t=="function"?t.apply(e,n):t.handleEvent.apply(t,n)}function T(e,t,n){n&&y(this,"detail",n),y(this,"type",t),y(this,"target",e),y(this,"timeStamp",m())}if(e.eddy)return;e.eddy=!0;var t=Array.prototype,n=e.prototype,r=T.prototype,i=n.hasOwnProperty,s=t.push,o=t.slice,u=t.unshift,a="toLocaleString",f={toLocaleString:1}.propertyIsEnumerable(a)?"_@eddy"+Math.random():a,l=f===a,c=(e.create||e)(null),h=[],p=l?function(e,t,n){e[t]=n.value}:e.defineProperty,d=function(e){var t=this;return function(){return t.apply(e,arguments)}},v=t.indexOf||function(e){var t=this.length;while(t--&&this[t]!==e);return t},m=Date.now||function(){return(new Date).getTime()},g={boundTo:function(t){var n=i.call(this,f)?this[f]:S(this),r=n.m,o=n.b,u=typeof t=="string"?this[t]:t,a=v.call(r,u);return a<0?o[s.call(r,u)-1]=d.call(u,this):o[a]},emit:function(t){var n=i.call(this,f),r=n&&this[f].l,s=n&&i.call(r,t),u=s&&r[t],a=s&&o.call(arguments,1),l=0,c=s?u.length:l;while(l<c)x(this,u[l++],a);return s},listeners:function(t){return i.call(this,f)&&i.call(this[f].l,t)&&this[f].l[t].slice()||[]},off:function(t,n){var r=i.call(this,f),s=r&&this[f].l,o=r&&i.call(s,t)&&s[t],u;return o&&(u=v.call(o,n),-1<u&&(o.splice(u,1),o.length||delete s[t])),this},on:function(t,n,r){var o=i.call(this,f),a=(o?this[f]:S(this)).l,l=o&&i.call(a,t)?a[t]:a[t]=[];return v.call(l,n)<0&&(r?u:s).call(l,n),this},once:function(t,n,r){var i=function(e){s.off(t,i,r),x(s,n,arguments)},s=this;return s.on(t,i,r)},trigger:function(t,n){var s=i.call(this,f),o=s&&this[f].l,u=typeof t=="string",a=u?t:t.type,l=s&&i.call(o,a),c=l&&o[a].slice(0),p=u?new T(this,a,n):t,d=0,v=l?c.length:d,m=!(p instanceof T);m&&(p._active=!0,p.stopImmediatePropagation=r.stopImmediatePropagation),p.currentTarget=this,h[0]=p;while(p._active&&d<v)x(this,c[d++],h);return m&&(delete p._active,delete p.stopImmediatePropagation),!p.defaultPrevented}},y=function(e,t,n){i.call(e,t)||(e[t]=n)},b=!1,w;r.defaultPrevented=!1,r._active=r.cancelable=!0,r.preventDefault=function(){this.defaultPrevented=!0},r.stopImmediatePropagation=function(){this._active=!1};for(w in g)i.call(g,w)&&p(n,w,{enumerable:!1,configurable:!0,writable:!0,value:g[w]});(function(e){function n(t){function n(e){e[t].apply(e,this)}return function(){return e.call(this,n,arguments),this}}for(var r in g)g.hasOwnProperty(r)&&!/^listeners|boundTo$/.test(r)&&p(t,r,{enumerable:!1,configurable:!0,writable:!0,value:n(r)})})(t.forEach);var N={boundTo:g.boundTo,data:function k(e,t){var n="dataset"in this;return arguments.length<2?n?this.dataset[e]:(t=this.getAttribute("data-"+e.replace(k.gre||(k.gre=/-[a-z]/g),k.gplace||(k.gplace=function(e,t){return t.toUpperCase()}))))==null?void 0:t:n?t==null?delete this.dataset[e]:(this.dataset[e]=t,t):(k.sre||(k.sre=/([a-z])([A-Z])/g,k.splace=function(e,t,n){return t+"-"+n.toLowerCase()}),e="data-"+e.replace(k.sre,k.splace),t==null?!this.removeAttribute(e):(this.setAttribute(e,t),t))},emit:function(n){var r=new CustomEvent(n);return r.arguments=t.slice.call(arguments,1),this.dispatchEvent(r)},listeners:function(t){return[]},off:function(e,t,n){return this.removeEventListener(e,t,n),this},on:function(e,t,n){return this.addEventListener(e,t,n),this},once:g.once,trigger:function(t,n){var r=typeof t=="string",i=r?t:t.type,s=r?new CustomEvent(i,(c.detail=n,c)):t;return c.detail=null,T.call(s,this,i),this.dispatchEvent(s)}};c.cancelable=!0,c.bubbles=!0;try{document.createEvent("Event").target=document}catch(C){b=!0,y=function(e,t,n){if(!i.call(e,t))try{e[t]=n}catch(r){}}}(function(e){var t=e.Window,n=t?t.prototype:e,r=(e.Node||e.Element||e.HTMLElement).prototype,s=(e.Document||e.HTMLDocument).prototype,o=(e.XMLHttpRequest||function(){}).prototype,u,a;for(u in N)i.call(N,u)&&(a={enumerable:!1,configurable:!0,writable:!0,value:N[u]},p(n,u,a),p(r,u,a),p(s,u,a),u!=="data"&&p(o,u,a))})(window)})(Object);window.$=function(a){return function(c,p){return a.slice.call(a.concat(p||document)[0].querySelectorAll(c))}}([]);function Mercator(TILE_SIZE) {
+(function(e){"use strict";function E(){return{l:{},m:[],b:[]}}function S(e){var t=E();return c.value=t,p(e,f,c),c.value=null,t}function x(e,t,n){typeof t=="function"?t.apply(e,n):t.handleEvent.apply(t,n)}function T(e,t,n){n&&y(this,"detail",n),y(this,"type",t),y(this,"target",e),y(this,"timeStamp",m())}if(e.eddy)return;e.eddy=!0;var t=Array.prototype,n=e.prototype,r=T.prototype,i=n.hasOwnProperty,s=t.push,o=t.slice,u=t.unshift,a="toLocaleString",f={toLocaleString:1}.propertyIsEnumerable(a)?"_@eddy"+Math.random():a,l=f===a,c=(e.create||e)(null),h=[],p=l?function(e,t,n){e[t]=n.value}:e.defineProperty,d=function(e){var t=this;return function(){return t.apply(e,arguments)}},v=t.indexOf||function(e){var t=this.length;while(t--&&this[t]!==e);return t},m=Date.now||function(){return(new Date).getTime()},g={boundTo:function(t){var n=i.call(this,f)?this[f]:S(this),r=n.m,o=n.b,u=typeof t=="string"?this[t]:t,a=v.call(r,u);return a<0?o[s.call(r,u)-1]=d.call(u,this):o[a]},emit:function(t){var n=i.call(this,f),r=n&&this[f].l,s=n&&i.call(r,t),u=s&&r[t],a=s&&o.call(arguments,1),l=0,c=s?u.length:l;while(l<c)x(this,u[l++],a);return s},listeners:function(t){return i.call(this,f)&&i.call(this[f].l,t)&&this[f].l[t].slice()||[]},off:function(t,n){var r=i.call(this,f),s=r&&this[f].l,o=r&&i.call(s,t)&&s[t],u;return o&&(u=v.call(o,n),-1<u&&(o.splice(u,1),o.length||delete s[t])),this},on:function(t,n,r){var o=i.call(this,f),a=(o?this[f]:S(this)).l,l=o&&i.call(a,t)?a[t]:a[t]=[];return v.call(l,n)<0&&(r?u:s).call(l,n),this},once:function(t,n,r){var i=function(e){s.off(t,i,r),x(s,n,arguments)},s=this;return s.on(t,i,r)},trigger:function(t,n){var s=i.call(this,f),o=s&&this[f].l,u=typeof t=="string",a=u?t:t.type,l=s&&i.call(o,a),c=l&&o[a].slice(0),p=u?new T(this,a,n):t,d=0,v=l?c.length:d,m=!(p instanceof T);m&&(p._active=!0,p.stopImmediatePropagation=r.stopImmediatePropagation),p.currentTarget=this,h[0]=p;while(p._active&&d<v)x(this,c[d++],h);return m&&(delete p._active,delete p.stopImmediatePropagation),!p.defaultPrevented}},y=function(e,t,n){i.call(e,t)||(e[t]=n)},b=!1,w;r.defaultPrevented=!1,r._active=r.cancelable=!0,r.preventDefault=function(){this.defaultPrevented=!0},r.stopImmediatePropagation=function(){this._active=!1};for(w in g)i.call(g,w)&&p(n,w,{enumerable:!1,configurable:!0,writable:!0,value:g[w]});(function(e){function n(t){function n(e){e[t].apply(e,this)}return function(){return e.call(this,n,arguments),this}}for(var r in g)g.hasOwnProperty(r)&&!/^listeners|boundTo$/.test(r)&&p(t,r,{enumerable:!1,configurable:!0,writable:!0,value:n(r)})})(t.forEach);var N={boundTo:g.boundTo,data:function k(e,t){var n="dataset"in this;return arguments.length<2?n?this.dataset[e]:(t=this.getAttribute("data-"+e.replace(k.gre||(k.gre=/-[a-z]/g),k.gplace||(k.gplace=function(e,t){return t.toUpperCase()}))))==null?void 0:t:n?t==null?delete this.dataset[e]:(this.dataset[e]=t,t):(k.sre||(k.sre=/([a-z])([A-Z])/g,k.splace=function(e,t,n){return t+"-"+n.toLowerCase()}),e="data-"+e.replace(k.sre,k.splace),t==null?!this.removeAttribute(e):(this.setAttribute(e,t),t))},emit:function(n){var r=new CustomEvent(n);return r.arguments=t.slice.call(arguments,1),this.dispatchEvent(r)},listeners:function(t){return[]},off:function(e,t,n){return this.removeEventListener(e,t,n),this},on:function(e,t,n){return this.addEventListener(e,t,n),this},once:g.once,trigger:function(t,n){var r=typeof t=="string",i=r?t:t.type,s=r?new CustomEvent(i,(c.detail=n,c)):t;return c.detail=null,T.call(s,this,i),this.dispatchEvent(s)}};c.cancelable=!0,c.bubbles=!0;try{document.createEvent("Event").target=document}catch(C){b=!0,y=function(e,t,n){if(!i.call(e,t))try{e[t]=n}catch(r){}}}(function(e){var t=e.Window,n=t?t.prototype:e,r=(e.Node||e.Element||e.HTMLElement).prototype,s=(e.Document||e.HTMLDocument).prototype,o=(e.XMLHttpRequest||function(){}).prototype,u,a;for(u in N)i.call(N,u)&&(a={enumerable:!1,configurable:!0,writable:!0,value:N[u]},p(n,u,a),p(r,u,a),p(s,u,a),u!=="data"&&p(o,u,a))})(window)})(Object);// very simple jQueryish approach: inefficient but handy enough
+window.$=function(a){return function(c,p){return a.slice.call(a.concat(p||document)[0].querySelectorAll(c))}}([]);function Mercator(TILE_SIZE) {
   /*! (C) Andrea Giammarchi */
   var
     Math = window.Math,
@@ -507,6 +737,8 @@ return SimpleKinetic;
   context.restore();
   return canvas;
 }// creates a png Map icon SRC out of FontAwesome
+// works with retina displays too but it uses
+// the display.js file in order to do that
 var fontAwesomeIcon = function(canvas){
   var
     context = canvas.getContext('2d'),
@@ -558,7 +790,6 @@ var fontAwesomeIcon = function(canvas){
         -size / 4,
         size / 10
       );
-      document.body.appendChild(canvas);
     }
     return canvas.toDataURL();
   }
@@ -589,4 +820,95 @@ var fontAwesomeIcon = function(canvas){
 }(
   document.createElement('canvas')
 );
-}(this));
+// let's dirtly feature detect browser capabilities
+// in the worst case scenario, we'll prepare
+// the most common icon fallback: the marker one
+try{fontAwesomeIcon('map-marker',36)}catch(o_O){
+  // ok, very old browser, icons should be static images
+  // instead of runtime generated canvas
+  // let's force them to be in there once needed
+  this.compat = true;
+  document.write('<script src="cgi/base64_icon.php"></script>');
+}
+(function(window, document, map){
+  // first come first serve
+  document.on('DOMContentLoaded', equolo);
+  window.on('load', equolo);
+  // in case it's already good to go
+  if (/loaded|complete/.test(document.readyState)) {
+    equolo();
+  }
+  // here the home page, Welcome to equolo.org !
+  function equolo() {
+    var el, tmp;
+    // we need to be sure this won't be fired twice
+    document.off('DOMContentLoaded', equolo);
+    window.off('load', equolo);
+    // but if there's still no map
+    // we need to wait for it
+    if (!window.L) {
+      return setTimeout(equolo, 15);
+    }
+    // user, please do not scroll by your own
+    document.documentElement.classList.add('no-scroll');
+    document.body.classList.add('no-scroll');
+    // better quality image, or just same image?
+    if (!window.compat) {
+      el = $('section#map img')[0];
+      tmp = document.createElement('canvas');
+      tmp.style.cssText = 'width:' + el.width + 'px;' +
+                          'height:' + el.height + 'px;';
+      el.replace(
+        equoloIcon(
+          tmp,
+          36 * display.ratio,
+          '#E6A72A'
+        )
+      );
+    }
+    // make section good for synthetic `scrollingTo`
+    onDisplayChange();
+    // initialize once the map
+    L.tileLayer(
+      'http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg',
+      {
+        attribution: 'Map Tiles &copy; Open MapQuest',
+        maxZoom: 18
+      }
+    ).addTo(
+      // one map for all places of all activities
+      map = L.map($('section#map > div.map')[0])
+    );
+    setMapView(
+      navigator.country ?
+        navigator.country.geo :
+        [51.4791, 0]
+      ,
+      6
+    );
+  }
+  // what happens when the display size changes ?
+  function onDisplayChange() {
+    restyle({
+      // section should have a proper minimum height
+      'section': {
+        'min-height': display.height + 'px'
+      }
+    });
+  }
+  function setMapView(
+    coords, zoom  // zoom is optional
+  ) {
+    map.setView(
+      [
+        // coords, geowhatever, array ? fine :-)
+        coords.latitude || coords.lat || coords[0],
+        coords.longitude || coords.lng || coords[1]
+      ],
+      zoom || Math.max(
+        14, map.getZoom()
+      )
+    );
+  }
+  display.on('change', onDisplayChange);
+}(this, document));}(this));

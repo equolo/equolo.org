@@ -14,6 +14,62 @@
 //    $stmt->closeCursor();
 function sql($command) {
   static $query = array(
+
+
+
+    'all-activities' =>
+      'SELECT
+        activity.id,
+        `activity-name`.value AS "name",
+        `activity-description`.value AS "description",
+        category.icon,
+        `activity-geo`.id AS "gid",
+        `activity-geo`.latitude,
+        `activity-geo`.longitude,
+        `activity-place`.road AS "address",
+        `activity-place`.extra,
+        `activity-place`.postcode,
+        `activity-place`.city,
+        `activity-place`.county,
+        `activity-place`.state,
+        `activity-place`.country,
+        `activity-place`.email,
+        `activity-place`.phone,
+        `activity-place`.website,
+        `activity-place`.twitter,
+        `activity-place`.gplus,
+        `activity-place`.facebook
+      FROM
+        auth,
+        `auth-login`,
+        activity,
+        `activity-description`,
+        `activity-name`,
+        `activity-geo`,
+        `activity-place`,
+        category,
+        lang
+      WHERE
+        `auth-login`.`auth-id` = auth.id
+      AND
+        `auth-login`.active = 1
+      AND
+        activity.`auth-id` = auth.id
+      AND
+        `activity-name`.`activity-id` = activity.id
+      AND
+        `activity-description`.`activity-id` = activity.id
+      AND
+        lang.id = `activity-description`.`lang-id`
+      AND
+        `activity-geo`.`activity-id` = activity.id
+      AND
+        category.id = `activity-geo`.`category-id`
+      AND
+        `activity-place`.`activity-geo-id` = `activity-geo`.id',
+
+
+
     'activity-create' =>
       'INSERT INTO
         activity
@@ -46,6 +102,9 @@ function sql($command) {
         `activity-geo`.`activity-id` = activity.id
       AND
         `activity-place`.`activity-geo-id` = `activity-geo`.id',
+
+
+
     'auth-login-active' =>
       'SELECT
         auth.id,
@@ -312,11 +371,12 @@ function sql($command) {
 
     'user-country' =>
       'SELECT
-        country.*
+        country.*,
+        lang.value AS "lang"
       FROM
         country_range,
         country,
-        `lang-description`
+        lang
       WHERE
         ?
       BETWEEN
@@ -325,7 +385,12 @@ function sql($command) {
         country_range.end
       AND
         country.id = country_range.country_id
+      AND
+        lang.id = country.lang_id
       LIMIT 1',
+
+
+
     'verify-notification' =>
       'SELECT
         notifications.tstamp AS "when"

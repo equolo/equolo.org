@@ -8,11 +8,36 @@
 
 require_once('cgi/common.php');
 
-$content = array(
-  'title' => 'equolo.org'
-);
+// where does the user come from ?
+$jsonCountry = searchSetAndGetCountry();
 
-header('Content-Type: text/html; charset=UTF-8');
-echo template('index', $content);
+if (isset($_COOKIE['lang'])) {
+  $lang = $_COOKIE['lang'];
+} else {
+  $obj = json_decode($jsonCountry);
+  $lang = $obj ? $obj->lang : 'en';
+}
+// no need to move PCRE here, a simple check would do
+// (.., ./, //) will all fail with '.php' after
+if (strlen($lang) != 2) {
+  $lang = 'en';
+}
+// save the language for the next visit
+cookieSetter('lang', $lang);
+
+// show content in the proper language
+$dictionary = getLanguage($lang);
+// providing some JS variable
+$dictionary['MAX_JS'] = DEVELOPMENT ? '.max' : '';
+$dictionary['navigator.country'] = 'navigator.country='.$jsonCountry.';';
+
+
+header('Content-Type: text/html; charset=utf-8');
+echo template(
+  // the template name
+  'index',
+  // all keys to replace
+  $dictionary
+);
 
 ?>

@@ -1,3 +1,5 @@
+// quite an ambitious name
+// however, this is all we might need/want to normalize
 (function(Array, Function, String){
   'indexOf' in Array || (Array.indexOf = function (v){
     for(var i = this.length; i-- && this[i] !== v;);

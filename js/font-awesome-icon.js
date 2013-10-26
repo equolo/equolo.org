@@ -1,4 +1,6 @@
 // creates a png Map icon SRC out of FontAwesome
+// works with retina displays too but it uses
+// the display.js file in order to do that
 var fontAwesomeIcon = function(canvas){
   var
     context = canvas.getContext('2d'),
@@ -50,7 +52,6 @@ var fontAwesomeIcon = function(canvas){
         -size / 4,
         size / 10
       );
-      document.body.appendChild(canvas);
     }
     return canvas.toDataURL();
   }

@@ -29,10 +29,13 @@ function db() {
     // http://www.php.net/manual/en/pdo.construct.php
     try {
       $db = new PDO(
-        $type.':dbname='.$dbmane.';host='.$host,
+        $type.':dbname='.$dbmane.';host='.$host.';charset=utf8',
         $user,
         $pass
       );
+      // be extra sure it's handled like that
+      // for older PDO configurations
+      $db->exec('set names utf8');
     } catch (PDOException $e) {
       exit($prod ?
         'the database, I haz it no more!' :
