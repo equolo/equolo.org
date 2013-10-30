@@ -1,0 +1,33 @@
+
+#ie9-map-wrapper,
+#ie9-map-center {
+  display: block;
+  -ms-user-select: none;
+  user-select: none;
+}
+#ie9-map-wrapper {
+  z-index: 999;
+  position: absolute;
+  left: 0;
+  overflow: scroll;
+  -ms-overflow-scrolling: touch;
+  overflow-scrolling: touch;
+}
+#ie9-map-center {
+  opacity: 0;
+  background: #FFF;
+}
+nav img {
+  border: 0;
+}
+nav li.selected img:first-child {
+  color: #FFF;
+}
+nav li img:last-child {
+  opacity: 0;
+  margin-left: 0;
+}
+nav li.selected img:last-child {
+  opacity: 1;
+  margin-left: 4px;
+}

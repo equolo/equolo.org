@@ -31,6 +31,15 @@ $dictionary = getLanguage($lang);
 $dictionary['MAX_JS'] = DEVELOPMENT ? '.max' : '';
 $dictionary['navigator.country'] = 'navigator.country='.$jsonCountry.';';
 
+// populate the select with all categories
+$categories = '<select name="category"><option value="all"> - </option>';
+$stmt = query('category-lang', array($lang));
+while($row = $stmt->fetch(PDO::FETCH_OBJ)) {
+  $categories .= '<option value="'.$row->icon.'">'.$row->description.'</option>';
+}
+$categories .= '</select>';
+$dictionary['select-categories'] = $categories;
+
 
 header('Content-Type: text/html; charset=utf-8');
 echo template(

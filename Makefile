@@ -20,6 +20,9 @@ JS =  js/display.js\
       js/simple-kinetic.js\
       js/equolo-icon.js\
       js/font-awesome-icon.js\
+      js/storage.js\
+      js/IE9Mobile.js\
+      font-cawesome/build/font-cawesome.js\
       js/$(REPO).js
 
 # make pinit/submit section files
@@ -37,7 +40,8 @@ PINIT=js/display.js\
 # make CSS files
 CSS = css/$(REPO).css\
       css/utils.css\
-      css/leaflet.css
+      css/leaflet.css\
+      css/IE9Mobile.css
 
 # move HTML files
 HTML = html/*

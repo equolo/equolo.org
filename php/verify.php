@@ -8,7 +8,6 @@
  */
 
 require_once('common.php');
-require_once('jsonh.php');
 
 // only for verified requests
 if (isEquoloRequest()) {
@@ -28,67 +27,9 @@ if (isEquoloRequest()) {
       (isAuthenticated() && $_GET['email'] === $_COOKIE['email'])
     ) {
       // grab all activities and all related info
-      $stmt = query('user-activities', $commonParams);
-      // used to group by activity
-      $activities_holder = array();
-      // used to group places
-      $places_holder = array();
-      // output
-      $result = array();
-      // all keys to copy from $row to $place (geo place)
-      $keys = array(
-        'icon',
-        'latitude',
-        'longitude',
-        'address',
-        'extra',
-        'postcode',
-        'city',
-        'county',
-        'state',
-        'country',
-        'email',
-        'phone',
-        'website',
-        'twitter',
-        'gplus',
-        'facebook'
+      $result = getOrganizedResults(
+        query('user-activities', $commonParams)
       );
-      while($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-        // if there's no activity yet
-        if (!isset($activities_holder[$row->id])) {
-          // create one unique
-          $activity = new StdClass;
-          $activity->id = $row->id;
-          $activity->name = $row->name;
-          $activity->description = array();
-          $activity->criteria = $row->criteria ?
-            explode(',', $row->criteria) : array();
-          $activity->certification = $row->certification ?
-            explode(',', $row->certification) : array();
-          $activity->place = array();
-          $activities_holder[$row->id] = $activity;
-          // assign by reference to the next $result
-          $result[] = &$activity;
-        }
-        // the previously handled unique activity
-        $activity = &$activities_holder[$row->id];
-        // each description by lang per each single activity
-        $activity->description[$row->lang] = $row->description;
-        // each place per activity
-        if (!isset($places_holder[$row->gid])) {
-          $place = new StdClass;
-          $place->id = $row->gid;
-          foreach($keys as $key) {
-            $place->$key = $row->$key;
-          }
-          $places_holder[$row->gid] = $place;
-          $activity->place[] = $place;
-        }
-      }
-      foreach($result as &$activity) {
-        $activity->place = JSONH::pack($activity->place);
-      }
     } else {
       // check if the user never authenticated
       $active = null;

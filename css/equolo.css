@@ -7,7 +7,7 @@ html, body {
   height: 100%;
   font-family: 'Helvetica Neue', 'Roboto', sans-serif;
   font-weight: 400;
-  background: #286868;
+  background: #064646;
 }
 section {
   min-height: 100%;
@@ -19,6 +19,7 @@ section#map {
 }
 section#map {
   position: relative;
+  overflow: hidden;
 }
 /* the best way to have a cross platform
   box-flex like container ? this one since HTML4 */
@@ -48,6 +49,7 @@ section#map > div.location {
   bottom: 48px;
 }
 section#map > footer {
+  background: #064646;
   height: 48px;
   bottom: 0;
 }
@@ -62,13 +64,13 @@ section#map header h2 {
 }
 section#map header h1 {
   margin-top: 12px;
-  margin-left: -4px;
+  margin-left: -8px;
 }
 section#map header h2 {
   font-weight: normal;
   font-style: italic;
   margin-top: 29px;
-  margin-left: -29px;
+  margin-left: -33px;
 }
 div.central {
   max-width: 720px;
@@ -77,7 +79,90 @@ div.central {
   font-size: 14px;
   line-height: 16px;
 }
+button#find-me,
+select[name=category] {
+  z-index: 9999;
+  font-size: 16px;
+  text-align: center;
+  background: #FFF !important;
+  box-shadow: none !important;
+  opacity: 0.8 !important;
+  border-radius: 8px !important;
+  border: 4px solid #888 !important;
+}
+button#find-me {
+  top: 153px;
+  left: 10px;
+  right: auto;
+  padding: 0;
+  width: 38px;
+  height: 38px;
+}
+section#map > select[name=category] {
+  -webkit-appearance: none;
+  -khtml-appearance: none;
+  -blink-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  -o-appearance: none;
+  appearance: none;
+  top: 73px;
+  right: 10px;
+  left: auto;
+  line-height: 26px;
+  padding: 0 2px;
+}
+nav {
+  font-size: 14px;
+  font-weight: 200;
+  text-align: center;
+}
+nav,
+nav a {
+  border-top: 8px solid #198A8A;
+}
 
+nav li.selected a {
+  border-top: 8px solid #E6A72A;
+}
+nav li.selected .fa:first-child {
+  color: #FFF;
+}
+nav li .fa:last-child {
+  opacity: 0;
+  margin-left: 0;
+}
+nav li.selected .fa:last-child {
+  opacity: 1;
+  margin-left: 4px;
+}
+nav a,
+nav a:visited {
+  color: #E6A72A;
+  text-decoration: none;
+  display: block;
+  height: 40px;
+  line-height: 32px;
+  width: 100%;
+  margin-top: -8px;
+}
+nav a,
+nav > ul,
+nav > ul > li {
+  list-style: none;
+  padding: 0;
+}
+nav > ul {
+  max-width: 720px;
+  margin: 0 auto;
+}
+nav > ul > li {
+  float: left;
+  width: 33%;
+}
+nav > ul > li:nth-child(2) {
+  width: 34%;
+}
 
 
 
@@ -106,5 +191,11 @@ div.central {
   }
   section#map > div.map {
     top: 0;
+  }
+  button#find-me {
+    top: 88px;
+  }
+  section#map > select[name=category] {
+    top: 8px;
   }
 }

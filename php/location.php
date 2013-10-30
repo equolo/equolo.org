@@ -7,24 +7,21 @@
  *
  */
 
-if (isset(
-  $_COOKIE['lang'],
-  $_COOKIE['country'],
-  $_COOKIE['ip']
-)) {
+require_once('common.php');
 
-  require_once('common.php');
-  require_once('jsonh.php');
-
-  $stmt = query('all-activities', array($_COOKIE['lang']));
-  while($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-    // TODO: organize activities, use JSONH
-    // make it small and fast
-  }
-
+if (isEquoloRequest() &&
+  isset(
+    $_COOKIE['lang'],
+    $_COOKIE['country'],
+    $_COOKIE['ip']
+  )
+) {
   jsHeader('javascript', true);
+  echo json_encode(getOrganizedResults(
+    query('all-activities'),
+    $_COOKIE['lang']
+  ));
 } else {
-  // trolls gonna troll
   jsTroll('derp');
 }
 

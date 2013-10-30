@@ -12,6 +12,10 @@
 //    $stmt->execute(array($lang, $coords));
 //    foreach($stmt->fetch(PDO::FETCH_OBJ) as $row) {...}
 //    $stmt->closeCursor();
+//
+// NOTE:  queries are kept simple on purpose
+//        being the database and the version
+//        unnown upfront (in few words: no JOIN)
 function sql($command) {
   static $query = array(
 
@@ -22,6 +26,7 @@ function sql($command) {
         activity.id,
         `activity-name`.value AS "name",
         `activity-description`.value AS "description",
+        lang.value AS "lang",
         category.icon,
         `activity-geo`.id AS "gid",
         `activity-geo`.latitude,
@@ -260,6 +265,23 @@ function sql($command) {
         *
       FROM
         category',
+
+      'category-lang' =>
+      'SELECT
+        category.icon,
+        `category-name`.value AS "description"
+      FROM
+        category,
+        `category-name`,
+        lang
+      WHERE
+        lang.value = ?
+      AND
+        `category-name`.`lang-id` = lang.id
+      AND
+        `category-name`.`category-id` = category.id',
+
+
 
     'remove-notification' =>
       'DELETE LOW_PRIORITY FROM

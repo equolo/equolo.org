@@ -1,3 +1,8 @@
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .no-select {
   -webkit-user-select: none;
   -blink-user-select: none;
@@ -6,6 +11,14 @@
   -ms-user-select: none;
   -o-user-select: none;
   user-select: none;
+}
+.t-all {
+  -webkit-transition: all .3s ease-out;
+  -khtml-transition: all .3s ease-out;
+  -moz-transition: all .3s ease-out;
+  -ms-transition: all .3s ease-out;
+  -o-transition: all .3s ease-out;
+  transition: all .3s ease-out;
 }
 .scroll {
   -webkit-overflow-scrolling: touch;

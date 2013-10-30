@@ -1,7 +1,7 @@
 // need to retrieve the leaflet map isntead of map
-document.on('DOMContentLoaded', function(){
+window.on('leaflet:map', function(e){
   function reset() {
-    mapEngine.panBy(
+    map.panBy(
       [lastDiffX * 6, lastDiffY * 6]
     );
     diffX = null;
@@ -18,11 +18,12 @@ document.on('DOMContentLoaded', function(){
     ) + 'px';
     center.style.height = (
       parseFloat(
-        wrap.style.height = tiles.style.height
+        wrap.style.height = tiles.offsetHeight + 'px'
       ) * 3
     ) + 'px';
   }
   var
+    map = e.detail,
     tiles = document.getElementById('tiles'),
     header = tiles.parentNode.children[0],
     wrap = tiles.parentNode.appendChild(
@@ -54,7 +55,7 @@ document.on('DOMContentLoaded', function(){
   reset();
   wrap.onscroll = function(e) {
     if (diffX != null) {
-      mapEngine.panBy(
+      map.panBy(
         [
           // maybe both should be negative
           (lastDiffX = wrap.scrollLeft - diffX),

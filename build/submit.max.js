@@ -40,111 +40,116 @@ IE9Mobile=/*@cc_on(IEMobile&&@_jscript_version<10)||@*/false,
 IE10Mobile=/*@cc_on(IEMobile&&@_jscript_version/10>=1)||@*/false
 ;
 IE9Mobile&&document.write('<link rel="stylesheet" href="css/IE9Mobile.css"/><script src="js/IE9Mobile.js"></script>');(function(window){
-/*! display v0.1.3 - MIT license */
+/*! display v0.1.6 - MIT license */
 /** easy way to obtain the full window size and some other prop */
 var display = function (global) {
 
   var
-      Math = global.Math,
-      abs = Math.abs,
-      max = Math.max,
-      min = Math.min,
-      Infinity = global.Infinity,
-      screen = global.screen || Infinity,
-      matchMedia = window.matchMedia,
-      addEventListener = 'addEventListener',
-      documentElement = global.document.documentElement,
-      shouldBeMobile  = /\bMobile\b/.test(navigator.userAgent),
-      handlers = {
-        change: []
-      },
-      display = {
-        width: 0,
-        height: 0,
-        ratio: 0,
-        on: function (type, callback) {
-          // right now only change is supported
-          // throws otherwise
-          handlers[type].push(callback);
-        }
-      },
-      forEach = handlers.change.forEach || function (callback, self) {
-        // partial polyfill for this case only
-        for(var i = 0; i < this.length; i++) {
-          callback.call(self, this[i], i, this);
-        }
-      },
-      timer
+    Math = global.Math,
+    abs = Math.abs,
+    max = Math.max,
+    min = Math.min,
+    Infinity = global.Infinity,
+    screen = global.screen || Infinity,
+    matchMedia = global.matchMedia,
+    addEventListener = 'addEventListener',
+    documentElement = global.document.documentElement,
+    shouldBeMobile  = /\bMobile\b/.test(navigator.userAgent),
+    handlers = {
+      change: []
+    },
+    display = {
+      width: 0,
+      height: 0,
+      ratio: 0,
+      on: function (type, callback) {
+        // right now only change is supported
+        // throws otherwise
+        handlers[type].push(callback);
+      }
+    },
+    forEach = handlers.change.forEach || function (callback, self) {
+      // partial polyfill for this case only
+      for(var i = 0; i < this.length; i++) {
+        callback.call(self, this[i], i, this);
+      }
+    },
+    timer
+  ;
+
+  function notify(callback) {
+    callback.call(display, display.width, display.height);
+  }
+
+  function delayed(e) {
+    if (timer) {
+      clearTimeout(timer);
+      timer = 0;
+    }
+    // ignore this event if keyboard comes up (300 should be enough)
+    return(!isLandscape() && innerHeight < 300) ||
+          (timer = setTimeout(recalc, 300, e));
+  }
+
+  function isLandscape() {
+    return 'orientation' in global ?
+      abs(global.orientation || 0) === 90 :
+      !!matchMedia && matchMedia("(orientation:landscape)").matches;
+  }
+
+  function recalc(e) {
+    timer = 0;
+    var
+      devicePixelRatio = global.devicePixelRatio || 1,
+      landscape = isLandscape(),
+      swidth = screen.width,    // TODO: verify screen.availWidth in some device
+      sheight = screen.height,  // only if width/height not working as expected
+      width = min(
+        global.innerWidth || documentElement.clientWidth,
+        // some Android has 0.75 ratio
+        devicePixelRatio < 1 ? Infinity : (
+          // Android flips screen width and height size in landscape
+          // Find biggest dimension in landscape otherwise width is OK
+          (shouldBeMobile && landscape ? max(swidth, sheight) : swidth) || Infinity
+        )
+      ),
+      height = min(
+        global.innerHeight || documentElement.clientHeight,
+        // some Android has 0.75 ratio
+        devicePixelRatio < 1 ? Infinity : (
+          // Android flips screen width and height size in landscape
+          // Find biggest dimension in landscape otherwise width is OK
+          (shouldBeMobile && landscape ? min(swidth, sheight) : sheight) || Infinity
+        )
+      )
     ;
 
-    function notify(callback) {
-      callback.call(display, display.width, display.height);
+    if (width !== display.width || height !== display.height) {
+      display.width = width;
+      display.height = height;
+      forEach.call(handlers.change, notify);
     }
+  }
 
-    function delayed(e) {
-      if (timer) {
-        clearTimeout(timer);
-      }
-      timer = setTimeout(recalc, 300, e);
-    }
+  // 
+  if (addEventListener in global) {
+    global[addEventListener]('orientationchange', delayed, true);
+    global[addEventListener]('resize', delayed, true);
+    try {
+      // W3C proposal
+      screen[addEventListener]('orientationchange', delayed, true);
+    } catch(e) {}
+  } else {
+    global.attachEvent('onresize', recalc);
+  }
 
-    function recalc(e) {
-      timer = 0;
-      var
-        devicePixelRatio = global.devicePixelRatio || 1,
-        hasOrientation = 'orientation' in this,
-        landscape = hasOrientation ?
-          abs(this.orientation || 0) === 90 :
-          !!matchMedia && matchMedia("(orientation:landscape)").matches
-        ,
-        swidth = screen.width,    // TODO: verify screen.availWidth in some device
-        sheight = screen.height,  // only if width/height not working as expected
-        width = min(
-          global.innerWidth || documentElement.clientWidth,
-          // some Android has 0.75 ratio
-          devicePixelRatio < 1 ? Infinity : (
-            // Android flips screen width and height size in landscape
-            // Find biggest dimension in landscape otherwise width is OK
-            (shouldBeMobile && landscape ? max(swidth, sheight) : swidth) || Infinity
-          )
-        ),
-        height = min(
-          global.innerHeight || documentElement.clientHeight,
-          // some Android has 0.75 ratio
-          devicePixelRatio < 1 ? Infinity : (
-            // Android flips screen width and height size in landscape
-            // Find biggest dimension in landscape otherwise width is OK
-            (shouldBeMobile && landscape ? min(swidth, sheight) : sheight) || Infinity
-          )
-        )
-      ;
+  recalc.call(global);
 
-      if (width !== display.width || height !== display.height) {
-        display.width = width;
-        display.height = height;
-        forEach.call(handlers.change, notify);
-      }
-    }
-
-    // 
-    if (addEventListener in global) {
-      global[addEventListener]('orientationchange', delayed, true);
-      global[addEventListener]('resize', delayed, true);
-      try {
-        // W3C proposal
-        screen[addEventListener]('orientationchange', delayed, true);
-      } catch(e) {}
-    } else {
-      global.attachEvent('onresize', recalc);
-    }
-
-    recalc.call(global);
-
-    // calculated only once
-    // works with MS Tablets/Phones too
-    display.ratio = global.devicePixelRatio ||
-                    screen.width / display.width ||
-                    (screen.deviceXDPI || 1) / (screen.logicalXDPI || 1);
+  // calculated only once
+  // works with MS Tablets/Phones too
+  display.ratio = global.devicePixelRatio ||
+                  screen.width / display.width ||
+                  (screen.deviceXDPI || 1) / (screen.logicalXDPI || 1);
 
   return display;
 
@@ -537,12 +542,11 @@ var timer = setInterval(function(one){
 
 return SimpleKinetic;
 
-}(this);function equoloIcon(canvas, width, fillColor) {
+}(this);function equoloIcon(canvas, size, fillColor, backgroundColor) {
   /*! (C) equolo.org */
   var
-    originalWidth = 162,
-    originalHeight = 192,
-    ratio = width / originalWidth,
+    originalSize = 192,
+    ratio = size / originalSize,
     fillStyle = fillColor || '#286868',
     context = canvas.getContext('2d')
   ;
@@ -560,44 +564,49 @@ return SimpleKinetic;
     );
   }
   context.clearRect(0, 0, canvas.width, canvas.height);
-  canvas.width = width;
-  canvas.height = Math.round(width * originalHeight / originalWidth);
+  canvas.width = canvas.height = size;
+  if (backgroundColor) {
+    context.fillStyle = backgroundColor;
+    context.fillRect(0, 0, size, size);
+  }
   context.fillStyle = fillStyle;
   context.save();
   context.scale(1.25, 1.25);
   context.beginPath();
-  moveTo(95.32,10.21);
-  bezierCurveTo(101.05, 7.85, 108.56, 12.68, 108.09, 19.01);
-  bezierCurveTo(108.39, 25.61, 100.46, 30.49, 94.67, 27.28);
-  bezierCurveTo(87.81, 24.1, 88.04, 12.79, 95.32, 10.21);
+  moveTo(95.32 + 10,10.21);
+  bezierCurveTo(101.05 + 10, 7.85, 108.56 + 10, 12.68, 108.09 + 10, 19.01);
+  bezierCurveTo(108.39 + 10, 25.61, 100.46 + 10, 30.49, 94.67 + 10, 27.28);
+  bezierCurveTo(87.81 + 10, 24.1, 88.04 + 10, 12.79, 95.32 + 10, 10.21);
   context.closePath();
   context.fill();
   context.beginPath();
-  moveTo(67.01,7.48);
-  bezierCurveTo(72.33, 20.59, 82.54, 31.7, 95.46, 37.57);
-  bezierCurveTo(104.17, 41.72, 113.89, 43.25, 123.47, 43.1);
-  bezierCurveTo(108.12, 48.29, 96.34, 60.6, 88.32, 74.31);
-  bezierCurveTo(79.91, 88.85, 78.34, 106.86, 83.29, 122.84);
-  bezierCurveTo(72.84, 106.64, 59.08, 91.84, 41.39, 83.57);
-  bezierCurveTo(30.55, 78.74, 18.41, 76.4, 6.58, 77.64);
-  bezierCurveTo(24.52, 73.08, 42.99, 65.59, 54.74, 50.61);
-  bezierCurveTo(64.15, 38.49, 68.55, 22.74, 67.01, 7.48);
+  moveTo(67.01 + 10, 7.48);
+  bezierCurveTo(72.33 + 10, 20.59, 82.54 + 10, 31.7, 95.46 + 10, 37.57);
+  bezierCurveTo(104.17 + 10, 41.72, 113.89 + 10, 43.25, 123.47 + 10, 43.1);
+  bezierCurveTo(108.12 + 10, 48.29, 96.34 + 10, 60.6, 88.32 + 10, 74.31);
+  bezierCurveTo(79.91 + 10, 88.85, 78.34 + 10, 106.86, 83.29 + 10, 122.84);
+  bezierCurveTo(72.84 + 10, 106.64, 59.08 + 10, 91.84, 41.39 + 10, 83.57);
+  bezierCurveTo(30.55 + 10, 78.74, 18.41 + 10, 76.4, 6.58 + 10, 77.64);
+  bezierCurveTo(24.52 + 10, 73.08, 42.99 + 10, 65.59, 54.74 + 10, 50.61);
+  bezierCurveTo(64.15 + 10, 38.49, 68.55 + 10, 22.74, 67.01 + 10, 7.48);
   context.closePath();
   context.fill();
   context.beginPath();
-  moveTo(43.22, 119.97);
-  bezierCurveTo(43.75, 102.87, 43.89, 94.92, 48.72, 89.2);
-  bezierCurveTo(50.5, 93.22, 49.73, 97.67, 50.54, 101.88);
-  bezierCurveTo(51.34, 107.31, 53.13, 112.93, 57.29, 116.73);
-  bezierCurveTo(61.3, 121.01, 68.71, 121.41, 70.94, 127.44);
-  bezierCurveTo(72.27, 133.19, 66.42, 138.03, 61.08, 138.09);
-  bezierCurveTo(54.7, 138.64, 49.47, 133.66, 46.69, 128.39);
-  bezierCurveTo(43.41, 122.84, 43.52, 116.2, 43.22, 109.97);
+  moveTo(43.22 + 10, 119.97);
+  bezierCurveTo(43.75 + 10, 102.87, 43.89 + 10, 94.92, 48.72 + 10, 89.2);
+  bezierCurveTo(50.5 + 10, 93.22, 49.73 + 10, 97.67, 50.54 + 10, 101.88);
+  bezierCurveTo(51.34 + 10, 107.31, 53.13 + 10, 112.93, 57.29 + 10, 116.73);
+  bezierCurveTo(61.3 + 10, 121.01, 68.71 + 10, 121.41, 70.94 + 10, 127.44);
+  bezierCurveTo(72.27 + 10, 133.19, 66.42 + 10, 138.03, 61.08 + 10, 138.09);
+  bezierCurveTo(54.7 + 10, 138.64, 49.47 + 10, 133.66, 46.69 + 10, 128.39);
+  bezierCurveTo(43.41 + 10, 122.84, 43.52 + 10, 116.2, 43.22 + 10, 109.97);
   context.closePath();
   context.fill();
   context.restore();
   return canvas;
-}// creates a png Map icon SRC out of FontAwesome
+}
+
+// document.body.appendChild(new Image).src=equoloIcon(document.createElement('canvas'), 256, '#E6A72A').toDataURL();// creates a png Map icon SRC out of FontAwesome
 // works with retina displays too but it uses
 // the display.js file in order to do that
 var fontAwesomeIcon = function(canvas){
@@ -609,7 +618,7 @@ var fontAwesomeIcon = function(canvas){
       question: 0xf128,
       'shopping-cart': 0xf07a,
       gift: 0xf06b,
-      food: 0xf0f5,
+      cutlery: 0xf0f5,
       home: 0xf015,
       glass: 0xf000,
       briefcase: 0xf0b1,
@@ -646,9 +655,9 @@ var fontAwesomeIcon = function(canvas){
       context.drawImage(
         equoloIcon(
           document.createElement('canvas'),
-          size / 2
+          size / 1.5
         ),
-        -size / 4,
+        -size / 2.8,
         size / 10
       );
     }

@@ -10,7 +10,7 @@ var fontAwesomeIcon = function(canvas){
       question: 0xf128,
       'shopping-cart': 0xf07a,
       gift: 0xf06b,
-      food: 0xf0f5,
+      cutlery: 0xf0f5,
       home: 0xf015,
       glass: 0xf000,
       briefcase: 0xf0b1,
@@ -47,9 +47,9 @@ var fontAwesomeIcon = function(canvas){
       context.drawImage(
         equoloIcon(
           document.createElement('canvas'),
-          size / 2
+          size / 1.5
         ),
-        -size / 4,
+        -size / 2.8,
         size / 10
       );
     }

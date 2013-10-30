@@ -1,3 +1,6 @@
 [submodule "eddy"]
 	path = eddy
 	url = https://github.com/WebReflection/eddy
+[submodule "font-cawesome"]
+	path = font-cawesome
+	url = git@github.com:WebReflection/font-cawesome.git

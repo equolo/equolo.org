@@ -37,7 +37,7 @@ html, body {
   height: 100%;
   font-family: 'Helvetica Neue', 'Roboto', sans-serif;
   font-weight: 400;
-  background: #286868;
+  background: #064646;
 }
 section {
   min-height: 100%;
@@ -49,6 +49,7 @@ section#map {
 }
 section#map {
   position: relative;
+  overflow: hidden;
 }
 /* the best way to have a cross platform
   box-flex like container ? this one since HTML4 */
@@ -78,6 +79,7 @@ section#map > div.location {
   bottom: 48px;
 }
 section#map > footer {
+  background: #064646;
   height: 48px;
   bottom: 0;
 }
@@ -92,13 +94,13 @@ section#map header h2 {
 }
 section#map header h1 {
   margin-top: 12px;
-  margin-left: -4px;
+  margin-left: -8px;
 }
 section#map header h2 {
   font-weight: normal;
   font-style: italic;
   margin-top: 29px;
-  margin-left: -29px;
+  margin-left: -33px;
 }
 div.central {
   max-width: 720px;
@@ -107,7 +109,90 @@ div.central {
   font-size: 14px;
   line-height: 16px;
 }
+button#find-me,
+select[name=category] {
+  z-index: 9999;
+  font-size: 16px;
+  text-align: center;
+  background: #FFF !important;
+  box-shadow: none !important;
+  opacity: 0.8 !important;
+  border-radius: 8px !important;
+  border: 4px solid #888 !important;
+}
+button#find-me {
+  top: 153px;
+  left: 10px;
+  right: auto;
+  padding: 0;
+  width: 38px;
+  height: 38px;
+}
+section#map > select[name=category] {
+  -webkit-appearance: none;
+  -khtml-appearance: none;
+  -blink-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  -o-appearance: none;
+  appearance: none;
+  top: 73px;
+  right: 10px;
+  left: auto;
+  line-height: 26px;
+  padding: 0 2px;
+}
+nav {
+  font-size: 14px;
+  font-weight: 200;
+  text-align: center;
+}
+nav,
+nav a {
+  border-top: 8px solid #198A8A;
+}
 
+nav li.selected a {
+  border-top: 8px solid #E6A72A;
+}
+nav li.selected .fa:first-child {
+  color: #FFF;
+}
+nav li .fa:last-child {
+  opacity: 0;
+  margin-left: 0;
+}
+nav li.selected .fa:last-child {
+  opacity: 1;
+  margin-left: 4px;
+}
+nav a,
+nav a:visited {
+  color: #E6A72A;
+  text-decoration: none;
+  display: block;
+  height: 40px;
+  line-height: 32px;
+  width: 100%;
+  margin-top: -8px;
+}
+nav a,
+nav > ul,
+nav > ul > li {
+  list-style: none;
+  padding: 0;
+}
+nav > ul {
+  max-width: 720px;
+  margin: 0 auto;
+}
+nav > ul > li {
+  float: left;
+  width: 33%;
+}
+nav > ul > li:nth-child(2) {
+  width: 34%;
+}
 
 
 
@@ -137,7 +222,18 @@ div.central {
   section#map > div.map {
     top: 0;
   }
-}.no-select {
+  button#find-me {
+    top: 88px;
+  }
+  section#map > select[name=category] {
+    top: 8px;
+  }
+}.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.no-select {
   -webkit-user-select: none;
   -blink-user-select: none;
   -khtml-user-select: none;
@@ -145,6 +241,14 @@ div.central {
   -ms-user-select: none;
   -o-user-select: none;
   user-select: none;
+}
+.t-all {
+  -webkit-transition: all .3s ease-out;
+  -khtml-transition: all .3s ease-out;
+  -moz-transition: all .3s ease-out;
+  -ms-transition: all .3s ease-out;
+  -o-transition: all .3s ease-out;
+  transition: all .3s ease-out;
 }
 .scroll {
   -webkit-overflow-scrolling: touch;
@@ -183,4 +287,36 @@ div.central {
 /* icons */
 .leaflet-popup.custom i {
   color: #198A8A;
+}
+#ie9-map-wrapper,
+#ie9-map-center {
+  display: block;
+  -ms-user-select: none;
+  user-select: none;
+}
+#ie9-map-wrapper {
+  z-index: 999;
+  position: absolute;
+  left: 0;
+  overflow: scroll;
+  -ms-overflow-scrolling: touch;
+  overflow-scrolling: touch;
+}
+#ie9-map-center {
+  opacity: 0;
+  background: #FFF;
+}
+nav img {
+  border: 0;
+}
+nav li.selected img:first-child {
+  color: #FFF;
+}
+nav li img:last-child {
+  opacity: 0;
+  margin-left: 0;
+}
+nav li.selected img:last-child {
+  opacity: 1;
+  margin-left: 4px;
 }

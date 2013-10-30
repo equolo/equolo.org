@@ -7,33 +7,66 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0"/>
     <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="mobile-web-app-capable" content="yes"/>
     <!--[if IE 8]><script src="js/ie8.js"></script><link rel="stylesheet" href="css/leaflet.ie.css"/><![endif]-->
-    <script>{{navigator.country}}</script>
-    <script>(function(i,d,s,p){p=d.documentElement;while(i<2){(s=d.createElement('script')).src=[
-      'js/equolo{{MAX_JS}}.js',
-      'js/leaflet.js'
-    ][i++];p.insertBefore(s,p.lastChild)}}(0,document));</script>
+    <script>{{navigator.country}}(function(r,u,n){n=u.documentElement;while(r<2){n.insertBefore(u.createElement('script'),n.lastChild).src=[
+        'js/equolo{{MAX_JS}}.js',
+        'js/leaflet.js'
+      ][r++]}}(0,document));</script>
+    <link rel="stylesheet" href="css/font-awesome.css"/>
     <link rel="stylesheet" href="css/equolo.css"/>
     <link rel="stylesheet" href="css/leaflet.css"/>
+    <link rel="apple-touch-startup-image" href="img/equolo-logo.png"/>
   </head>
   <body>
     <section id="map">
       <header>
         <div class="central">
-          <img src="/img/equolo-logo.png" style="width:36px;"/>
+          <img src="/img/equolo-logo.png"/>
           <h1>equolo</h1>
           <h2>discovering a sustainable world</h2>
         </div>
       </header>
-      <div class="map"></div>
+      <div id="tiles" class="map"></div>
+      <button id="find-me"><i class="fa fa-compass"></i></button>
+      {{select-categories}}
       <div class="location scroll"></div>
-      <footer></footer>
+      <footer class="no-select">
+        <nav>
+          <ul>
+            <li>
+              <a href="#about" class="t-all">
+                <i class="t-all fa fa-info"></i>
+                {{about}}
+                <i class="t-all fa fa-times-circle"></i>
+              </a>
+            </li>
+            <li>
+              <a href="#contact" class="t-all">
+                <i class="t-all fa fa-envelope"></i>
+                {{contact}}
+                <i class="t-all fa fa-times-circle"></i>
+              </a>
+            </li>
+            <li>
+              <a href="#pin-it" class="t-all">
+                <i class="t-all fa fa-map-marker"></i>
+                {{pin-it}}
+                <i class="t-all fa fa-times-circle"></i>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </footer>
     </section>
     <section id="about">
+      lololol
     </section>
     <section id="contact">
+      lololol
     </section>
     <section id="pin-it">
+      lololol
     </section>
   </body>
 </html>

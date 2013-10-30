@@ -14,11 +14,14 @@
 // define the environment in here
 define(
   'DEVELOPMENT',
-  in_array($_SERVER['REMOTE_ADDR'], array(
-    '127.0.0.1',  // common IPv4 localhost
-    'fe80::1',    // common OSX IPv6 localhost
-    '::1'         // common OSX IPv6 localhost
-  ))
+  isset($_SERVER['REMOTE_ADDR']) && (
+    in_array($_SERVER['REMOTE_ADDR'], array(
+      '127.0.0.1',  // common IPv4 localhost
+      'fe80::1',    // common OSX IPv6 localhost
+      '::1'         // common OSX IPv6 localhost
+    )) ||
+    '192.168.' === substr($_SERVER['REMOTE_ADDR'], 0, 8)
+  )
 );
 
 // if we are in localhost makes sense to actually see errors
@@ -109,6 +112,87 @@ function getLanguage($lang = 'en') {
   return $dictionary;
 }
 
+// with all returned results
+// create a client side friendly collection
+function getOrganizedResults($stmt, $lang = null) {
+  // all keys to copy from $row to $place (geo place)
+  static $keys = array(
+    'icon',
+    'latitude',
+    'longitude',
+    'address',
+    'extra',
+    'postcode',
+    'city',
+    'county',
+    'state',
+    'country',
+    'email',
+    'phone',
+    'website',
+    'twitter',
+    'gplus',
+    'facebook'
+  );
+  // used to group by activity
+  $activities_holder = array();
+  // used to group places
+  $places_holder = array();
+  // output
+  $result = array();
+  while($row = $stmt->fetch(PDO::FETCH_OBJ)) {
+    // if there's no activity yet
+    if (!isset($activities_holder[$row->id])) {
+      // create one unique
+      $activity = new StdClass;
+      $activity->id = $row->id;
+      $activity->name = $row->name;
+      $activity->description = array();
+      if (isset($row->criteria)) {
+        $activity->criteria = $row->criteria ?
+          explode(',', $row->criteria) : array();
+      }
+      if (isset($row->certification)) {
+        $activity->certification = $row->certification ?
+          explode(',', $row->certification) : array();
+      }
+      $activity->place = array();
+      $activities_holder[$row->id] = $activity;
+      // assign by reference to the next $result
+      $result[] = &$activity;
+    }
+    // the previously handled unique activity
+    $activity = &$activities_holder[$row->id];
+    // each description by lang per each single activity
+    $activity->description[$row->lang] = $row->description;
+    // each place per activity
+    if (!isset($places_holder[$row->gid])) {
+      $place = new StdClass;
+      $place->id = $row->gid;
+      foreach($keys as $key) {
+        $place->$key = $row->$key;
+      }
+      $places_holder[$row->gid] = $place;
+      $activity->place[] = $place;
+    }
+  }
+  require_once('jsonh.php');
+  foreach($result as &$activity) {
+    if ($lang !== null) {
+      if (isset($activity->description[$lang])) {
+        $activity->description = $activity->description[$lang];
+      } else {
+        foreach($activity->description as $description) {
+          $activity->description = $description;
+          break;
+        }
+      }
+    }
+    $activity->place = JSONH::pack($activity->place);
+  }
+  return $result;
+}
+
 // utility: returns true if the user has valid cookies
 function isAuthenticated($returnId = false) {
   $authenticated = false;
@@ -125,15 +209,9 @@ function isAuthenticated($returnId = false) {
 // utility: returns true if localhost env or real website
 function isEquoloRequest() {
   // only if REMOTE_ADDR and REQUEST_URI are present
-  return isset(
-    $_SERVER['REMOTE_ADDR'],
-    $_SERVER['HTTP_HOST'],
-    $_SERVER['REQUEST_URI']
-  ) &&
-  // only proper hosts
-  (
-    $_SERVER['HTTP_HOST'] === 'equolo.org' ||
-    (DEVELOPMENT && $_SERVER['HTTP_HOST'] === 'localhost')
+  return DEVELOPMENT || (
+    isset($_SERVER['HTTP_HOST']) &&
+    $_SERVER['HTTP_HOST'] === 'equolo.org'
   );
 }
 
