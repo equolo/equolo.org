@@ -1,7 +1,7 @@
 // let's dirtly feature detect browser capabilities
 // in the worst case scenario, we'll prepare
 // the most common icon fallback: the marker one
-try{if(IE9Mobile||fontAwesomeIcon('map-marker',36).length<36)throw 0}catch(o_O){
+try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
   // ok, very old browser, icons should be static images
   // instead of runtime generated canvas
   // let's force them to be in there once needed
@@ -19,6 +19,7 @@ try{if(IE9Mobile||fontAwesomeIcon('map-marker',36).length<36)throw 0}catch(o_O){
 (function(window, document){
 
   var
+    fa = new XMLHttpRequest,
     // which level is good enough to show proper icons ?
     ZOOM_FOR_ICONS = 12,
     ZOOM_FOR_BBOX = 15,
@@ -38,8 +39,13 @@ try{if(IE9Mobile||fontAwesomeIcon('map-marker',36).length<36)throw 0}catch(o_O){
     section,
     // data
     lastReceivedActivities,
-    lastParsedActivities
+    lastParsedActivities,
+    // special lazy function case
+    scroll
   ;
+
+  fa.open('get', 'fonts/fontawesome-webfont.svg', true);
+  fa.send(null);
 
   // first come first serve
   document.on('DOMContentLoaded', equolo);
@@ -57,18 +63,26 @@ try{if(IE9Mobile||fontAwesomeIcon('map-marker',36).length<36)throw 0}catch(o_O){
 // initialization
 ///////////////////////////////////////////////////////////////////////
 
-    var el, tmp, watchId;
+    var navLink, el, tmp, watchId;
     // we need to be sure this won't be fired twice
     document.off('DOMContentLoaded', equolo);
     window.off('load', equolo);
     // but if there's still no map
     // we need to wait for it
-    if (!window.L) {
+    // same is if the svg font is not loaded
+    // (some brower requires it in order to render it in canvas)
+    if (fa.readyState != 4 || !window.L) {
       return setTimeout(equolo, 15);
     }
     // user, please do not scroll by your own
-    document.documentElement.classList.add('no-scroll');
-    document.body.classList.add('no-scroll');
+    DOMScroll(false);
+
+    $('noscript').forEach(function(noscript, i){
+      noscript.remove();
+      if (i == 1) {
+        $('footer')[0].innerHTML = noscript.textContent;
+      }
+    });
 
     // solve IE9MObile problem with fonts
     if (IE9Mobile)
@@ -81,9 +95,14 @@ try{if(IE9Mobile||fontAwesomeIcon('map-marker',36).length<36)throw 0}catch(o_O){
       map: $('section#map')[0],
       about: $('#about')[0],
       contact: $('#contact')[0],
-      pinIt: $('#pinIt')[0]
+      pinIt: $('#pin-it')[0]
     };
     section.nav = $('nav', section.map)[0];
+    section.details = [
+      section.about,
+      section.contact,
+      section.pinIt
+    ];
 
     // better quality image, or just same image?
     if (!window.compat) {
@@ -148,6 +167,7 @@ try{if(IE9Mobile||fontAwesomeIcon('map-marker',36).length<36)throw 0}catch(o_O){
         previous.parentNode.classList.remove('selected');
       }
       previous.parentNode = parentNode;
+      previous.section = parentNode.firstChild.href.split('#')[1];
       parentNode.classList.add('selected');
     }
 
@@ -155,25 +175,32 @@ try{if(IE9Mobile||fontAwesomeIcon('map-marker',36).length<36)throw 0}catch(o_O){
     categories = $('select[name=category]')[0];
 
     // take control over each section click
-    $('nav a').on('click', function click(e) {
+    navLink = $('nav a').on('click', function click(e) {
       var
         parentNode = this.parentNode,
         offsetHeight
       ;
-      e.preventDefault();
       // in case kinetic was working
       if (click.sk) click.sk.cancel();
       // closing the whole menu if already selected
       if (parentNode.classList.contains('selected')) {
+        e.preventDefault();
         click.parentNode = null;
         parentNode.classList.remove('selected');
-        // new one
-        click.sk = new SimpleKinetic({
+        offsetHeight = section.nav.offsetHeight;
+        // a new kinetic
+        (click.sk = new SimpleKinetic({
           context: section.map,
           onstart: function () {
+            click.kinetic = true;
+            // in case DOM was scrolling
+            if (scrollIntoSection.sk) scrollIntoSection.sk.cancel();
             // invert status
+            DOMScroll(false);
+            document.body.scrollTop =
+            document.documentElement.scrollTop = 0;
             click.ms.display = 'block';
-            click.np.appendChild(section.nav).style.cssText = '';
+            click.np.appendChild(section.nav);
           },
           onmove: function (x, y, dx, dy, ex, ey) {
             click.ms.minHeight = y + 'px';
@@ -182,10 +209,10 @@ try{if(IE9Mobile||fontAwesomeIcon('map-marker',36).length<36)throw 0}catch(o_O){
             click.ms.minHeight = null;
             findMe.style.zIndex = 
             categories.style.zIndex = 9999;
+            map.invalidateSize();
+            click.kinetic = false;
           }
-        });
-        offsetHeight = section.nav.offsetHeight;
-        click.sk.init(
+        })).init(
           0,
           offsetHeight,
           0,
@@ -196,38 +223,55 @@ try{if(IE9Mobile||fontAwesomeIcon('map-marker',36).length<36)throw 0}catch(o_O){
       }
       // in case it's already opened
       else if(click.parentNode) {
-        // change section smoothly
-        // go to the new scroll position first
-        // then swap the current section selection
-        swapNavSelection(parentNode, click);
+        if (IE9Mobile) {
+          swapNavSelection(parentNode, click);
+        } else {
+          e.preventDefault();
+          // change section smoothly
+          // then go to the new scroll position
+          swapNavSelection(parentNode, click);
+          setTimeout(
+            scrollIntoSection,
+            300,
+            parentNode
+          );
+        }
       }
       // opening otherwise
       else {
+        e.preventDefault();
         // create a SimpleKinetic instance
         // with the section map as context
         click.sk = new SimpleKinetic({
           context: section.map,
           onstart: function () {
+            click.kinetic = true;
             findMe.style.zIndex = 
             categories.style.zIndex = 0;
+            DOMScroll(true);
           },
           onmove: function (x, y, dx, dy, ex, ey) {
             click.ms.minHeight = y + 'px';
           },
           onend: function () {
             // top nav can be fixed now
-            section.nav.style.cssText =
-              'position:fixed;top:0;width:' + display.width + 'px;'
-            ;
-            document.body.appendChild(section.nav);
+            //section.nav.style.cssText = 'position:fixed;top:0;width:' + display.width + 'px;';
+            //document.body.appendChild(section.nav);
+            section.about.prepend(section.nav);
             // drop the map
             click.ms.display = 'none';
             setTimeout(
               swapNavSelection,
               50,
-              click.sk.trigger,
+              click.lt,
               click
             );
+            setTimeout(
+              scrollIntoSection,
+              350,
+              click.lt
+            );
+            click.kinetic = false;
           }
         });
         // shortcuts to speed up operations
@@ -236,7 +280,7 @@ try{if(IE9Mobile||fontAwesomeIcon('map-marker',36).length<36)throw 0}catch(o_O){
           click.np = section.nav.parentNode;
           click.ms = section.map.style;
         }
-        click.sk.trigger = parentNode;
+        click.lt = parentNode;
         offsetHeight = section.map.offsetHeight;
         click.sk.init(
           0,
@@ -249,6 +293,67 @@ try{if(IE9Mobile||fontAwesomeIcon('map-marker',36).length<36)throw 0}catch(o_O){
           false,
           true
         );
+        // once the menu gets clicked
+        // the document could scroll
+        // and the section might want
+        // to be automagically updated
+        // let's implement once such logic in here
+        if (!click.scroll) {
+          click.scroll = true;
+          [ document,
+            document.documentElement,
+            document.body
+          ].forEach(function(el){
+            // add all events
+            // and lazy detect later on
+            el
+              .on('scroll', this)
+              .on('mousewheel', this)
+            ;
+            this.i = 0;
+          }, function onscroll(e) {
+            // if automatic scroll, do nothing
+            if (scrollIntoSection.kinetic || click.kinetic) return;
+            var
+              // ask for position
+              // in case it's the user scrolling
+              // after pressing about (first section)
+              // where no scrollTop is mutated
+              scrollTop = scroll(),
+              el, i, s, total
+            ;
+            // do checks only if knowing where
+            if (scroll.el) {
+              // document has no scrollTop
+              // but might be the scroll event trigger
+              el = 'scrollTop' in this ? this : scroll.el;
+              // so we care only about the trigger
+              if (el == scroll.el) {
+                i = total = 0;
+                s = scrollTop + display.height / 3;
+                while(i < section.details.length) {
+                  el = section.details[i++];
+                  total += el.offsetHeight + 8;
+                  if (s < total) {
+                    --i;
+                    break;
+                  }
+                }
+                if (i != onscroll.i) {
+                  onscroll.i = i;
+                  swapNavSelection(navLink[i].parentNode, click);
+                }
+              } else {
+                // otherwise we don't care
+                // it's just capturing stuff
+                this
+                  .off('scroll', onscroll)
+                  .off('mousewheel', onscroll)
+                ;
+              }
+            }
+          });
+        }
       }
       try{this.blur()}catch(o_O){}
     });
@@ -293,7 +398,7 @@ try{if(IE9Mobile||fontAwesomeIcon('map-marker',36).length<36)throw 0}catch(o_O){
               // update current position marker on the map
               if (!findMe.moved) {
                 findMe.moved = true;
-                setMapView(position.coords, 14);
+                setMapView(position.coords, 15);
               }
               updatePositionIcon(position.coords);
               enableFindMe();
@@ -360,10 +465,21 @@ try{if(IE9Mobile||fontAwesomeIcon('map-marker',36).length<36)throw 0}catch(o_O){
     map.on('moveend', function () {
       var
         zoom = map.getZoom(),
-        center = map.getCenter()
+        center = map.getCenter(),
+        bounds
       ;
       if (ZOOM_FOR_BBOX <= zoom) {
-        // console.log('DO STUFF');
+        // TODO:  IE9 Mobile won't reach this point
+        //        find a solution
+        console.log(
+          lastParsedActivities.reduce(
+            flatPlaces, []
+          )
+          .filter(
+            onlyInBox,
+            map.getBounds()
+          )
+        );
       }
       storage.setItem(
         'equolo.map',
@@ -402,6 +518,10 @@ try{if(IE9Mobile||fontAwesomeIcon('map-marker',36).length<36)throw 0}catch(o_O){
     findMe.firstChild.classList.remove('fa-spin', 'fa-download');
     findMe.firstChild.classList.add('fa-compass');
     findMe.disabled = false;
+  }
+
+  function flatPlaces(p,c){
+    return p.concat(c.place);
   }
 
   function addActivityToTheMap(activity) {
@@ -503,6 +623,81 @@ try{if(IE9Mobile||fontAwesomeIcon('map-marker',36).length<36)throw 0}catch(o_O){
     xhr.send(null);
   }
 
+  scroll = function (value) {
+    // this needs to be lazy detected
+    var el = document.body.scrollTop ?
+      // either it's the body
+      document.body : (
+        // or the html element
+        document.documentElement.scrollTop ?
+          document.documentElement :
+          // otherwise we don't know yet
+          null
+      )
+    ;
+    // if we found the scrolling element
+    if (el) {
+      // we redefine this function once for all
+      scroll = function (value) {
+        // and we optimize as much as possible this operation
+        return value == null ? el.scrollTop : (el.scrollTop = value);
+      };
+      scroll.el = el;
+      return scroll(value);
+    }
+    // otherwise we wait to find the element
+    else if (value == null) {
+      return 0;
+    } else {
+      // trying to blidly set a value
+      document.body.scrollTop =
+      document.documentElement.scrollTop = value;
+    }
+  }
+
+  function scrollIntoSection(el) {
+    var
+      clicked = el.firstChild.href.split('#')[1],
+      details = section.details,
+      find = true,
+      total = 0,
+      i = 0,
+      length = details.length,
+      current = scroll()
+    ;
+    while(find) {
+      find = details[i].id != clicked;
+      if (find) {
+        total += details[i].offsetHeight + 8;
+      }
+      i++;
+    }
+    if (IEMobile) {
+      scroll(total);
+    } else {
+      if (scrollIntoSection.sk) scrollIntoSection.sk.cancel();
+      (scrollIntoSection.sk = new SimpleKinetic({
+        onstart: function () {
+          scrollIntoSection.kinetic = true;
+        },
+        onmove: function (x, y, dx, dy, ex, ey) {
+          scroll(y);
+        },
+        onend: function (x, y, dx, dy, ex, ey) {
+          scroll(ey);
+          scrollIntoSection.kinetic = false;
+        }
+      })).init(
+        0,
+        current,
+        0,
+        total - current,
+        false,
+        true
+      );
+    }
+  }
+
   // change the map view
   function setMapView(
     coords, zoom  // zoom is optional
@@ -510,9 +705,15 @@ try{if(IE9Mobile||fontAwesomeIcon('map-marker',36).length<36)throw 0}catch(o_O){
     map.setView(
       toGeoArray(coords),
       zoom || Math.max(
-        14, map.getZoom()
+        15, map.getZoom()
       )
     );
+  }
+
+  function DOMScroll(init) {
+    var op = init ? 'remove' : 'add';
+    document.documentElement.classList[op]('no-scroll');
+    document.body.classList[op]('no-scroll');
   }
 
   // what happens when the display size changes ?
@@ -523,6 +724,13 @@ try{if(IE9Mobile||fontAwesomeIcon('map-marker',36).length<36)throw 0}catch(o_O){
         'min-height': display.height + 'px'
       }
     });
+  }
+
+  function onlyInBox(place) {
+    return this.contains(new L.LatLng(
+      place.latitude,
+      place.longitude
+    ));
   }
 
   // given a generic geo object

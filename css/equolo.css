@@ -7,13 +7,27 @@ html, body {
   height: 100%;
   font-family: 'Helvetica Neue', 'Roboto', sans-serif;
   font-weight: 400;
-  background: #064646;
+  background-color: #064646;
+}
+noscript + section#map {
+  display: none;
+}
+br + noscript + section#map {
+  display: block;
+}
+body > br {
+  display: none;
+}
+noscript > nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
 }
 section {
   min-height: 100%;
-  display: none;
 }
-body.no-scroll section,
 section#map {
   display: block;
 }
@@ -139,6 +153,7 @@ nav li.selected .fa:last-child {
 nav a,
 nav a:visited {
   color: #E6A72A;
+  background-color: #064646;
   text-decoration: none;
   display: block;
   height: 40px;
@@ -164,10 +179,26 @@ nav > ul > li:nth-child(2) {
   width: 34%;
 }
 
+section#about > nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
 
+section#about > nav + div {
+  margin-top: 48px;
+}
 
-
-
+section#about > div,
+section#contact > div,
+section#pin-it > div{
+  border-top: 8px dotted #286868;
+  color: #FFF;
+  font-size: 16px;
+  margin-bottom: 8px;
+  padding-top: 16px;
+}
 
 
 

@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="css/leaflet.css"/>
     <link rel="apple-touch-startup-image" href="img/equolo-logo.png"/>
   </head>
-  <body>
+  <body><script>document.write('<br/>')</script><noscript></noscript>
     <section id="map">
       <header>
         <div class="central">
@@ -31,42 +31,34 @@
       <button id="find-me"><i class="fa fa-compass"></i></button>
       {{select-categories}}
       <div class="location scroll"></div>
-      <footer class="no-select">
-        <nav>
-          <ul>
-            <li>
-              <a href="#about" class="t-all">
-                <i class="t-all fa fa-info"></i>
-                {{about}}
-                <i class="t-all fa fa-times-circle"></i>
-              </a>
-            </li>
-            <li>
-              <a href="#contact" class="t-all">
-                <i class="t-all fa fa-envelope"></i>
-                {{contact}}
-                <i class="t-all fa fa-times-circle"></i>
-              </a>
-            </li>
-            <li>
-              <a href="#pin-it" class="t-all">
-                <i class="t-all fa fa-map-marker"></i>
-                {{pin-it}}
-                <i class="t-all fa fa-times-circle"></i>
-              </a>
-            </li>
-          </ul>
-        </nav>
-      </footer>
+      <footer class="no-select"></footer>
     </section>
-    <section id="about">
-      lololol
-    </section>
-    <section id="contact">
-      lololol
-    </section>
-    <section id="pin-it">
-      lololol
-    </section>
+    <section id="about"><div>
+      <noscript><nav>
+        <ul>
+          <li><a href="#about" class="t-all">
+            <i class="t-all fa fa-info"></i>
+            {{about}}
+            <i class="t-all fa fa-times-circle"></i>
+          </a></li>
+          <li><a href="#contact" class="t-all">
+            <i class="t-all fa fa-envelope"></i>
+            {{contact}}
+            <i class="t-all fa fa-times-circle"></i>
+          </a></li>
+          <li><a href="#pin-it" class="t-all">
+            <i class="t-all fa fa-map-marker"></i>
+            {{pin-it}}
+            <i class="t-all fa fa-times-circle"></i>
+          </a></li>
+        </ul>
+      </nav></noscript><div class="central">about</div>
+    </div></section>
+    <section id="contact"><div>
+      <div class="central">contact</div>
+    </div></section>
+    <section id="pin-it"><div>
+      <div class="central">pin it</div>
+    </div></section>
   </body>
 </html>
