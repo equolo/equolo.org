@@ -19,7 +19,6 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
 (function(window, document){
 
   var
-    fa = new XMLHttpRequest,
     // which level is good enough to show proper icons ?
     ZOOM_FOR_ICONS = 12,
     ZOOM_FOR_BBOX = 15,
@@ -29,7 +28,10 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     // will be an object containing all related groups
     // per each category. By defatult all
     categories,
+    // all icons used per each category
+    icons,
     // current single group logic/implementation
+    groups,
     group,
     // user position
     positionIcon,
@@ -44,15 +46,49 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     scroll
   ;
 
-  fa.open('get', 'fonts/fontawesome-webfont.svg', true);
-  fa.send(null);
+  // things that should be done ASAP
+  function DOMContentLoaded() {
 
-  // first come first serve
-  document.on('DOMContentLoaded', equolo);
-  window.on('load', equolo);
-  // in case it's already good to go
-  if (/loaded|complete/.test(document.readyState)) {
-    equolo();
+    // if performed already, do nothing
+    // there are cases where this event is not fired
+    // probably the reason is the document.write trick
+    if (DOMContentLoaded.done) return;
+    DOMContentLoaded.done = true;
+
+    cleanTheStage();
+
+    // solve IE9MObile problem with fonts
+    if (IE9Mobile)
+      FontCawesome('../fonts/fontawesome-webfont.svg')
+    ;
+    // drop all noscript elements
+    $('noscript').forEach(function(noscript){
+      // place the navigation menu in place
+      if (noscript.className == 'nav') {
+        $('footer')[0].innerHTML = noscript.textContent;
+      }
+      noscript.remove();
+    });
+    // user should not be able to scroll
+    DOMScroll(false);
+
+  }
+  document.once('DOMContentLoaded', DOMContentLoaded);
+
+  // try window.onload to be sure everythingis there
+  // (font, map, css, etc)
+  window.once('load', equolo);
+
+  // not necessary but nice to keep it semantic
+  // also returns the map node
+  function cleanTheStage() {
+    while (document.body.firstChild.id != 'map') {
+      // map is the firt valid section in a JS enabled env
+      document.body.removeChild(
+        document.body.firstChild
+      );
+    }
+    return document.body.firstChild;
   }
 
   // here the home page, Welcome to equolo.org !
@@ -64,35 +100,19 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
 ///////////////////////////////////////////////////////////////////////
 
     var navLink, el, tmp, watchId;
-    // we need to be sure this won't be fired twice
-    document.off('DOMContentLoaded', equolo);
-    window.off('load', equolo);
-    // but if there's still no map
+
+    // be sure the document is prepared
+    DOMContentLoaded();
+
+    // if there's still no map
     // we need to wait for it
-    // same is if the svg font is not loaded
-    // (some brower requires it in order to render it in canvas)
-    if (fa.readyState != 4 || !window.L) {
-      return setTimeout(equolo, 15);
-    }
-    // user, please do not scroll by your own
-    DOMScroll(false);
-
-    $('noscript').forEach(function(noscript, i){
-      noscript.remove();
-      if (i == 1) {
-        $('footer')[0].innerHTML = noscript.textContent;
-      }
-    });
-
-    // solve IE9MObile problem with fonts
-    if (IE9Mobile)
-    FontCawesome('../fonts/fontawesome-webfont.svg');
+    if (!window.L) return setTimeout(equolo, 15);
 
     // map all sections once
     // these won't change anyway during
     // interaction lifecycle ;-)
     section = {
-      map: $('section#map')[0],
+      map: cleanTheStage(),
       about: $('#about')[0],
       contact: $('#contact')[0],
       pinIt: $('#pin-it')[0]
@@ -171,8 +191,14 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
       parentNode.classList.add('selected');
     }
 
-    // TODO: move this to the relative relevant section
+    // TODO: move this to the relative section
     categories = $('select[name=category]')[0];
+    categories.on('change', function(){
+      updateMapMarkers(false);
+    });
+    icons = [].map.call(categories.options, function (option) {
+      return option.value;
+    });
 
     // take control over each section click
     navLink = $('nav a').on('click', function click(e) {
@@ -199,7 +225,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
             DOMScroll(false);
             document.body.scrollTop =
             document.documentElement.scrollTop = 0;
-            click.ms.display = 'block';
+            click.ms.display = null;
             click.np.appendChild(section.nav);
           },
           onmove: function (x, y, dx, dy, ex, ey) {
@@ -374,7 +400,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
       // one map for all places of all activities
       map = L.map($('section#map > div.map')[0])
     );
-    group = L.layerGroup().addTo(map);
+    groups = {};
     setMapView(
       navigator.country ?
         navigator.country.geo :
@@ -450,7 +476,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
       )) {
         // in these cases icons
         // should be replaced
-        updateMapMarkers();
+        updateMapMarkers(true);
       }
     });
 
@@ -526,7 +552,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
 
   function addActivityToTheMap(activity) {
     for(var
-      marker,
+      marker, current, icon,
       putIcon = ZOOM_FOR_ICONS <= map.getZoom(),
       options = putIcon || {
         stroke: true,
@@ -543,14 +569,16 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
       place = activity.place,
       i = 0; i < place.length; i++
     ) {
+      current = place[i];
+      icon = current.icon;
       if (putIcon) {
-        marker = createMarker(place[i]);
+        marker = createMarker(current);
         marker.activity = activity;
         marker.placeIndex = i;
       } else {
-        marker = L.circleMarker(toGeoArray(place[i]), options);
+        marker = L.circleMarker(toGeoArray(current), options);
       }
-      this.addLayer(marker);
+      groups[icon].addLayer(marker);
     }
   }
 
@@ -584,13 +612,41 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     positionIcon.setLatLng(latLong);
   }
 
-  function updateMapMarkers() {
-    map.removeLayer(group);
-    lastParsedActivities.forEach(
-      addActivityToTheMap,
-      group = L.layerGroup()
-    );
-    group.addTo(map);
+  function addMarkers() {
+    for(var value = categories.value, i = 1; i < icons.length; i++) {
+      if (value == 'all' || value == icons[i]) {
+        groups[icons[i]].addTo(map);
+      }
+    }
+  }
+
+  function removeMarkers(erase) {
+    // do not include all as layer, starts from 1
+    for(var i = 1; i < icons.length; i++) {
+      // if there was such layer
+      if (groups.hasOwnProperty(icons[i])) {
+        // remove it
+        map.removeLayer(groups[icons[i]]);
+      }
+      if (erase) {
+        // create a new layer for this category/icon
+        groups[icons[i]] = L.layerGroup();
+      }
+    }
+  }
+
+  function updateMapMarkers(parseActivity) {
+    // remove and if needed erase all layers
+    removeMarkers(parseActivity);
+    // if specified
+    if (parseActivity) {
+      // add all latest parsed activities
+      lastParsedActivities.forEach(
+        addActivityToTheMap
+      );
+    }
+    // show them on map
+    addMarkers();
   }
 
   // place all received markers on the map
@@ -599,7 +655,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     if (json) {
       lastParsedActivities = JSON.parse(json).map(unpack);
       lastReceivedActivities = json;
-      updateMapMarkers();
+      updateMapMarkers(true);
     }
   }
 
@@ -724,6 +780,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
         'min-height': display.height + 'px'
       }
     });
+    if (map) map.invalidateSize();
   }
 
   function onlyInBox(place) {

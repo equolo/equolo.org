@@ -84,10 +84,12 @@ js:
 	cat js-tpl/var.before $(PINIT) js-tpl/var.after >build/no-copy.submit.max.js
 	java -jar node_modules/yuicompressor.jar --type js build/no-copy.$(REPO).max.js -o build/no-copy.$(REPO).js --charset utf-8
 	java -jar node_modules/yuicompressor.jar --type js build/no-copy.submit.max.js -o build/no-copy.submit.js --charset utf-8
+#	echo `node categories.js` >js/categories.js
 	cat js-tpl/license.before LICENSE.txt js-tpl/license.after js/IE.js build/no-copy.$(REPO).max.js >build/$(REPO).max.js
 	cat js-tpl/license.before LICENSE.txt js-tpl/license.after js/IE.js build/no-copy.submit.max.js >build/submit.max.js
 	cat js-tpl/copyright js/IE.js build/no-copy.$(REPO).js >build/$(REPO).js
 	cat js-tpl/copyright js/IE.js build/no-copy.submit.js >build/submit.js
+#	rm js/categories.js
 	rm build/no-copy.*
 	rm -rf www/js/*
 	cp build/$(REPO).js www/js
@@ -146,6 +148,7 @@ size:
 dependencies:
 	rm -rf node_modules
 	mkdir node_modules
+#	npm install tea-spawn
 	curl -O -L https://github.com/yui/yuicompressor/releases/download/v$(YUI)/yuicompressor-$(YUI).jar
 	mv yuicompressor-$(YUI).jar node_modules/yuicompressor.jar
 	curl -O -L http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css
