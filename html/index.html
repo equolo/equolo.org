@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="mobile-web-app-capable" content="yes"/>
-    <!--[if IE 8]><script src="js/ie8.js"></script><link rel="stylesheet" href="css/leaflet.ie.css"/><![endif]-->
+    <!--[if IE 8]><script src="js/ie8.js"></script><script src="js/es5-shim.js"></script><link rel="stylesheet" href="css/leaflet.ie.css"/><![endif]-->
     <script>{{navigator.country}}(function(r,u,n){n=u.documentElement;while(r<2){n.insertBefore(u.createElement('script'),n.lastChild).src=[
         'js/equolo{{MAX_JS}}.js',
         'js/leaflet.js'
@@ -30,7 +30,19 @@
       <div id="tiles" class="map"></div>
       <button id="find-me"><i class="fa fa-compass"></i></button>
       {{select-categories}}
-      <div class="location scroll"></div>
+      <div class="location scroll"><ul>
+        <li class="intro">
+          <h3><i class="fa fa-globe"></i> Welcome</h3>
+          <ul>
+            <li>use the icon to find your position <i class="fa fa-compass"></i></li>
+            <li>use these buttons to zoom <i class="fa fa-expand-o"></i> / <i class="fa fa-collapse-o"></i></li>
+            <li>click this icon to know details <i class="fa fa-external-link-square"></i></li>
+            <li>choose all categories or just one of them with top right selection</li>
+          </ul>
+        </li>
+        <li class="stats"><h3><i class="fa fa-bar-chart-o"></i> Stats</h3><p></p></li>
+        <li class="place"><h3></h3><p></p></li>
+      </ul></div>
       <footer class="no-select"></footer>
     </section>
     <section id="about"><div>

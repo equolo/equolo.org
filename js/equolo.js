@@ -30,6 +30,9 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     categories,
     // all icons used per each category
     icons,
+    iconDescription,
+    // IE9Mobile FontCawesome glyphs
+    glyphs,
     // current single group logic/implementation
     groups,
     group,
@@ -42,6 +45,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     // data
     lastReceivedActivities,
     lastParsedActivities,
+    lastReducedActivities,
     // special lazy function case
     scroll
   ;
@@ -57,10 +61,11 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
 
     cleanTheStage();
 
-    // solve IE9MObile problem with fonts
+    // solve IE9Mobile problem with fonts
     if (IE9Mobile)
       FontCawesome('../fonts/fontawesome-webfont.svg')
     ;
+
     // drop all noscript elements
     $('noscript').forEach(function(noscript){
       // place the navigation menu in place
@@ -138,6 +143,19 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
           '#E6A72A'
         )
       );
+
+      // same is for the welcome, an equolo logo would be nicer
+      tmp = document.createElement('canvas');
+      tmp.style.cssText = 'width:' + 20 + 'px;' +
+                          'height:' + 20 + 'px;';
+      $('li.intro h3 > i')[0].replace(
+        equoloIcon(
+          tmp,
+          20 * display.ratio,
+          '#064646'
+        )
+      );
+
     }
     // make section good for synthetic `scrollingTo`
     onDisplayChange();
@@ -197,8 +215,9 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
       updateMapMarkers(false);
     });
     icons = [].map.call(categories.options, function (option) {
+      this[option.value] = option.textContent;
       return option.value;
-    });
+    }, iconDescription = {});
 
     // take control over each section click
     navLink = $('nav a').on('click', function click(e) {
@@ -225,7 +244,8 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
             DOMScroll(false);
             document.body.scrollTop =
             document.documentElement.scrollTop = 0;
-            click.ms.display = null;
+            // NOTE: needed in IE9 Mobile
+            click.ms.display = 'block';
             click.np.appendChild(section.nav);
           },
           onmove: function (x, y, dx, dy, ex, ey) {
@@ -237,6 +257,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
             categories.style.zIndex = 9999;
             map.invalidateSize();
             click.kinetic = false;
+            click.doNotScroll = true;
           }
         })).init(
           0,
@@ -271,6 +292,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
         click.sk = new SimpleKinetic({
           context: section.map,
           onstart: function () {
+            click.doNotScroll = false;
             click.kinetic = true;
             findMe.style.zIndex = 
             categories.style.zIndex = 0;
@@ -338,8 +360,9 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
             ;
             this.i = 0;
           }, function onscroll(e) {
-            // if automatic scroll, do nothing
-            if (scrollIntoSection.kinetic || click.kinetic) return;
+            // if automatic scroll, do nothing, same if the map is visible
+            // since the list of items might triger the scroll action too
+            if (scrollIntoSection.kinetic || click.kinetic || click.doNotScroll) return;
             var
               // ask for position
               // in case it's the user scrolling
@@ -392,7 +415,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     L.tileLayer(
       'http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg',
       {
-        attribution: 'Map Tiles &copy; Open MapQuest',
+        attribution: 'Map Tiles <a href="http://open.mapquest.com/">&copy; Open MapQuest</a>',
         maxZoom: 18,
         minZoom: 3
       }
@@ -459,6 +482,8 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
       tmp = storage.getItem('equolo.map');
       if (tmp) {
         setMapView.apply(null, JSON.parse(tmp));
+      } else {
+        $('section#map > div.location > ul > li.intro')[0].style.display = 'block';
       }
     }
 
@@ -477,6 +502,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
         // in these cases icons
         // should be replaced
         updateMapMarkers(true);
+        updateInfoOnBar();
       }
     });
 
@@ -488,30 +514,18 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     });
 
     // this is for all actions needed once the map has been moved
-    map.on('moveend', function () {
+    map.on('moveend', tmp = Delayed(function () {
       var
         zoom = map.getZoom(),
         center = map.getCenter(),
         bounds
       ;
-      if (ZOOM_FOR_BBOX <= zoom) {
-        // TODO:  IE9 Mobile won't reach this point
-        //        find a solution
-        console.log(
-          lastParsedActivities.reduce(
-            flatPlaces, []
-          )
-          .filter(
-            onlyInBox,
-            map.getBounds()
-          )
-        );
-      }
       storage.setItem(
         'equolo.map',
         JSON.stringify([center, zoom])
       );
-    });
+    }));
+    map.on('movestart', tmp.clear);
 
     window
       .on('pagehide', saveActivities)
@@ -546,8 +560,23 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     findMe.disabled = false;
   }
 
+  function flatActivities() {
+    return lastReducedActivities || (
+      lastReducedActivities = lastParsedActivities.reduce(
+        flatPlaces, []
+      )
+    );
+  }
+
+  function enrichPlace(place) {
+    place.name = this.name;
+    place.description = this.description;
+    place.aid = this.id;
+    return place;
+  }
+
   function flatPlaces(p,c){
-    return p.concat(c.place);
+    return p.concat(c.place.map(enrichPlace, c));
   }
 
   function addActivityToTheMap(activity) {
@@ -635,6 +664,109 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     }
   }
 
+  function updateStats(place) {
+    if (!this.hasOwnProperty(place.icon)) {
+      this[place.icon] = 0;
+    }
+    this[place.icon]++;
+  }
+
+  function updateInfoOnBar() {
+    // TODO:  this is not working as expected
+    //        plus it's completely user unfriendly
+    if (updateInfoOnBar.moveend) {
+      map.off('moveend', updateInfoOnBar.moveend);
+      map.off('movestart', updateInfoOnBar.moveend.clear);
+    }
+    if (map.getZoom() < ZOOM_FOR_ICONS) {
+      // show stats
+      updateInfoOnBar.el = $('section#map > div.location > ul > li.stats')[0];
+      updateInfoOnBar.el.style.display = 'block';
+      map.on('moveend', updateInfoOnBar.moveend = Delayed(function () {
+        // TODO:  IE9 Mobile won't reach this point
+        //        find a solution
+        var p, key, stats = {}, result = [];
+        flatActivities().filter(
+          onlyInBox,
+          map.getBounds()
+        ).forEach(
+          updateStats,
+          stats
+        );
+        for (key in stats) {
+          if (stats.hasOwnProperty(key)) {
+            result.push(
+              '<i class="fa fa-' +
+                key +
+              '"></i> ' +
+                iconDescription[key] +
+                ' ' +
+                stats[key]
+            );
+          }
+        }
+        p = updateInfoOnBar.el.childNodes[1];
+        p.innerHTML = result.length ?
+          result.join(', ') :
+          'we have nothing nothing in this area :-(<br/>' +
+          'do you know any activity that could be part of equolo?'
+        ;
+        if (IE9Mobile)
+          FontCawesome.fix(p)
+        ;
+      }));
+      map.on('movestart', updateInfoOnBar.moveend.clear);
+    } else {
+      // show details
+      if (updateInfoOnBar.el) {
+        updateInfoOnBar.el.style.display = 'none';
+      }
+      updateInfoOnBar.el = $('section#map div.location > ul')[0];
+      map.on('moveend', updateInfoOnBar.moveend = Delayed(function () {
+        var
+          fragment = document.createDocumentFragment(),
+          size = 0
+        ;
+        updateInfoOnBar.el.innerHTML = '';
+        flatActivities().filter(
+          onlyInBox,
+          map.getBounds()
+        ).forEach(
+          function (place) {
+            var
+              li = this.appendChild(
+                document.createElement('li')
+              ),
+              h3 = li.appendChild(
+                document.createElement('h3')
+              ),
+              p = li.appendChild(
+                document.createElement('p')
+              )
+            ;
+            li.className = 'place';
+            h3.appendChild(
+              document.createElement('i')
+            ).classList.add(
+              'fa', 'fa-' + place.icon
+            );
+            h3.appendChild(
+              document.createTextNode(' ' + place.name)
+            );
+            p.appendChild(
+              document.createTextNode(place.description)
+            );
+            size += 276;
+          },
+          fragment
+        );
+        updateInfoOnBar.el.style.width = size + 'px';
+        updateInfoOnBar.el.appendChild(fragment);
+      }));
+      map.on('movestart', updateInfoOnBar.moveend.clear);
+    }
+  }
+
   function updateMapMarkers(parseActivity) {
     // remove and if needed erase all layers
     removeMarkers(parseActivity);
@@ -655,7 +787,9 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     if (json) {
       lastParsedActivities = JSON.parse(json).map(unpack);
       lastReceivedActivities = json;
+      lastReducedActivities = null;
       updateMapMarkers(true);
+      updateInfoOnBar();
     }
   }
 

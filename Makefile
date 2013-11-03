@@ -23,6 +23,7 @@ JS =  js/display.js\
       js/storage.js\
       js/IE9Mobile.js\
       font-cawesome/build/font-cawesome.js\
+      js/Delayed.js\
       js/$(REPO).js
 
 # make pinit/submit section files
@@ -99,6 +100,7 @@ js:
 	cp eddy/build/ie8.js www/js
 	cp leaflet/leaflet.js www/js
 	cp js/base64Icon.js www/js
+	cp js/es5-shim.js www/js
 
 # build generic version
 css:
@@ -151,6 +153,7 @@ dependencies:
 #	npm install tea-spawn
 	curl -O -L https://github.com/yui/yuicompressor/releases/download/v$(YUI)/yuicompressor-$(YUI).jar
 	mv yuicompressor-$(YUI).jar node_modules/yuicompressor.jar
+	curl -O -L http://cdnjs.cloudflare.com/ajax/libs/es5-shim/2.1.0/es5-shim.min.js
 	curl -O -L http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css
 	curl -O -L http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.ie.css
 	curl -O -L http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js
@@ -159,6 +162,7 @@ dependencies:
 	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/4.0.0/fonts/fontawesome-webfont.woff
 	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/4.0.0/fonts/fontawesome-webfont.ttf
 	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/4.0.0/fonts/fontawesome-webfont.svg
+	mv es5-shim.min.js js/es5-shim.js
 	mv leaflet*.* leaflet
 	mv font*.* fonts
 

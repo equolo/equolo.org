@@ -61,7 +61,59 @@ section#map > div.location {
   background: #FFF;
   height: 150px;
   bottom: 48px;
+  text-align: center;
 }
+section#map > div.location > ul {
+  display: inline-block;
+  margin: auto;
+}
+section#map > div.location > ul,
+section#map > div.location > ul > li {
+  padding: 0;
+  list-style: none;
+}
+section#map > div.location > ul > li {
+  display: inline-block;
+  float: left;
+  text-align: left;
+  width: 260px;
+  font-size: 13px;
+  line-height: 18px;
+  margin-left: 16px;
+  
+  cursor: pointer;
+}
+section#map > div.location > ul > li > h3 {
+  margin: 8px 0 0 8px;
+  font-size: 16px;
+  font-weight: 400;
+  color: #000000;
+}
+section#map > div.location > ul > li > p {
+  margin: 8px 0 0 8px;
+  color: #064646;
+}
+section#map > div.location > ul > li > h3 > span {
+  float: right;
+  margin-left: -100px;
+  font-size: 12px;
+  color: #198A8A;
+}
+section#map > div.location > ul > li:nth-child(1) {
+  margin-left: 0;
+}
+
+section#map > div.location > ul > li.intro,
+section#map > div.location > ul > li.stats {
+  display: none;
+  margin: auto;
+  padding: 0;
+}
+section#map > div.location > ul > li.intro > ul {
+  margin: 8px 0 0 0;
+  padding: 0;
+}
+
 section#map > footer {
   background: #064646;
   height: 48px;
@@ -81,7 +133,7 @@ section#map header h1 {
   margin-left: -8px;
 }
 section#map header h2 {
-  font-weight: normal;
+  font-weight: 200;
   font-style: italic;
   margin-top: 29px;
   margin-left: -33px;
