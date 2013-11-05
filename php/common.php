@@ -148,14 +148,16 @@ function getOrganizedResults($stmt, $lang = null) {
       $activity->id = $row->id;
       $activity->name = $row->name;
       $activity->description = array();
-      if (isset($row->criteria)) {
-        $activity->criteria = $row->criteria ?
-          explode(',', $row->criteria) : array();
-      }
-      if (isset($row->certification)) {
-        $activity->certification = $row->certification ?
-          explode(',', $row->certification) : array();
-      }
+      $activity->criteria = isset($row->criteria) &&
+                            $row->criteria ?
+                              explode(',', $row->criteria) :
+                              array()
+      ;
+      $activity->certification =  isset($row->certification) &&
+                                  $row->certification ?
+                                    explode(',', $row->certification) :
+                                    array()
+      ;
       $activity->place = array();
       $activities_holder[$row->id] = $activity;
       // assign by reference to the next $result

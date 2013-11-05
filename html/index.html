@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>)&#x00b0;(, {{title}}</title>
+    <title>)&#x00b0;(, equolo</title>
     <meta http-equiv="content-language" content="en-US"/>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0"/>
     <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="mobile-web-app-capable" content="yes"/>
-    <!--[if IE 8]><script src="js/ie8.js"></script><script src="js/es5-shim.js"></script><link rel="stylesheet" href="css/leaflet.ie.css"/><![endif]-->
-    <script>{{navigator.country}}(function(r,u,n){n=u.documentElement;while(r<2){n.insertBefore(u.createElement('script'),n.lastChild).src=[
-        'js/equolo{{MAX_JS}}.js',
-        'js/leaflet.js'
-      ][r++]}}(0,document));</script>
+    <!--[if IE 8]><script src="js/ie8.js"></script><script src="js/es5-shim.js"></script><link rel="stylesheet" href="css/leaflet.ie.css"/><![endif]--><script>{{navigator.country}}
+(function(b,d,e,f){function g(a){return function(c){for(;a.length;)a.shift().call(b,c);a.K=!0}}function h(a){return function(c){a.K?c.call(b):a.push(c)}}b.onDOM=h(e);b.onLoad=h(f);document[d]("DOMContentLoaded",g(e));b[d]("load",g(f))})(this,"addEventListener",[],[]);(function(r,u,n){n=u.documentElement;while(r<2){n.insertBefore(u.createElement('script'),n.lastChild).src=[
+'js/equolo{{MAX_JS}}.js',
+'js/leaflet.js'
+][r++]}}(0,document));</script>
     <link rel="stylesheet" href="css/font-awesome.css"/>
     <link rel="stylesheet" href="css/equolo.css"/>
     <link rel="stylesheet" href="css/leaflet.css"/>
@@ -30,7 +30,7 @@
       <div id="tiles" class="map"></div>
       <button id="find-me"><i class="fa fa-compass"></i></button>
       {{select-categories}}
-      <div class="location scroll"><ul>
+      <div class="t-all location scroll h-scroll"><ul class="no-select">
         <li class="intro">
           <h3><i class="fa fa-globe"></i> Welcome</h3>
           <ul>
@@ -43,7 +43,33 @@
         <li class="stats"><h3><i class="fa fa-bar-chart-o"></i> Stats</h3><p></p></li>
         <li class="place"><h3></h3><p></p></li>
       </ul></div>
-      <footer class="no-select"></footer>
+      <div class="details scroll t-all">
+        <div>
+          <div class="minimap"></div>
+          <h3 class="ellipsis"></h3>
+          <ul class="address"></ul>
+          <ul class="contact"></ul>
+        </div>
+      </div>
+      <footer class="no-select"><nav>
+        <ul>
+          <li><a href="#about" class="t-all">
+            <i class="t-all fa fa-info"></i>
+            {{about}}
+            <i class="t-all fa fa-times-circle"></i>
+          </a></li>
+          <li><a href="#contact" class="t-all">
+            <i class="t-all fa fa-envelope"></i>
+            {{contact}}
+            <i class="t-all fa fa-times-circle"></i>
+          </a></li>
+          <li><a href="#pin-it" class="t-all">
+            <i class="t-all fa fa-map-marker"></i>
+            {{pin-it}}
+            <i class="t-all fa fa-times-circle"></i>
+          </a></li>
+        </ul>
+      </nav></footer>
     </section>
     <section id="about"><div>
       <noscript class="nav"><nav>

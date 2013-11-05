@@ -22,8 +22,13 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     // which level is good enough to show proper icons ?
     ZOOM_FOR_ICONS = 12,
     ZOOM_FOR_BBOX = 15,
+    ZOOM_MAX = 18,
+    ZOOM_MIN = 3,
+    // coordinates utility
+    mercator = new Mercator(256),
     // the shared map instance
     map,
+    minimap,
     // all categories available on the map
     // will be an object containing all related groups
     // per each category. By defatult all
@@ -47,45 +52,45 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     lastParsedActivities,
     lastReducedActivities,
     // special lazy function case
-    scroll
+    scroll,
+    // as a matter of welcome :-)
+    veryFirstTime = true
   ;
 
   // things that should be done ASAP
-  function DOMContentLoaded() {
-
-    // if performed already, do nothing
-    // there are cases where this event is not fired
-    // probably the reason is the document.write trick
-    if (DOMContentLoaded.done) return;
-    DOMContentLoaded.done = true;
-
-    cleanTheStage();
+  window.onDOM(function(){
 
     // solve IE9Mobile problem with fonts
     if (IE9Mobile)
       FontCawesome('../fonts/fontawesome-webfont.svg')
     ;
 
+    // clean dirty nodes on stage
+    cleanTheStage();
+
     // drop all noscript elements
     $('noscript').forEach(function(noscript){
-      // place the navigation menu in place
+      // navigation menu in place
+      /* actually some browser won't parse noscript content
+      // so we need to duplicate this in the HTML page
       if (noscript.className == 'nav') {
+        alert(noscript.parentNode.innerHTML);
         $('footer')[0].innerHTML = noscript.textContent;
       }
+      */
       noscript.remove();
     });
+
     // user should not be able to scroll
     DOMScroll(false);
 
-  }
-  document.once('DOMContentLoaded', DOMContentLoaded);
+  });
 
-  // try window.onload to be sure everythingis there
+  // use window.onload to "hope" everythingis there
   // (font, map, css, etc)
-  window.once('load', equolo);
+  window.onLoad(equolo);
 
-  // not necessary but nice to keep it semantic
-  // also returns the map node
+  // not necessary but nice to keep the body semantic
   function cleanTheStage() {
     while (document.body.firstChild.id != 'map') {
       // map is the firt valid section in a JS enabled env
@@ -93,7 +98,6 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
         document.body.firstChild
       );
     }
-    return document.body.firstChild;
   }
 
   // here the home page, Welcome to equolo.org !
@@ -106,9 +110,6 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
 
     var navLink, el, tmp, watchId;
 
-    // be sure the document is prepared
-    DOMContentLoaded();
-
     // if there's still no map
     // we need to wait for it
     if (!window.L) return setTimeout(equolo, 15);
@@ -117,12 +118,14 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     // these won't change anyway during
     // interaction lifecycle ;-)
     section = {
-      map: cleanTheStage(),
-      about: $('#about')[0],
-      contact: $('#contact')[0],
-      pinIt: $('#pin-it')[0]
+      map: $('section#map')[0],
+      about: $('section#about')[0],
+      contact: $('section#contact')[0],
+      pinIt: $('section#pin-it')[0]
     };
     section.nav = $('nav', section.map)[0];
+    section.placeDetails = $('div.details', section.map)[0];
+    section.location = $('div.location', section.map)[0];
     section.details = [
       section.about,
       section.contact,
@@ -213,6 +216,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     categories = $('select[name=category]')[0];
     categories.on('change', function(){
       updateMapMarkers(false);
+      updateInfoOnBar();
     });
     icons = [].map.call(categories.options, function (option) {
       this[option.value] = option.textContent;
@@ -255,6 +259,8 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
             click.ms.minHeight = null;
             findMe.style.zIndex = 
             categories.style.zIndex = 9999;
+            section.placeDetails.style.height =
+              section.placeDetails.style._height;
             map.invalidateSize();
             click.kinetic = false;
             click.doNotScroll = true;
@@ -292,10 +298,13 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
         click.sk = new SimpleKinetic({
           context: section.map,
           onstart: function () {
-            click.doNotScroll = false;
-            click.kinetic = true;
             findMe.style.zIndex = 
             categories.style.zIndex = 0;
+            section.placeDetails.style._height =
+              section.placeDetails.style.height;
+            section.placeDetails.style.height = 0;
+            click.doNotScroll = false;
+            click.kinetic = true;
             DOMScroll(true);
           },
           onmove: function (x, y, dx, dy, ex, ey) {
@@ -412,17 +421,8 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
 ///////////////////////////////////////////////////////////////////////
 
     // initialize once the map
-    L.tileLayer(
-      'http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg',
-      {
-        attribution: 'Map Tiles <a href="http://open.mapquest.com/">&copy; Open MapQuest</a>',
-        maxZoom: 18,
-        minZoom: 3
-      }
-    ).addTo(
-      // one map for all places of all activities
-      map = L.map($('section#map > div.map')[0])
-    );
+    section.tiles = $('#tiles')[0];
+    map = createMap(section.tiles);
     groups = {};
     setMapView(
       navigator.country ?
@@ -481,10 +481,14 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
       );
       tmp = storage.getItem('equolo.map');
       if (tmp) {
+        veryFirstTime = false;
         setMapView.apply(null, JSON.parse(tmp));
-      } else {
-        $('section#map > div.location > ul > li.intro')[0].style.display = 'block';
       }
+    }
+    if(veryFirstTime) {
+      $('li.intro', section.map)[0].style.cssText = 'display:block;margin-left:' + (
+        getScrollableMargin()
+      ) + 'px;';
     }
 
     // in any case swap icons once zoom change
@@ -511,6 +515,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     // the user won't be redirected
     map.on('movestart', function () {
       findMe.moved = true;
+      veryFirstTime = false;
     });
 
     // this is for all actions needed once the map has been moved
@@ -554,6 +559,23 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     }
   }
 
+  function createMap(node, extraOptions) {
+    var
+      options = {
+        attribution: 'Map Tiles <a href="http://open.mapquest.com/">&copy; Open MapQuest</a>',
+        maxZoom: ZOOM_MAX,
+        minZoom: ZOOM_MIN
+      },
+      map
+    ;
+    map = extraOptions ? L.map(node, extraOptions) : L.map(node);
+    L.tileLayer(
+      'http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg',
+      options
+    ).addTo(map);
+    return map;
+  }
+
   function enableFindMe() {
     findMe.firstChild.classList.remove('fa-spin', 'fa-download');
     findMe.firstChild.classList.add('fa-compass');
@@ -561,11 +583,76 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
   }
 
   function flatActivities() {
-    return lastReducedActivities || (
+    if (!lastReducedActivities) {
       lastReducedActivities = lastParsedActivities.reduce(
         flatPlaces, []
-      )
+      );
+      /*
+      // simplified and quite dumb algo
+      // to have ordered points by distance
+      for(var
+        current, nd, od, p, n,
+        changed = false
+        j = 0,
+        i = 0,
+        length = lastReducedActivities.length;
+        i < length; i++
+      ) {
+        current = lastReducedActivities[i];
+        if (!current.point) {
+          current.point = mercator.coordsToPoint(current, ZOOM_MAX);
+        }
+        for(od = null, j = i + 1; j < length; j++) {
+          p = lastReducedActivities[j];
+          nd = mercator.pointDistance(
+            current.point,
+            p.point || (
+              p.point = mercator.coordsToPoint(p, ZOOM_MAX)
+            )
+          );
+          if (!od) {
+            od = nd;
+          } else if (nd < od || p.point.x < n.point.x) {
+            changed = true;
+            od = nd;
+            lastReducedActivities[j - 1] = p;
+            lastReducedActivities[j] = n;
+            --j;
+          }  
+          n = p;
+        }
+        if (changed && i + 1 == length) {
+          i = -1;
+          changed = false;
+        }
+      }
+      */
+    }
+    return lastReducedActivities;
+  }
+
+  function orderByDistance(a, b) {
+    var distance = mercator.pointDistance(
+      mercator.coordsToPoint(a, ZOOM_MAX),
+      mercator.coordsToPoint(b, ZOOM_MAX)
     );
+    if (!('distance' in a)) {
+      a.distance = distance;
+    }
+    if (!('distance' in b)) {
+      b.distance = distance;
+    }
+    if (a.distance < b.distance) {
+      if (distance < a.distance) {
+        a.distance = distance;
+        return 1;
+      }
+      return 0;
+    } else if(b.distance < a.distance) {
+      return -1;
+    } else {
+      return 0;
+    }
   }
 
   function enrichPlace(place) {
@@ -614,7 +701,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
   // simplifies the creation of a map icon
   // return the marker added to the map
   function createMarker(place) {
-    return L.marker(
+    var marker = L.marker(
       toGeoArray(place),
       {
         icon: L.icon({
@@ -624,6 +711,9 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
         })
       }
     );
+    marker.on('click', onMarkerClick);
+    marker.id = place.id;
+    return marker;
   }
 
   function updatePositionIcon(coords) {
@@ -672,15 +762,28 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
   }
 
   function updateInfoOnBar() {
+    if (veryFirstTime) return;
     // TODO:  this is not working as expected
     //        plus it's completely user unfriendly
     if (updateInfoOnBar.moveend) {
       map.off('moveend', updateInfoOnBar.moveend);
       map.off('movestart', updateInfoOnBar.moveend.clear);
     }
+    // clean up sections
+    $('li', section.location).forEach(function (li) {
+      if (li.classList.contains('place')) {
+        li.remove();
+      } else {
+        li.style.display = 'none';
+      }
+    });
+    updateInfoOnBar.map = {};
     if (map.getZoom() < ZOOM_FOR_ICONS) {
       // show stats
-      updateInfoOnBar.el = $('section#map > div.location > ul > li.stats')[0];
+      if (updateInfoOnBar.el) {
+        updateInfoOnBar.el.style.width = null;
+      }
+      updateInfoOnBar.el = $('li.stats', section.map)[0];
       updateInfoOnBar.el.style.display = 'block';
       map.on('moveend', updateInfoOnBar.moveend = Delayed(function () {
         // TODO:  IE9 Mobile won't reach this point
@@ -711,28 +814,28 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
           'we have nothing nothing in this area :-(<br/>' +
           'do you know any activity that could be part of equolo?'
         ;
-        if (IE9Mobile)
-          FontCawesome.fix(p)
-        ;
+        fixFonts(p);
       }));
       map.on('movestart', updateInfoOnBar.moveend.clear);
     } else {
-      // show details
-      if (updateInfoOnBar.el) {
-        updateInfoOnBar.el.style.display = 'none';
-      }
-      updateInfoOnBar.el = $('section#map div.location > ul')[0];
+      updateInfoOnBar.el = $('ul', section.map)[0];
       map.on('moveend', updateInfoOnBar.moveend = Delayed(function () {
         var
-          fragment = document.createDocumentFragment(),
-          size = 0
+          activities = flatActivities().filter(
+            onlyInBox,
+            map.getBounds()
+          ),
+          length = activities.length,
+          fragment = length && document.createDocumentFragment(),
+          size = 0,
+          keys
         ;
-        updateInfoOnBar.el.innerHTML = '';
-        flatActivities().filter(
-          onlyInBox,
-          map.getBounds()
-        ).forEach(
+        if (!length) return;
+        keys = [];
+        activities.forEach(
           function (place) {
+            keys.push(place.id);
+            if (updateInfoOnBar.map[place.id]) return;
             var
               li = this.appendChild(
                 document.createElement('li')
@@ -744,7 +847,11 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
                 document.createElement('p')
               )
             ;
-            li.className = 'place';
+            h3.classList.add('ellipsis');
+            li.data('coords', place.latitude + '/' + place.longitude);
+            li.classList.add('place', 't-all');
+            li.id = 'place-' + place.id;
+            updateInfoOnBar.map[place.id] = place;
             h3.appendChild(
               document.createElement('i')
             ).classList.add(
@@ -753,19 +860,297 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
             h3.appendChild(
               document.createTextNode(' ' + place.name)
             );
+            h3.appendChild(
+              document.createElement('span')
+            ).textContent = place.postcode;
             p.appendChild(
               document.createTextNode(place.description)
             );
-            size += 276;
+            li.on('click', onPlaceClick);
           },
           fragment
         );
-        updateInfoOnBar.el.style.width = size + 'px';
         updateInfoOnBar.el.appendChild(fragment);
+        length = $('li.place', updateInfoOnBar.el).filter(function(li){
+          var id = li.id.slice(6);
+          if (keys.indexOf(id) < 0) {
+            delete updateInfoOnBar.map[id];
+            li.remove();
+            return false;
+          }
+          return true;
+        }).length;
+        updateInfoOnBar.el.style.width = (
+          length * 276 +
+          getScrollableMargin() * 2 +
+          1
+        ) + 'px';
+        fixFonts(updateInfoOnBar.el);
+        if (!updateInfoOnBar.hscroll) {
+          updateInfoOnBar.hscroll = new HorizontalScroll(
+            updateInfoOnBar.el, {
+              onStart: function () {
+                this.x = updateInfoOnBar.el.scrollLeft;
+                this.el = onPlaceClick.last || $('li.place', updateInfoOnBar.el)[0];
+                onPlaceClick.reset();
+              },
+              onChange: function (e) {
+                this.x = e.x - this.x;
+              },
+              onEnd: function (e) {
+                onPlaceClick.call((
+                  this.x < 0 ?
+                    this.el.nextElementSibling :
+                    this.el.previousElementSibling
+                  ) ||
+                  this.el,
+                  {}
+                );
+                /*
+                var
+                  i = Math.round(
+                    ( updateInfoOnBar.el.parentNode.scrollLeft -
+                      getScrollableMargin()
+                    ) / 276
+                  ),
+                  target = $('li.place', updateInfoOnBar.el)[i]
+                ;
+                if (target) {
+                  if (target === this.el) {
+                    target = target[this.x < 0 ? 'previousSibling' : 'nextSibling'];
+                    if (target) {
+                      onPlaceClick.call(target, {});
+                    }
+                  }
+                }
+                */
+              },
+              onClick: function (e) {
+                if (IEMobile) return;
+                var target = e.target;
+                e.preventDefault();
+                e.stopPropagation();
+                while(target && target.nodeName !== 'LI') {
+                  target = target.parentNode;
+                }
+                if (target && target.nodeName === 'LI') {
+                  onPlaceClick.call(target, {});
+                }
+              }
+            }
+          );
+        }
+        /*
+        if (onPlaceClick.last) {
+          fragment = onPlaceClick.last;
+          onPlaceClick.reset();
+          onPlaceClick.call(fragment);
+        }
+        */
       }));
-      map.on('movestart', updateInfoOnBar.moveend.clear);
+      map.on('movestart', updateInfoOnBar.movestart = function () {
+        updateInfoOnBar.moveend.clear();
+        onPlaceClick.cancel();
+      });
+      updateInfoOnBar.moveend();
     }
   }
+
+  function onMarkerClick() {
+    $('li#place-' + this.id).trigger('click', false);
+  }
+
+  function isPlaceFieldNotEmpty(key) {
+    return this[key].length;
+  }
+
+  function getObjectProperty(key) {
+    return this[key];
+  }
+
+  function showDetailsIfNeeded(where, place, fields) {
+    var tmp = fields.filter(
+      isPlaceFieldNotEmpty,
+      place
+    );
+    if (tmp.length) {
+      (where.appendChild(
+        document.createElement('li')
+      )).textContent = tmp.map(getObjectProperty, place).join(', ');
+    }
+  }
+
+  function showButtonIfNeeded(where, place, field, icon, content) {
+    var li;
+    if (place[field]) {
+      li = where.appendChild(
+        document.createElement('li')
+      );
+      li.classList.add('button');
+      li.appendChild(
+        document.createElement('i')
+      ).classList.add('fa', 'fa-' + icon);
+      li = li.appendChild(
+        document.createElement('a')
+      );
+      li.classList.add('ellipsis');
+      li.href = field === (
+        'phone' ? 'tel:' : (
+          field === 'email' ? 'mailto:' : ''
+        )
+      ) + place[field];
+      li.textContent = place[field];
+    }
+  }
+
+  function showAllDetails(place) {
+    var el, ul, height;
+    showAllDetails.showing = true;
+    if (!showAllDetails.footer) {
+      showAllDetails.footer = section.nav.parentNode.offsetHeight;
+    }
+    if (!showAllDetails.el) {
+      showAllDetails.el = $('div.details', section.map)[0];
+    }
+    height = section.tiles.offsetHeight;
+    el = showAllDetails.el;
+    el.style.cssText ='opacity:1;' +
+                      'top:' + ($('header', section.map)[0].offsetHeight) + 'px;' +
+                      'height:' + (
+                        height < 276 ? (height + showAllDetails.footer) : height
+                      ) + 'px;';
+    if (height < 276) {
+      section.location.style.bottom =
+      section.nav.parentNode.style.height = 0;
+    }
+    if (!minimap) {
+      showAllDetails.h3 = $('h3', el)[0];
+      showAllDetails.info = $('ul', el)[0];
+      showAllDetails.address = $('ul.address', el)[0];
+      showAllDetails.contact = $('ul.contact', el)[0];
+      minimap = createMap($('div.minimap', el)[0], {
+        zoomControl: false,
+        dragging: false,
+        touchZoom: false,
+        doubleClickZoom: false,
+        scrollWheelZoom: false,
+        boxZoom: false,
+        keyboard: false,
+        attributionControl: false,
+        tap: false
+      });
+    }
+    // no need to remove others
+    // nicer effect, not a huge deal, practically ...
+    createMarker(place).addTo(minimap);
+    minimap.setView(
+      toGeoArray(place),
+      15
+    );
+    showAllDetails.h3.textContent =
+    showAllDetails.address.textContent =
+    showAllDetails.contact.textContent = '';
+    showAllDetails.h3.appendChild(
+      document.createElement('i')
+    ).className = 'fa fa-' + place.icon;
+    showAllDetails.h3.appendChild(
+      document.createTextNode(' ' + place.name)
+    );
+    ul = showAllDetails.address;
+    showDetailsIfNeeded(ul, place, [
+      'address',
+      'extra',
+      'postcode',
+      'city'
+    ]);
+    /*
+    showDetailsIfNeeded(ul, place, [
+      'county',
+      'state',
+      'country'
+    ]);
+    */
+    place.phone = '+393387621067';
+    place.email = 'polpetta@polpetti.po';
+    place.website = 'www.polpetti.com';
+    showButtonIfNeeded(ul, place, 'phone', 'phone');
+    showButtonIfNeeded(ul, place, 'email', 'envelope');
+    showButtonIfNeeded(ul, place, 'website', 'globe');
+
+    fixFonts(el);
+    console.log(place);
+  }
+
+  function onPlaceClick(e) {
+    var
+      coords = this.data('coords').split('/'),
+      doubleClick = onPlaceClick.last == this,
+      scroller = this.parentNode.parentNode,
+      placeId = this.id.slice(6),
+      li, x, onend
+    ;
+    if (doubleClick) {
+      if (showAllDetails.showing) {
+        showAllDetails.showing = false;
+        showAllDetails.el.style.cssText = '';
+        section.location.style.bottom =
+        section.nav.parentNode.style.height = null;
+      } else {
+        showAllDetails(updateInfoOnBar.map[placeId]);
+      }
+    } else {
+      onend = e.detail === false ? Object : function (x, y, dx, dy, ex, ey) {
+        var cancel = onPlaceClick.cancel;
+        onPlaceClick.cancel = Object;
+        setMapView(
+          {
+            latitude: parseFloat(coords[0]),
+            longitude: parseFloat(coords[1])
+          },
+          map.getZoom()
+        );
+        onPlaceClick.cancel = cancel;
+        if (showAllDetails.showing) {
+          showAllDetails(updateInfoOnBar.map[placeId]);
+        }
+      };
+      onPlaceClick.cancel();
+      (onPlaceClick.last = this).classList.add('selected');
+      x = 0;
+      li = this.previousElementSibling;
+      while (li.classList.contains('place')) {
+        li = li.previousElementSibling;
+        x += 276;
+      }
+      (onPlaceClick.sk = new SimpleKinetic({
+        onmove: function (x, y, dx, dy, ex, ey) {
+          scroller.scrollLeft = x;
+        },
+        onend: onend
+      })).init(
+        scroller.scrollLeft,
+        0,
+        x - scroller.scrollLeft,
+        0,
+        true,
+        false
+      ) || onend();
+    }
+  }
+
+  onPlaceClick.reset = function () {
+    if (onPlaceClick.last) {
+      onPlaceClick.last.classList.remove('selected');
+      onPlaceClick.last = null;
+    }
+  };
+
+  onPlaceClick.cancel = function () {
+    if (onPlaceClick.sk) {
+      onPlaceClick.sk.cancel();
+    }
+    onPlaceClick.reset();
+  };
 
   function updateMapMarkers(parseActivity) {
     // remove and if needed erase all layers
@@ -906,19 +1291,35 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     document.body.classList[op]('no-scroll');
   }
 
+  function getScrollableMargin() {
+    return (display.width - 276) >> 1;
+  }
+
   // what happens when the display size changes ?
   function onDisplayChange() {
+    var placeMargin = getScrollableMargin();
     restyle({
       // section should have a proper minimum height
       'section': {
         'min-height': display.height + 'px'
+      },
+      'section#map > div.location li.place:nth-child(3)': {
+        'margin-left': placeMargin + 'px'
+      },
+      'section#map > div.location li.place:last-child': {
+        'margin-right': placeMargin + 'px'
+      },
+      'section#map > div.location > ul > li': {
+        'min-height': (150 - SCROLLBAR_SIZE) + 'px'
       }
     });
     if (map) map.invalidateSize();
+    if (minimap) minimap.invalidateSize();
   }
 
   function onlyInBox(place) {
-    return this.contains(new L.LatLng(
+    var value = categories.value;
+    return place.icon == value || value == 'all' && this.contains(new L.LatLng(
       place.latitude,
       place.longitude
     ));
@@ -932,6 +1333,12 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
       coords.latitude || coords.lat || coords[0] || 0,
       coords.longitude || coords.lng || coords[1] || 0
     ];
+  }
+
+  function fixFonts(el) {
+    if (IE9Mobile)
+      FontCawesome.fix(el)
+    ;
   }
 
   // all places are packed via JSONH to preserve

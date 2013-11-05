@@ -1,5 +1,5 @@
 var storage = localStorage;
-try{storage.setItem('0',0)}catch(iOS7){
+try{storage.setItem('0',0);storage.removeItem('0')}catch(iOS7){
   storage = {
     length: 0,    // do not store data
     getItem: function (key) {

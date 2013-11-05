@@ -398,8 +398,8 @@ var JSONH, jsonh = JSONH = function (Array, JSON) {"use strict"; // if you want
 }(Array, JSON);/*! (C) WebReflection Mit Style License */
 (function(e){"use strict";function t(t){return typeof t=="string"?e.document.createTextNode(t):t}function n(n){if(n.length===1)return t(n[0]);for(var r=e.document.createDocumentFragment(),i=h.call(n),s=0;s<n.length;s++)r.appendChild(t(i[s]));return r}for(var r,i,s,o=/^\s+|\s+$/g,u=/\s+/,a=" ",f=function(t,n){return this.contains(t)?n||this.remove(t):n&&this.add(t),!!n},l=(e.Element||e.Node||e.HTMLElement).prototype,c=["prepend",function(){var t=this.firstChild,r=n(arguments);t?this.insertBefore(r,t):this.appendChild(r)},"append",function(){this.appendChild(n(arguments))},"before",function(){var t=this.parentNode;t&&t.insertBefore(n(arguments),this)},"after",function(){var t=this.parentNode,r=this.nextSibling,i=n(arguments);t&&(r?t.insertBefore(i,r):t.appendChild(i))},"replace",function(){var t=this.parentNode;t&&t.replaceChild(n(arguments),this)},"remove",function(){var t=this.parentNode;t&&t.removeChild(this)}],h=c.slice,p=c.length;p;p-=2)r=c[p-2],r in l||(l[r]=c[p-1]);"classList"in document.documentElement?(s=document.createElement("div").classList,s.add("a","b"),"a b"!=s&&(l=s.constructor.prototype,"add"in l||(l=e.DOMTokenList.prototype),i=function(e){return function(){var t=0;while(t<arguments.length)e.call(this,arguments[t++])}},l.add=i(l.add),l.remove=i(l.remove),l.toggle=f)):(i=function(e){if(!e)throw"SyntaxError";if(u.test(e))throw"InvalidCharacterError";return e},s=function(e){var t=e.className.replace(o,"");t.length&&c.push.apply(this,t.split(u)),this._=e},s.prototype={length:0,add:function(){for(var t=0,n;t<arguments.length;t++)n=arguments[t],this.contains(n)||c.push.call(this,r);this._.className=""+this},contains:function(e){return function(n){return p=e.call(this,r=i(n)),-1<p}}([].indexOf||function(e){p=this.length;while(p--&&this[p]!==e);return p}),item:function(t){return this[t]||null},remove:function(){for(var t=0,n;t<arguments.length;t++)n=arguments[t],this.contains(n)&&c.splice.call(this,p,1);this._.className=""+this},toggle:f,toString:function v(){return c.join.call(this,a)}},(Object.defineProperty||function(e,t,n){e.__defineGetter__(t,n.get)})(l,"classList",{get:function(){return new s(this)},set:function(){}}));try{new e.CustomEvent("?")}catch(d){e.CustomEvent=function(e,t){function n(n,i){var s=document.createEvent(e);if(typeof n!="string")throw new Error("An event name must be provided");return e=="Event"&&(s.initCustomEvent=r),i==null&&(i=t),s.initCustomEvent(n,i.bubbles,i.cancelable,i.detail),s}function r(e,t,n,r){this.initEvent(e,t,n),this.detail=r}return n}(e.CustomEvent?"CustomEvent":"Event",{bubbles:!1,cancelable:!1,detail:null})}})(window);/*! (C) Andrea Giammarchi Mit Style License */
 (function(e){"use strict";function E(){return{l:{},m:[],b:[]}}function S(e){var t=E();return c.value=t,p(e,f,c),c.value=null,t}function x(e,t,n){typeof t=="function"?t.apply(e,n):t.handleEvent.apply(t,n)}function T(e,t,n){n&&y(this,"detail",n),y(this,"type",t),y(this,"target",e),y(this,"timeStamp",m())}if(e.eddy)return;e.eddy=!0;var t=Array.prototype,n=e.prototype,r=T.prototype,i=n.hasOwnProperty,s=t.push,o=t.slice,u=t.unshift,a="toLocaleString",f={toLocaleString:1}.propertyIsEnumerable(a)?"_@eddy"+Math.random():a,l=f===a,c=(e.create||e)(null),h=[],p=l?function(e,t,n){e[t]=n.value}:e.defineProperty,d=function(e){var t=this;return function(){return t.apply(e,arguments)}},v=t.indexOf||function(e){var t=this.length;while(t--&&this[t]!==e);return t},m=Date.now||function(){return(new Date).getTime()},g={boundTo:function(t){var n=i.call(this,f)?this[f]:S(this),r=n.m,o=n.b,u=typeof t=="string"?this[t]:t,a=v.call(r,u);return a<0?o[s.call(r,u)-1]=d.call(u,this):o[a]},emit:function(t){var n=i.call(this,f),r=n&&this[f].l,s=n&&i.call(r,t),u=s&&r[t],a=s&&o.call(arguments,1),l=0,c=s?u.length:l;while(l<c)x(this,u[l++],a);return s},listeners:function(t){return i.call(this,f)&&i.call(this[f].l,t)&&this[f].l[t].slice()||[]},off:function(t,n){var r=i.call(this,f),s=r&&this[f].l,o=r&&i.call(s,t)&&s[t],u;return o&&(u=v.call(o,n),-1<u&&(o.splice(u,1),o.length||delete s[t])),this},on:function(t,n,r){var o=i.call(this,f),a=(o?this[f]:S(this)).l,l=o&&i.call(a,t)?a[t]:a[t]=[];return v.call(l,n)<0&&(r?u:s).call(l,n),this},once:function(t,n,r){var i=function(e){s.off(t,i,r),x(s,n,arguments)},s=this;return s.on(t,i,r)},trigger:function(t,n){var s=i.call(this,f),o=s&&this[f].l,u=typeof t=="string",a=u?t:t.type,l=s&&i.call(o,a),c=l&&o[a].slice(0),p=u?new T(this,a,n):t,d=0,v=l?c.length:d,m=!(p instanceof T);m&&(p._active=!0,p.stopImmediatePropagation=r.stopImmediatePropagation),p.currentTarget=this,h[0]=p;while(p._active&&d<v)x(this,c[d++],h);return m&&(delete p._active,delete p.stopImmediatePropagation),!p.defaultPrevented}},y=function(e,t,n){i.call(e,t)||(e[t]=n)},b=!1,w;r.defaultPrevented=!1,r._active=r.cancelable=!0,r.preventDefault=function(){this.defaultPrevented=!0},r.stopImmediatePropagation=function(){this._active=!1};for(w in g)i.call(g,w)&&p(n,w,{enumerable:!1,configurable:!0,writable:!0,value:g[w]});(function(e){function n(t){function n(e){e[t].apply(e,this)}return function(){return e.call(this,n,arguments),this}}for(var r in g)g.hasOwnProperty(r)&&!/^listeners|boundTo$/.test(r)&&p(t,r,{enumerable:!1,configurable:!0,writable:!0,value:n(r)})})(t.forEach);var N={boundTo:g.boundTo,data:function k(e,t){var n="dataset"in this;return arguments.length<2?n?this.dataset[e]:(t=this.getAttribute("data-"+e.replace(k.gre||(k.gre=/-[a-z]/g),k.gplace||(k.gplace=function(e,t){return t.toUpperCase()}))))==null?void 0:t:n?t==null?delete this.dataset[e]:(this.dataset[e]=t,t):(k.sre||(k.sre=/([a-z])([A-Z])/g,k.splace=function(e,t,n){return t+"-"+n.toLowerCase()}),e="data-"+e.replace(k.sre,k.splace),t==null?!this.removeAttribute(e):(this.setAttribute(e,t),t))},emit:function(n){var r=new CustomEvent(n);return r.arguments=t.slice.call(arguments,1),this.dispatchEvent(r)},listeners:function(t){return[]},off:function(e,t,n){return this.removeEventListener(e,t,n),this},on:function(e,t,n){return this.addEventListener(e,t,n),this},once:g.once,trigger:function(t,n){var r=typeof t=="string",i=r?t:t.type,s=r?new CustomEvent(i,(c.detail=n,c)):t;return c.detail=null,T.call(s,this,i),this.dispatchEvent(s)}};c.cancelable=!0,c.bubbles=!0;try{document.createEvent("Event").target=document}catch(C){b=!0,y=function(e,t,n){if(!i.call(e,t))try{e[t]=n}catch(r){}}}(function(e){var t=e.Window,n=t?t.prototype:e,r=(e.Node||e.Element||e.HTMLElement).prototype,s=(e.Document||e.HTMLDocument).prototype,o=(e.XMLHttpRequest||function(){}).prototype,u,a;for(u in N)i.call(N,u)&&(a={enumerable:!1,configurable:!0,writable:!0,value:N[u]},p(n,u,a),p(r,u,a),p(s,u,a),u!=="data"&&p(o,u,a))})(window)})(Object);// very simple jQueryish approach: inefficient but handy enough
-window.$=function(a){return function(c,p){return a.slice.call(a.concat(p||document)[0].querySelectorAll(c))}}([]);function Mercator(TILE_SIZE) {
-  /*! (C) Andrea Giammarchi */
+window.$=function(a){return function(c,p){return a.slice.call(a.concat(p||document)[0].querySelectorAll(c))}}([]);/*! (C) Andrea Giammarchi */
+function Mercator(TILE_SIZE) {
   var
     Math = window.Math,
     atan = Math.atan,
@@ -407,7 +407,9 @@ window.$=function(a){return function(c,p){return a.slice.call(a.concat(p||docume
     log = Math.log,
     max = Math.max,
     min = Math.min,
+    pow = Math.pow,
     round = Math.round,
+    sqrt = Math.sqrt,
     tan = Math.tan,
     PI = Math.PI,
     POINT_FIVE = .5,
@@ -441,6 +443,9 @@ window.$=function(a){return function(c,p){return a.slice.call(a.concat(p||docume
           )
         ) * size)
       };
+    },
+    pointDistance: function pointsDistance(a, b) {
+      return sqrt(pow(b.y - a.y, 2) + pow(b.x - a.x, 2));
     },
     pointToCoords: function pointToCoords(point, zoom) {
       var
@@ -826,7 +831,7 @@ var fontAwesomeIcon = function(canvas){
   document.createElement('canvas')
 );
 var storage = localStorage;
-try{storage.setItem('0',0)}catch(iOS7){
+try{storage.setItem('0',0);storage.removeItem('0')}catch(iOS7){
   storage = {
     length: 0,    // do not store data
     getItem: function (key) {
@@ -931,6 +936,7 @@ window.on('leaflet:map', function(e){
   setTimeout(resize);
 });/*! (C) Andrea Giammarchi - Mit Style License */
 var FontCawesome=function(e){function o(e,t){var o=new XMLHttpRequest,f;o.open("get",e,!0),o.onreadystatechange=function(){o.readyState==4&&(f=o.responseXML,f.firstChild||(f=document.createElement("div"),f.innerHTML=o.responseText),r=u(f,"font-face","units-per-em"),i=u(f,"font-face","ascent"),s=u(f,"font-face","descent"),Array.prototype.forEach.call(f.getElementsByTagName("glyph"),c,n={}),t?t(n):a())},o.send(null)}function u(e,t,n){return parseFloat(e.getElementsByTagName(t)[0].getAttribute(n))}function a(e){Array.prototype.forEach.call((e||document).querySelectorAll(".fa"),l,n)}function f(n,i,o){var u=0,a=0,f=n.length,l=i/r*(typeof display=="object"?display.ratio:1.5),c,h,p,d,v,m,g,y;e.width=e.height=Math.round(l*r),t.translate(0,e.height),t.scale(1,-1),t.fillStyle=o||"rgb(0,0,0)",t.globalCompositeOperation="xor";while(u<f){y=n[u++],g=1;switch(y.type){case"T":g=0;case"t":t.quadraticCurveTo(l*(v=2*p-(v||p)),l*(m=2*d-(m||d)),l*(p=p*g+y.arguments[0]),l*(d=d*g+y.arguments[1]));break;case"Q":g=0;case"q":t.quadraticCurveTo(l*(v=p*g+y.arguments[0]),l*(m=d*g+y.arguments[1]),l*(p=p*g+y.arguments[2]),l*(d=d*g+y.arguments[3]));break;case"L":g=0;case"l":t.lineTo(l*(p=p*g+y.arguments[0]),l*(d=d*g+y.arguments[1]));break;case"H":g=0;case"h":t.lineTo(l*(p=p*g+y.arguments[0]),l*d);break;case"V":g=0;case"v":t.lineTo(l*p,l*(d=d*g+y.arguments[0]));break;case"z":case"Z":t.lineTo(l*c,l*h),t.closePath(),t.fill();break;case"M":g=0,t.moveTo(l*(p=c=y.arguments[0]),l*(d=h=y.arguments[1]-s)),t.beginPath(),a=2;while(a<y.arguments.length)t.lineTo(l*(p=y.arguments[a]),l*(d=y.arguments[a+1])),a+=2;break;default:throw"unknown "+y.type}}}function l(e){var t=e.offsetHeight,n=getComputedStyle(e,":before"),r=n.getPropertyValue("content"),i=this[r.length!==1?r.charAt(1):r].size(t,n.getPropertyValue("color"));e.parentNode.replaceChild(i,e)}function c(e,t){var n=e.getAttribute("d");n&&(this[e.getAttribute("unicode")]={size:d,path:n})}function h(e){var t=0,n=[],r;e=e.replace(h.re||(h.re=/\s*([achlmqstvzACHLMQSTVZ])\s*/g),"$1");while(t<e.length)n.push(r={}),t=p(r,e,t);return n}function p(e,t,n){var r=n,i=!1;switch(e.type=t[n]){case"z":case"Z":return n+1}e.arguments=[];while(r++<t.length)switch(t[r]){case"A":case"a":case"C":case"c":case"H":case"h":case"L":case"l":case"M":case"m":case"Q":case"q":case"S":case"s":case"T":case"t":case"V":case"v":case"Z":case"z":i=!0;case" ":e.arguments.push(parseFloat(t.substring(n+1,r))),n=r;if(i)return n}}function d(n,i){var s=new Image;return f(this._actions||(this._actions=h(this.path)),n,i),s.src=e.toDataURL(),s.style.cssText="width:"+n+"px;"+"height:"+n+"px;",t.clearRect(0,0,r,r),s}var t=e.getContext("2d"),n,r,i,s;return o.fix=a,o}(document.createElement("canvas"));/*! (C) Andrea Giammarchi */
+// https://gist.github.com/WebReflection/7286687
 var Delayed = function(delay){
   function Delayed(callback, delay) {
     if (!delay) delay = Delayed.delay;
@@ -958,7 +964,391 @@ var Delayed = function(delay){
   }
   Delayed.delay = delay;
   return Delayed;
-}(500);// let's dirtly feature detect browser capabilities
+}(500);/*! (C) Andrea Giammarchi */
+function Mercator(TILE_SIZE) {
+  var
+    Math = window.Math,
+    atan = Math.atan,
+    exp = Math.exp,
+    log = Math.log,
+    max = Math.max,
+    min = Math.min,
+    pow = Math.pow,
+    round = Math.round,
+    sqrt = Math.sqrt,
+    tan = Math.tan,
+    PI = Math.PI,
+    POINT_FIVE = .5,
+    NINETY = 90,
+    ONE_EIGHTY = NINETY * 2,
+    THREE_SIXTY = NINETY * 4,
+    PI_DIVIDED_2 = PI / 2,
+    PI_DIVIDED_4 = PI / 4,
+    PI_DIVIDED_180 = PI / ONE_EIGHTY,
+    PI_DIVIDING_180 = ONE_EIGHTY / PI,
+    PI_MULTIPLIED_2 = PI * 2,
+    PI_MULTIPLIED_4 = PI * 4
+  ;
+  if (!TILE_SIZE) TILE_SIZE = 256;
+  return {
+    coordsToPoint: function coordsToPoint(coords, zoom) {
+      var size = TILE_SIZE << zoom;
+      return {
+        x: round((coords.longitude / THREE_SIXTY + POINT_FIVE) * size),
+        y: round(min(
+          1,
+          max(
+            0,
+            POINT_FIVE - (
+              log(
+                tan(
+                  PI_DIVIDED_4 + PI_DIVIDED_2 * coords.latitude / ONE_EIGHTY
+                )
+              ) / PI
+            ) / 2
+          )
+        ) * size)
+      };
+    },
+    pointDistance: function pointsDistance(a, b) {
+      return sqrt(pow(b.y - a.y, 2) + pow(b.x - a.x, 2));
+    },
+    pointToCoords: function pointToCoords(point, zoom) {
+      var
+        size = TILE_SIZE << zoom,
+        x = point.x / size,
+        y = point.y / size
+      ;
+      return {
+        latitude: y <= 0 ?
+          NINETY :
+          y >= 1 ?
+            -NINETY :
+            PI_DIVIDING_180 * (2 * atan(exp(PI * (1 - 2 * y))) - PI_DIVIDED_2),
+        longitude: (x === 1 ? 1 : (x % 1 + 1) % 1) * THREE_SIXTY - ONE_EIGHTY
+      };
+    }
+  };
+}/*! (C) Andrea Giammarchi */
+var HorizontalScroll = (function(bugged, Math){
+
+  // for IE10 and IE11 remember to add this
+  // CSS to the element that should be scrolled by this
+  // -ms-touch-action: none;
+  // touch-action: none;
+
+  var
+    // shortcut for happy minifiers
+    Prototype = HorizontalScroll.prototype,
+    // quicker shortcuts
+    abs = Math.abs,
+    max = Math.max,
+    min = Math.min
+  ;
+
+  // a very essential horizontal touch scroll handler
+
+  // @param the target which parent can scroll
+  // i.e. the <p> element within the scrollable container
+  // <div class="scrlable"><p></p></div>
+  // @param object with handlers
+  function HorizontalScroll(el, obj) {
+    for (var type in this) {
+      if (type !== 'handleEvent') {
+        el.addEventListener(type, this);
+      }
+    }
+    if (!obj) obj = this;
+    // by default, it really does nothing
+    this.onStart  = obj.onStart || nothingToDoHere;
+    this.onChange = obj.onChange || nothingToDoHere;
+    this.onEnd    = obj.onEnd || nothingToDoHere;
+    this.onClick  = obj.onClick || nothingToDoHere;;
+    // this avoids checking while scrolling
+    el.style.cssText += ';overflow:hidden;-ms-touch-action:none;touch-action:none';
+  }
+
+  function nothingToDoHere(o_O){/*literally*/}
+
+  // entry point for the handler
+  Prototype.handleEvent = function handleEvent(e) {
+    this[e.type](e);
+  };
+
+  Prototype.touchstart = function touchstart(e) {
+    e.preventDefault();
+    // only if not scrolling yet
+    if (!this._scrolling) {
+      // remember first X in the page
+      // even if slower to calculate,
+      // pageX is better than screenX
+      // due pixel density agnostic nature
+      // once the viewport has been set as mobile
+      this._x = e.touches[0].pageX >> 0;
+      // I don't care about multiple fingers for now
+    }
+  };
+
+  Prototype.touchmove = function touchmove(e) {
+    var pageX = e.touches[0].pageX >> 0;
+    // do not let it scroll by its own regardless
+    e.preventDefault();
+    // if already scrolling
+    if (this._scrolling) {
+      // do not propagate the action anywhere
+      e.stopPropagation();
+      // calculate the different x from
+      // the beginning of the action
+      e.x = pageX - this._diffX - this._x;
+      // change the scroll
+      this._p.scrollLeft = this._s - e.x;
+      // however, Android 4.0 will ignore that
+      // reflecting the value if get but not the layout
+      if (bugged) {
+        this._p.style.marginLeft = max(
+          this._m,
+          min(0, e.x + this._l)
+        ) + 'px';
+        this._e = e.x;
+      }
+      // notify the scroll changed
+      this.onChange(e);
+    } else {
+      // calculate current diff from the first pageX
+      this._diffX = pageX - this._x;
+      // if that's about 15 or more
+      this._scrolling = 14 < abs(this._diffX);
+      // then it's scrolling
+      if (this._scrolling) {
+        // grab the element that should scroll
+        this._p = e.currentTarget.parentNode;
+        // store initial scrolling value
+        this._s = this._p.scrollLeft;
+        if (bugged) {
+          if (!this._l) {
+            this._l = 0;
+            // minimum margin left
+            // so it won't disappear from the screen
+            this._m = this._p.clientWidth - this._p.scrollWidth;
+          }
+          this._s = -this._l;
+        }
+        // notify the action
+        this.onStart(e);
+      }
+    }
+  };
+
+  Prototype.touchend = function touchend(e) {
+    // do not do anything by default
+    e.preventDefault();
+    // and if there are no fingers anymore on the screen
+    if (!e.touches.length) {
+      // if it was scrolling
+      if (this._scrolling) {
+        // drop the parentNode reference
+        // so we have one less leak to think about
+        this._p = null;
+        // set it as non scrolling
+        this._scrolling = false;
+        if (bugged)
+          this._l = max(
+            this._m,
+            min(0, this._e + this._l)
+          )
+        ;
+        // notify the end
+        this.onEnd(e);
+      } else {
+        // no scrolled, this was a click intent
+        this.onClick(e);
+      }
+    }
+  };
+
+  // the bare essential constructor
+  return HorizontalScroll;
+
+}(/Android 4\.0/.test(navigator.userAgent), Math));/*! (C) Andrea Giammarchi */
+(function (navigator, document, pointerEnabled) {
+
+  // highly experimental, should work on IE10 and IE11 only
+
+  if (!(
+    (pointerEnabled = navigator.pointerEnabled) ||
+    navigator.msPointerEnabled
+  ) ||
+    'touchend' in document
+  ) return;
+
+  var
+    // IE10 and IE11 have different names
+    TYPE_MOUSE = (pointerEnabled ? '' : 'MS') + 'POINTER_TYPE_MOUSE',
+    // for types too
+    type = function (type) {
+      return pointerEnabled ? type.toLowerCase() : 'MS' + type;
+    },
+    // so we might want to unwrap these
+    untype = pointerEnabled ?
+      function (type) {
+        return type;
+      } :
+      function (type) {
+        return type.slice(2).toLowerCase();
+      }
+    ,
+    // while here a shortcut
+    addListener = function (where, how, which) {
+      // intercept all the pointer events
+      how.call(where, type(which), handler, true);
+    },
+    // these are calls to the passed event
+    commonMethod = function (name) {
+      return {
+        value: function () {
+          Event[name].call(this);
+          this._[name]();
+        }
+      };
+    },
+    // these are common DOM overrides
+    commonOverride = function (proto, name) {
+      var original = proto[name];
+      Object.defineProperty(proto, name, {
+        configurable: true,
+        value: function (type, eventHandler, capture) {
+          if (type in types) {
+            original.call(this, types[type], handler, capture);
+          }
+          return original.call(this, type, eventHandler, capture);
+        }
+      });
+    },
+    // these are delegated properties
+    commonProperty = function (name) {
+      return {
+        get: function () {
+          return this._[name];
+        }
+      };
+    },
+    // shortcut for all events
+    dispatchEvent = function (type, e) {
+      var c = document.createEvent('Event');
+      c.initEvent(type, true, true);
+      _.value = e;
+      Object.defineProperties(c, TouchEventProperties);
+      e.target.dispatchEvent(c);
+    },
+    // basically says if it's touch or not
+    humanReadablePointerType = function (e) {
+      var pointerType = e.pointerType;
+      return (
+        pointerType === e[TYPE_MOUSE] ||
+        pointerType === 'mouse'
+      ) ? 'mouse' : 'touch'; // right now pen is fine as touch
+    },
+    // silly method for the TouchList nobody uses anyway
+    item = function (i) {
+      return this[i];
+    },
+    // recycle all the Array extras functions
+    returnTouch = function (id) {
+      return touches[id];
+    },
+    // recycle common descriptors too
+    _ = {value: null},
+    Event = document.createEvent('Event'),
+    // all properties per each event
+    // defined at runtime .. not so fast
+    // but still OKish in terms of RAM and CPU
+    TouchEventProperties = {
+      _: _,
+      touches: {
+        configurable: true,
+        get: function () { // lazily defined once
+          _.value = Object.keys(touches).map(returnTouch);
+          return Object.defineProperty(this, 'touches', _).touches;
+        }
+      },
+      // almost everything is mirrored
+      relatedTarget: commonProperty('relatedTarget'),
+      currentTarget: commonProperty('currentTarget'),
+      target: commonProperty('target'),
+      altKey: commonProperty('altKey'),
+      metaKey: commonProperty('metaKey'),
+      ctrlKey: commonProperty('ctrlKey'),
+      shiftKey: commonProperty('shiftKey'),
+      // including methods
+      preventDefault: commonMethod('preventDefault'),
+      stopPropagation: commonMethod('stopPropagation'),
+      stopImmediatePropagation: commonMethod('stopImmediatePropagation')
+    },
+    // the list of touches
+    touches = Object.create(null),
+    // all types translated
+    types = Object.create(null),
+    // the unique handler for all the things
+    handler = {
+      handleEvent: function (e) {
+        // when an event occurres
+        if (humanReadablePointerType(e) === 'touch') {
+          // invoke normalized methods
+          handler[untype(e.type)](e);
+        }
+      },
+      pointerdown: function (e) {
+        touches[e.pointerId] = new Touch(e);
+        dispatchEvent('touchstart', e);
+      },
+      pointermove: function (e) {
+        touches[e.pointerId]._ = e;
+        dispatchEvent('touchmove', e);
+      },
+      pointerup: function (e) {
+        delete touches[e.pointerId];
+        dispatchEvent('touchend', e);
+      }
+    }
+  ;
+
+  // faacde for initial events info
+  function Touch(_) {
+    // the event needs to be refreshed
+    // each touchmove
+    this._ = _;
+  }
+
+  // all common properties
+  Object.defineProperties(
+    Touch.prototype,
+    {
+      identifier: commonProperty('pointerId'),
+      target: commonProperty('target'),
+      screenX: commonProperty('screenX'),
+      screenY: commonProperty('screenY'),
+      clientX: commonProperty('clientX'),
+      clientY: commonProperty('clientY'),
+      pageX: commonProperty('pageX'),
+      pageY: commonProperty('pageY')
+    }
+  );
+
+  types['touchstart'] = type('PointerDown');
+  types['touchmove']  = type('PointerMove');
+  types['touchend']   = type('PointerUp');
+
+  commonOverride(document, 'addEventListener');
+  commonOverride(document, 'removeEventListener');
+  commonOverride(Element.prototype, 'addEventListener');
+  commonOverride(Element.prototype, 'removeEventListener');
+
+  // mark these are available
+  document.touchstart =
+  document.touchmove =
+  document.touchend = null;
+
+}(navigator, document));// let's dirtly feature detect browser capabilities
 // in the worst case scenario, we'll prepare
 // the most common icon fallback: the marker one
 try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
@@ -982,8 +1372,13 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     // which level is good enough to show proper icons ?
     ZOOM_FOR_ICONS = 12,
     ZOOM_FOR_BBOX = 15,
+    ZOOM_MAX = 18,
+    ZOOM_MIN = 3,
+    // coordinates utility
+    mercator = new Mercator(256),
     // the shared map instance
     map,
+    minimap,
     // all categories available on the map
     // will be an object containing all related groups
     // per each category. By defatult all
@@ -1007,45 +1402,45 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     lastParsedActivities,
     lastReducedActivities,
     // special lazy function case
-    scroll
+    scroll,
+    // as a matter of welcome :-)
+    veryFirstTime = true
   ;
 
   // things that should be done ASAP
-  function DOMContentLoaded() {
-
-    // if performed already, do nothing
-    // there are cases where this event is not fired
-    // probably the reason is the document.write trick
-    if (DOMContentLoaded.done) return;
-    DOMContentLoaded.done = true;
-
-    cleanTheStage();
+  window.onDOM(function(){
 
     // solve IE9Mobile problem with fonts
     if (IE9Mobile)
       FontCawesome('../fonts/fontawesome-webfont.svg')
     ;
 
+    // clean dirty nodes on stage
+    cleanTheStage();
+
     // drop all noscript elements
     $('noscript').forEach(function(noscript){
-      // place the navigation menu in place
+      // navigation menu in place
+      /* actually some browser won't parse noscript content
+      // so we need to duplicate this in the HTML page
       if (noscript.className == 'nav') {
+        alert(noscript.parentNode.innerHTML);
         $('footer')[0].innerHTML = noscript.textContent;
       }
+      */
       noscript.remove();
     });
+
     // user should not be able to scroll
     DOMScroll(false);
 
-  }
-  document.once('DOMContentLoaded', DOMContentLoaded);
+  });
 
-  // try window.onload to be sure everythingis there
+  // use window.onload to "hope" everythingis there
   // (font, map, css, etc)
-  window.once('load', equolo);
+  window.onLoad(equolo);
 
-  // not necessary but nice to keep it semantic
-  // also returns the map node
+  // not necessary but nice to keep the body semantic
   function cleanTheStage() {
     while (document.body.firstChild.id != 'map') {
       // map is the firt valid section in a JS enabled env
@@ -1053,7 +1448,6 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
         document.body.firstChild
       );
     }
-    return document.body.firstChild;
   }
 
   // here the home page, Welcome to equolo.org !
@@ -1066,9 +1460,6 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
 
     var navLink, el, tmp, watchId;
 
-    // be sure the document is prepared
-    DOMContentLoaded();
-
     // if there's still no map
     // we need to wait for it
     if (!window.L) return setTimeout(equolo, 15);
@@ -1077,12 +1468,14 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     // these won't change anyway during
     // interaction lifecycle ;-)
     section = {
-      map: cleanTheStage(),
-      about: $('#about')[0],
-      contact: $('#contact')[0],
-      pinIt: $('#pin-it')[0]
+      map: $('section#map')[0],
+      about: $('section#about')[0],
+      contact: $('section#contact')[0],
+      pinIt: $('section#pin-it')[0]
     };
     section.nav = $('nav', section.map)[0];
+    section.placeDetails = $('div.details', section.map)[0];
+    section.location = $('div.location', section.map)[0];
     section.details = [
       section.about,
       section.contact,
@@ -1173,6 +1566,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     categories = $('select[name=category]')[0];
     categories.on('change', function(){
       updateMapMarkers(false);
+      updateInfoOnBar();
     });
     icons = [].map.call(categories.options, function (option) {
       this[option.value] = option.textContent;
@@ -1215,6 +1609,8 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
             click.ms.minHeight = null;
             findMe.style.zIndex = 
             categories.style.zIndex = 9999;
+            section.placeDetails.style.height =
+              section.placeDetails.style._height;
             map.invalidateSize();
             click.kinetic = false;
             click.doNotScroll = true;
@@ -1252,10 +1648,13 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
         click.sk = new SimpleKinetic({
           context: section.map,
           onstart: function () {
-            click.doNotScroll = false;
-            click.kinetic = true;
             findMe.style.zIndex = 
             categories.style.zIndex = 0;
+            section.placeDetails.style._height =
+              section.placeDetails.style.height;
+            section.placeDetails.style.height = 0;
+            click.doNotScroll = false;
+            click.kinetic = true;
             DOMScroll(true);
           },
           onmove: function (x, y, dx, dy, ex, ey) {
@@ -1372,17 +1771,8 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
 ///////////////////////////////////////////////////////////////////////
 
     // initialize once the map
-    L.tileLayer(
-      'http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg',
-      {
-        attribution: 'Map Tiles <a href="http://open.mapquest.com/">&copy; Open MapQuest</a>',
-        maxZoom: 18,
-        minZoom: 3
-      }
-    ).addTo(
-      // one map for all places of all activities
-      map = L.map($('section#map > div.map')[0])
-    );
+    section.tiles = $('#tiles')[0];
+    map = createMap(section.tiles);
     groups = {};
     setMapView(
       navigator.country ?
@@ -1441,10 +1831,14 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
       );
       tmp = storage.getItem('equolo.map');
       if (tmp) {
+        veryFirstTime = false;
         setMapView.apply(null, JSON.parse(tmp));
-      } else {
-        $('section#map > div.location > ul > li.intro')[0].style.display = 'block';
       }
+    }
+    if(veryFirstTime) {
+      $('li.intro', section.map)[0].style.cssText = 'display:block;margin-left:' + (
+        getScrollableMargin()
+      ) + 'px;';
     }
 
     // in any case swap icons once zoom change
@@ -1471,6 +1865,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     // the user won't be redirected
     map.on('movestart', function () {
       findMe.moved = true;
+      veryFirstTime = false;
     });
 
     // this is for all actions needed once the map has been moved
@@ -1514,6 +1909,23 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     }
   }
 
+  function createMap(node, extraOptions) {
+    var
+      options = {
+        attribution: 'Map Tiles <a href="http://open.mapquest.com/">&copy; Open MapQuest</a>',
+        maxZoom: ZOOM_MAX,
+        minZoom: ZOOM_MIN
+      },
+      map
+    ;
+    map = extraOptions ? L.map(node, extraOptions) : L.map(node);
+    L.tileLayer(
+      'http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg',
+      options
+    ).addTo(map);
+    return map;
+  }
+
   function enableFindMe() {
     findMe.firstChild.classList.remove('fa-spin', 'fa-download');
     findMe.firstChild.classList.add('fa-compass');
@@ -1521,11 +1933,76 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
   }
 
   function flatActivities() {
-    return lastReducedActivities || (
+    if (!lastReducedActivities) {
       lastReducedActivities = lastParsedActivities.reduce(
         flatPlaces, []
-      )
+      );
+      /*
+      // simplified and quite dumb algo
+      // to have ordered points by distance
+      for(var
+        current, nd, od, p, n,
+        changed = false
+        j = 0,
+        i = 0,
+        length = lastReducedActivities.length;
+        i < length; i++
+      ) {
+        current = lastReducedActivities[i];
+        if (!current.point) {
+          current.point = mercator.coordsToPoint(current, ZOOM_MAX);
+        }
+        for(od = null, j = i + 1; j < length; j++) {
+          p = lastReducedActivities[j];
+          nd = mercator.pointDistance(
+            current.point,
+            p.point || (
+              p.point = mercator.coordsToPoint(p, ZOOM_MAX)
+            )
+          );
+          if (!od) {
+            od = nd;
+          } else if (nd < od || p.point.x < n.point.x) {
+            changed = true;
+            od = nd;
+            lastReducedActivities[j - 1] = p;
+            lastReducedActivities[j] = n;
+            --j;
+          }  
+          n = p;
+        }
+        if (changed && i + 1 == length) {
+          i = -1;
+          changed = false;
+        }
+      }
+      */
+    }
+    return lastReducedActivities;
+  }
+
+  function orderByDistance(a, b) {
+    var distance = mercator.pointDistance(
+      mercator.coordsToPoint(a, ZOOM_MAX),
+      mercator.coordsToPoint(b, ZOOM_MAX)
     );
+    if (!('distance' in a)) {
+      a.distance = distance;
+    }
+    if (!('distance' in b)) {
+      b.distance = distance;
+    }
+    if (a.distance < b.distance) {
+      if (distance < a.distance) {
+        a.distance = distance;
+        return 1;
+      }
+      return 0;
+    } else if(b.distance < a.distance) {
+      return -1;
+    } else {
+      return 0;
+    }
   }
 
   function enrichPlace(place) {
@@ -1574,7 +2051,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
   // simplifies the creation of a map icon
   // return the marker added to the map
   function createMarker(place) {
-    return L.marker(
+    var marker = L.marker(
       toGeoArray(place),
       {
         icon: L.icon({
@@ -1584,6 +2061,9 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
         })
       }
     );
+    marker.on('click', onMarkerClick);
+    marker.id = place.id;
+    return marker;
   }
 
   function updatePositionIcon(coords) {
@@ -1632,15 +2112,28 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
   }
 
   function updateInfoOnBar() {
+    if (veryFirstTime) return;
     // TODO:  this is not working as expected
     //        plus it's completely user unfriendly
     if (updateInfoOnBar.moveend) {
       map.off('moveend', updateInfoOnBar.moveend);
       map.off('movestart', updateInfoOnBar.moveend.clear);
     }
+    // clean up sections
+    $('li', section.location).forEach(function (li) {
+      if (li.classList.contains('place')) {
+        li.remove();
+      } else {
+        li.style.display = 'none';
+      }
+    });
+    updateInfoOnBar.map = {};
     if (map.getZoom() < ZOOM_FOR_ICONS) {
       // show stats
-      updateInfoOnBar.el = $('section#map > div.location > ul > li.stats')[0];
+      if (updateInfoOnBar.el) {
+        updateInfoOnBar.el.style.width = null;
+      }
+      updateInfoOnBar.el = $('li.stats', section.map)[0];
       updateInfoOnBar.el.style.display = 'block';
       map.on('moveend', updateInfoOnBar.moveend = Delayed(function () {
         // TODO:  IE9 Mobile won't reach this point
@@ -1671,28 +2164,28 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
           'we have nothing nothing in this area :-(<br/>' +
           'do you know any activity that could be part of equolo?'
         ;
-        if (IE9Mobile)
-          FontCawesome.fix(p)
-        ;
+        fixFonts(p);
       }));
       map.on('movestart', updateInfoOnBar.moveend.clear);
     } else {
-      // show details
-      if (updateInfoOnBar.el) {
-        updateInfoOnBar.el.style.display = 'none';
-      }
-      updateInfoOnBar.el = $('section#map div.location > ul')[0];
+      updateInfoOnBar.el = $('ul', section.map)[0];
       map.on('moveend', updateInfoOnBar.moveend = Delayed(function () {
         var
-          fragment = document.createDocumentFragment(),
-          size = 0
+          activities = flatActivities().filter(
+            onlyInBox,
+            map.getBounds()
+          ),
+          length = activities.length,
+          fragment = length && document.createDocumentFragment(),
+          size = 0,
+          keys
         ;
-        updateInfoOnBar.el.innerHTML = '';
-        flatActivities().filter(
-          onlyInBox,
-          map.getBounds()
-        ).forEach(
+        if (!length) return;
+        keys = [];
+        activities.forEach(
           function (place) {
+            keys.push(place.id);
+            if (updateInfoOnBar.map[place.id]) return;
             var
               li = this.appendChild(
                 document.createElement('li')
@@ -1704,7 +2197,11 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
                 document.createElement('p')
               )
             ;
-            li.className = 'place';
+            h3.classList.add('ellipsis');
+            li.data('coords', place.latitude + '/' + place.longitude);
+            li.classList.add('place', 't-all');
+            li.id = 'place-' + place.id;
+            updateInfoOnBar.map[place.id] = place;
             h3.appendChild(
               document.createElement('i')
             ).classList.add(
@@ -1713,19 +2210,297 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
             h3.appendChild(
               document.createTextNode(' ' + place.name)
             );
+            h3.appendChild(
+              document.createElement('span')
+            ).textContent = place.postcode;
             p.appendChild(
               document.createTextNode(place.description)
             );
-            size += 276;
+            li.on('click', onPlaceClick);
           },
           fragment
         );
-        updateInfoOnBar.el.style.width = size + 'px';
         updateInfoOnBar.el.appendChild(fragment);
+        length = $('li.place', updateInfoOnBar.el).filter(function(li){
+          var id = li.id.slice(6);
+          if (keys.indexOf(id) < 0) {
+            delete updateInfoOnBar.map[id];
+            li.remove();
+            return false;
+          }
+          return true;
+        }).length;
+        updateInfoOnBar.el.style.width = (
+          length * 276 +
+          getScrollableMargin() * 2 +
+          1
+        ) + 'px';
+        fixFonts(updateInfoOnBar.el);
+        if (!updateInfoOnBar.hscroll) {
+          updateInfoOnBar.hscroll = new HorizontalScroll(
+            updateInfoOnBar.el, {
+              onStart: function () {
+                this.x = updateInfoOnBar.el.scrollLeft;
+                this.el = onPlaceClick.last || $('li.place', updateInfoOnBar.el)[0];
+                onPlaceClick.reset();
+              },
+              onChange: function (e) {
+                this.x = e.x - this.x;
+              },
+              onEnd: function (e) {
+                onPlaceClick.call((
+                  this.x < 0 ?
+                    this.el.nextElementSibling :
+                    this.el.previousElementSibling
+                  ) ||
+                  this.el,
+                  {}
+                );
+                /*
+                var
+                  i = Math.round(
+                    ( updateInfoOnBar.el.parentNode.scrollLeft -
+                      getScrollableMargin()
+                    ) / 276
+                  ),
+                  target = $('li.place', updateInfoOnBar.el)[i]
+                ;
+                if (target) {
+                  if (target === this.el) {
+                    target = target[this.x < 0 ? 'previousSibling' : 'nextSibling'];
+                    if (target) {
+                      onPlaceClick.call(target, {});
+                    }
+                  }
+                }
+                */
+              },
+              onClick: function (e) {
+                if (IEMobile) return;
+                var target = e.target;
+                e.preventDefault();
+                e.stopPropagation();
+                while(target && target.nodeName !== 'LI') {
+                  target = target.parentNode;
+                }
+                if (target && target.nodeName === 'LI') {
+                  onPlaceClick.call(target, {});
+                }
+              }
+            }
+          );
+        }
+        /*
+        if (onPlaceClick.last) {
+          fragment = onPlaceClick.last;
+          onPlaceClick.reset();
+          onPlaceClick.call(fragment);
+        }
+        */
       }));
-      map.on('movestart', updateInfoOnBar.moveend.clear);
+      map.on('movestart', updateInfoOnBar.movestart = function () {
+        updateInfoOnBar.moveend.clear();
+        onPlaceClick.cancel();
+      });
+      updateInfoOnBar.moveend();
     }
   }
+
+  function onMarkerClick() {
+    $('li#place-' + this.id).trigger('click', false);
+  }
+
+  function isPlaceFieldNotEmpty(key) {
+    return this[key].length;
+  }
+
+  function getObjectProperty(key) {
+    return this[key];
+  }
+
+  function showDetailsIfNeeded(where, place, fields) {
+    var tmp = fields.filter(
+      isPlaceFieldNotEmpty,
+      place
+    );
+    if (tmp.length) {
+      (where.appendChild(
+        document.createElement('li')
+      )).textContent = tmp.map(getObjectProperty, place).join(', ');
+    }
+  }
+
+  function showButtonIfNeeded(where, place, field, icon, content) {
+    var li;
+    if (place[field]) {
+      li = where.appendChild(
+        document.createElement('li')
+      );
+      li.classList.add('button');
+      li.appendChild(
+        document.createElement('i')
+      ).classList.add('fa', 'fa-' + icon);
+      li = li.appendChild(
+        document.createElement('a')
+      );
+      li.classList.add('ellipsis');
+      li.href = field === (
+        'phone' ? 'tel:' : (
+          field === 'email' ? 'mailto:' : ''
+        )
+      ) + place[field];
+      li.textContent = place[field];
+    }
+  }
+
+  function showAllDetails(place) {
+    var el, ul, height;
+    showAllDetails.showing = true;
+    if (!showAllDetails.footer) {
+      showAllDetails.footer = section.nav.parentNode.offsetHeight;
+    }
+    if (!showAllDetails.el) {
+      showAllDetails.el = $('div.details', section.map)[0];
+    }
+    height = section.tiles.offsetHeight;
+    el = showAllDetails.el;
+    el.style.cssText ='opacity:1;' +
+                      'top:' + ($('header', section.map)[0].offsetHeight) + 'px;' +
+                      'height:' + (
+                        height < 276 ? (height + showAllDetails.footer) : height
+                      ) + 'px;';
+    if (height < 276) {
+      section.location.style.bottom =
+      section.nav.parentNode.style.height = 0;
+    }
+    if (!minimap) {
+      showAllDetails.h3 = $('h3', el)[0];
+      showAllDetails.info = $('ul', el)[0];
+      showAllDetails.address = $('ul.address', el)[0];
+      showAllDetails.contact = $('ul.contact', el)[0];
+      minimap = createMap($('div.minimap', el)[0], {
+        zoomControl: false,
+        dragging: false,
+        touchZoom: false,
+        doubleClickZoom: false,
+        scrollWheelZoom: false,
+        boxZoom: false,
+        keyboard: false,
+        attributionControl: false,
+        tap: false
+      });
+    }
+    // no need to remove others
+    // nicer effect, not a huge deal, practically ...
+    createMarker(place).addTo(minimap);
+    minimap.setView(
+      toGeoArray(place),
+      15
+    );
+    showAllDetails.h3.textContent =
+    showAllDetails.address.textContent =
+    showAllDetails.contact.textContent = '';
+    showAllDetails.h3.appendChild(
+      document.createElement('i')
+    ).className = 'fa fa-' + place.icon;
+    showAllDetails.h3.appendChild(
+      document.createTextNode(' ' + place.name)
+    );
+    ul = showAllDetails.address;
+    showDetailsIfNeeded(ul, place, [
+      'address',
+      'extra',
+      'postcode',
+      'city'
+    ]);
+    /*
+    showDetailsIfNeeded(ul, place, [
+      'county',
+      'state',
+      'country'
+    ]);
+    */
+    place.phone = '+393387621067';
+    place.email = 'polpetta@polpetti.po';
+    place.website = 'www.polpetti.com';
+    showButtonIfNeeded(ul, place, 'phone', 'phone');
+    showButtonIfNeeded(ul, place, 'email', 'envelope');
+    showButtonIfNeeded(ul, place, 'website', 'globe');
+
+    fixFonts(el);
+    console.log(place);
+  }
+
+  function onPlaceClick(e) {
+    var
+      coords = this.data('coords').split('/'),
+      doubleClick = onPlaceClick.last == this,
+      scroller = this.parentNode.parentNode,
+      placeId = this.id.slice(6),
+      li, x, onend
+    ;
+    if (doubleClick) {
+      if (showAllDetails.showing) {
+        showAllDetails.showing = false;
+        showAllDetails.el.style.cssText = '';
+        section.location.style.bottom =
+        section.nav.parentNode.style.height = null;
+      } else {
+        showAllDetails(updateInfoOnBar.map[placeId]);
+      }
+    } else {
+      onend = e.detail === false ? Object : function (x, y, dx, dy, ex, ey) {
+        var cancel = onPlaceClick.cancel;
+        onPlaceClick.cancel = Object;
+        setMapView(
+          {
+            latitude: parseFloat(coords[0]),
+            longitude: parseFloat(coords[1])
+          },
+          map.getZoom()
+        );
+        onPlaceClick.cancel = cancel;
+        if (showAllDetails.showing) {
+          showAllDetails(updateInfoOnBar.map[placeId]);
+        }
+      };
+      onPlaceClick.cancel();
+      (onPlaceClick.last = this).classList.add('selected');
+      x = 0;
+      li = this.previousElementSibling;
+      while (li.classList.contains('place')) {
+        li = li.previousElementSibling;
+        x += 276;
+      }
+      (onPlaceClick.sk = new SimpleKinetic({
+        onmove: function (x, y, dx, dy, ex, ey) {
+          scroller.scrollLeft = x;
+        },
+        onend: onend
+      })).init(
+        scroller.scrollLeft,
+        0,
+        x - scroller.scrollLeft,
+        0,
+        true,
+        false
+      ) || onend();
+    }
+  }
+
+  onPlaceClick.reset = function () {
+    if (onPlaceClick.last) {
+      onPlaceClick.last.classList.remove('selected');
+      onPlaceClick.last = null;
+    }
+  };
+
+  onPlaceClick.cancel = function () {
+    if (onPlaceClick.sk) {
+      onPlaceClick.sk.cancel();
+    }
+    onPlaceClick.reset();
+  };
 
   function updateMapMarkers(parseActivity) {
     // remove and if needed erase all layers
@@ -1866,19 +2641,35 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     document.body.classList[op]('no-scroll');
   }
 
+  function getScrollableMargin() {
+    return (display.width - 276) >> 1;
+  }
+
   // what happens when the display size changes ?
   function onDisplayChange() {
+    var placeMargin = getScrollableMargin();
     restyle({
       // section should have a proper minimum height
       'section': {
         'min-height': display.height + 'px'
+      },
+      'section#map > div.location li.place:nth-child(3)': {
+        'margin-left': placeMargin + 'px'
+      },
+      'section#map > div.location li.place:last-child': {
+        'margin-right': placeMargin + 'px'
+      },
+      'section#map > div.location > ul > li': {
+        'min-height': (150 - SCROLLBAR_SIZE) + 'px'
       }
     });
     if (map) map.invalidateSize();
+    if (minimap) minimap.invalidateSize();
   }
 
   function onlyInBox(place) {
-    return this.contains(new L.LatLng(
+    var value = categories.value;
+    return place.icon == value || value == 'all' && this.contains(new L.LatLng(
       place.latitude,
       place.longitude
     ));
@@ -1892,6 +2683,12 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
       coords.latitude || coords.lat || coords[0] || 0,
       coords.longitude || coords.lng || coords[1] || 0
     ];
+  }
+
+  function fixFonts(el) {
+    if (IE9Mobile)
+      FontCawesome.fix(el)
+    ;
   }
 
   // all places are packed via JSONH to preserve

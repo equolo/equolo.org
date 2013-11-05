@@ -32,10 +32,14 @@
 }
 .h-scroll {
   overflow-x: auto;
+  overflow-y: hidden;
 }
 .v-scroll {
-  overflow-x: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .no-scroll {
   overflow: hidden;
+  -ms-touch-action: none;
+  touch-action: none;
 }

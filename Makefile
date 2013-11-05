@@ -24,6 +24,9 @@ JS =  js/display.js\
       js/IE9Mobile.js\
       font-cawesome/build/font-cawesome.js\
       js/Delayed.js\
+      js/Mercator.js\
+      js/HorizontalScroll.js\
+      js/ietouches.js\
       js/$(REPO).js
 
 # make pinit/submit section files

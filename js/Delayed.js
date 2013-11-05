@@ -1,4 +1,5 @@
 /*! (C) Andrea Giammarchi */
+// https://gist.github.com/WebReflection/7286687
 var Delayed = function(delay){
   function Delayed(callback, delay) {
     if (!delay) delay = Delayed.delay;

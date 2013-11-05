@@ -1,5 +1,5 @@
+/*! (C) Andrea Giammarchi */
 function Mercator(TILE_SIZE) {
-  /*! (C) Andrea Giammarchi */
   var
     Math = window.Math,
     atan = Math.atan,
@@ -7,7 +7,9 @@ function Mercator(TILE_SIZE) {
     log = Math.log,
     max = Math.max,
     min = Math.min,
+    pow = Math.pow,
     round = Math.round,
+    sqrt = Math.sqrt,
     tan = Math.tan,
     PI = Math.PI,
     POINT_FIVE = .5,
@@ -41,6 +43,9 @@ function Mercator(TILE_SIZE) {
           )
         ) * size)
       };
+    },
+    pointDistance: function pointsDistance(a, b) {
+      return sqrt(pow(b.y - a.y, 2) + pow(b.x - a.x, 2));
     },
     pointToCoords: function pointToCoords(point, zoom) {
       var

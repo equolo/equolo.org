@@ -93,6 +93,46 @@ section#map > div.location {
   bottom: 48px;
   text-align: center;
 }
+section#map > div.details {
+  z-index: 9999;
+  opacity: 0;
+  height: 0;
+  position: relative;
+  overflow: hidden;
+  background-color: #FFFFFF;
+}
+section#map > div.details > div {
+  max-width: 720px;
+  margin: auto;
+}
+section#map > div.details > div > * {
+  margin: 8px;
+}
+section#map > div.details > div > div.minimap {
+  height: 80px;
+}
+section#map > div.details > div > h3 {
+  font-size: 18px;
+  font-weight: 400;
+  text-align: center;
+  color: #198A8A;
+}
+section#map > div.details > div > h3 > i {
+  color: #286868;
+}
+section#map > div.details > div > ul,
+section#map > div.details > div > ul > li {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+section#map > div.details > div > ul > li {
+  font-size: 14px;
+  line-height: 16px;
+  font-weight: 200;
+  margin: 2px 8px;
+  color: #064646;
+}
 section#map > div.location > ul {
   display: inline-block;
   margin: auto;
@@ -129,9 +169,6 @@ section#map > div.location > ul > li > h3 > span {
   font-size: 12px;
   color: #198A8A;
 }
-section#map > div.location > ul > li:nth-child(1) {
-  margin-left: 0;
-}
 
 section#map > div.location > ul > li.intro,
 section#map > div.location > ul > li.stats {
@@ -143,9 +180,15 @@ section#map > div.location > ul > li.intro > ul {
   margin: 8px 0 0 0;
   padding: 0;
 }
-
+section#map > div.location > ul > li.selected {
+  background-color: #F5F5F5;
+}
+section#map > div.location > ul > li.selected + li {
+  margin-left: -8px;
+  border-left: 8px solid #F5F5F5;
+}
 section#map > footer {
-  background: #064646;
+  background-color: #064646;
   height: 48px;
   bottom: 0;
 }
@@ -281,7 +324,26 @@ section#pin-it > div{
   margin-bottom: 8px;
   padding-top: 16px;
 }
-
+li.button {
+  position: relative;
+  left: 20px;
+}
+li.button > i,
+li.button > img {
+  position: absolute;
+  left: -20px;
+}
+li.button > a,
+li.button > a:visited {
+  position: relative;
+  left: 0;
+  display: inline-block;
+  text-decoration: none;
+  background: #EEEEEE;
+  color: #286868;
+  width: 200px;
+  padding: 2px;
+}
 
 
 
@@ -345,12 +407,16 @@ section#pin-it > div{
 }
 .h-scroll {
   overflow-x: auto;
+  overflow-y: hidden;
 }
 .v-scroll {
-  overflow-x: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .no-scroll {
   overflow: hidden;
+  -ms-touch-action: none;
+  touch-action: none;
 }/* custom borders */
 .leaflet-bar {
   background: #FFF !important;
