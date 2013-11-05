@@ -2276,7 +2276,6 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
                 */
               },
               onClick: function (e) {
-                if (IEMobile) return;
                 var target = e.target;
                 e.preventDefault();
                 e.stopPropagation();
@@ -2284,19 +2283,13 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
                   target = target.parentNode;
                 }
                 if (target && target.nodeName === 'LI') {
-                  onPlaceClick.call(target, {});
+                  target.clicked = false;
+                  setTimeout(onPlaceFakeClick, 350, target);
                 }
               }
             }
           );
         }
-        /*
-        if (onPlaceClick.last) {
-          fragment = onPlaceClick.last;
-          onPlaceClick.reset();
-          onPlaceClick.call(fragment);
-        }
-        */
       }));
       map.on('movestart', updateInfoOnBar.movestart = function () {
         updateInfoOnBar.moveend.clear();
@@ -2439,6 +2432,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
       placeId = this.id.slice(6),
       li, x, onend
     ;
+    this.clicked = true;
     if (doubleClick) {
       if (showAllDetails.showing) {
         showAllDetails.showing = false;
@@ -2501,6 +2495,12 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     }
     onPlaceClick.reset();
   };
+
+  function onPlaceFakeClick(target) {
+    if (!target.clicked) {
+      onPlaceClick.call(target, target);
+    }
+  }
 
   function updateMapMarkers(parseActivity) {
     // remove and if needed erase all layers
