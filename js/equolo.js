@@ -962,7 +962,40 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     }
   }
 
-  function showButtonIfNeeded(where, place, field, icon, content) {
+  function showSocialIfNeeded(where, place, field, icon) {
+    var a;
+    if (place[field]) {
+      a = where.lastChild.appendChild(
+        document.createElement('a')
+      );
+      a.classList.add('social');
+      switch(field) {
+        case 'twitter':
+          a.href = /^https?:\/\/(?:www.)?twitter\./.test(place[field]) ?
+            place[field] :
+            'https://twitter.com/' + place[field].replace(/^@/, '')
+          ;
+          break;
+        case 'facebook':
+          a.href = /^https?:\/\/(?:www.)?facebook\./.test(place[field]) ?
+            place[field] :
+            'https://www.facebook.com/' + place[field]
+          ;
+          break;
+        case 'gplus':
+          a.href = /^https?:\/\/plus\.google\./.test(place[field]) ?
+            place[field] :
+            'https://plus.google.com/' + place[field]
+          ;
+          break;
+      }
+      a.appendChild(
+        document.createElement('i')
+      ).classList.add('fa', 'fa-' + icon);
+    }
+  }
+
+  function showButtonIfNeeded(where, place, field, icon) {
     var li;
     if (place[field]) {
       li = where.appendChild(
@@ -1058,12 +1091,13 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
       'postcode',
       'city'
     ]);
-    place.phone = '(415) 535-6886';
-    place.email = 'polpetta@polpetti.po';
-    place.website = 'www.polpetti.com';
+
     showButtonIfNeeded(ul, place, 'phone', 'phone');
+    showSocialIfNeeded(ul, place, 'twitter', 'twitter');
     showButtonIfNeeded(ul, place, 'email', 'envelope');
+    showSocialIfNeeded(ul, place, 'facebook', 'facebook-square');
     showButtonIfNeeded(ul, place, 'website', 'globe');
+    showSocialIfNeeded(ul, place, 'gplus', 'google-plus');
 
     fixFonts(el);
   }

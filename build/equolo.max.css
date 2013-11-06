@@ -344,6 +344,20 @@ li.button > a:visited {
   width: 200px;
   padding: 2px;
 }
+li.button > a.social {
+  position: absolute;
+  left: auto;
+  right: 16px;
+  width: 32px;
+  height: 16px;
+  font-size: 16px;
+  text-align: center;
+}
+li.button > a.social,
+li.button > a.social img {
+  text-decoration: none;
+  border: 0;
+}
 
 
 
