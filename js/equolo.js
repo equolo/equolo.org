@@ -1,3 +1,22 @@
+// WARNING ===================================================
+// this is not how you should do JavaScript for any website
+// this is a rushed code out of a prototype and potentially
+// full of any sort of bug, not organized, not optimized
+// not ... you name it, it's **not** !
+// Please feel free to use some hint used in this file
+// but do not copy the style, it's a mess,
+// and we deeply apologize about such state at this point.
+// If we'll ever have more time to test properly all devices
+// we are curently supported in a properly well organized
+// code and repository, we'll just do that!
+// Right now, we are looking forward to any sort of bug report
+// so we can organize our time and resources to fix
+// what's really important/missing and prioritize accordingly.
+// THANK YOU FOR YOUR UNDERSTANDING!!!
+// =================================================== WARNING
+
+
+
 // let's dirtly feature detect browser capabilities
 // in the worst case scenario, we'll prepare
 // the most common icon fallback: the marker one
@@ -594,46 +613,6 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
       lastReducedActivities = lastParsedActivities.reduce(
         flatPlaces, []
       );
-      /*
-      // simplified and quite dumb algo
-      // to have ordered points by distance
-      for(var
-        current, nd, od, p, n,
-        changed = false
-        j = 0,
-        i = 0,
-        length = lastReducedActivities.length;
-        i < length; i++
-      ) {
-        current = lastReducedActivities[i];
-        if (!current.point) {
-          current.point = mercator.coordsToPoint(current, ZOOM_MAX);
-        }
-        for(od = null, j = i + 1; j < length; j++) {
-          p = lastReducedActivities[j];
-          nd = mercator.pointDistance(
-            current.point,
-            p.point || (
-              p.point = mercator.coordsToPoint(p, ZOOM_MAX)
-            )
-          );
-          if (!od) {
-            od = nd;
-          } else if (nd < od || p.point.x < n.point.x) {
-            changed = true;
-            od = nd;
-            lastReducedActivities[j - 1] = p;
-            lastReducedActivities[j] = n;
-            --j;
-          }  
-          n = p;
-        }
-        if (changed && i + 1 == length) {
-          i = -1;
-          changed = false;
-        }
-      }
-      */
     }
     return lastReducedActivities;
   }
@@ -1188,14 +1167,6 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     }
     onPlaceClick.reset();
   };
-
-  /* hack not needed anymore
-  function onPlaceFakeClick(target) {
-    if (!target.clicked) {
-      onPlaceClick.call(target, target);
-    }
-  }
-  */
 
   function updateMapMarkers(parseActivity) {
     // remove and if needed erase all layers
