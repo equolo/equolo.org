@@ -24,6 +24,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     ZOOM_FOR_BBOX = 15,
     ZOOM_MAX = 18,
     ZOOM_MIN = 3,
+    TOUCH = 'ontouchend' in document,
     // coordinates utility
     mercator = new Mercator(256),
     // the shared map instance
@@ -162,6 +163,12 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     }
     // make section good for synthetic `scrollingTo`
     onDisplayChange();
+
+    if (display.height <= 500) {
+      section.map.appendChild(
+        $(window.compat ? 'img' : 'canvas', section.map)[0]
+      ).classList.add('logo');
+    }
 
     // add shortcut icons per each resolution to the header at runtime
     function createShortcutIcon() {
@@ -707,7 +714,8 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
         icon: L.icon({
           // works with retina too and any pixel density
           iconUrl: fontAwesomeIcon(place.icon, 36),
-          iconSize: [36, 36]
+          iconSize: [36, 36],
+          iconAnchor: [18, 36]
         })
       }
     );
@@ -866,7 +874,9 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
             p.appendChild(
               document.createTextNode(place.description)
             );
-            li.on('click', onPlaceClick);
+            if (!TOUCH) {
+              li.on('click', onPlaceClick);
+            }
           },
           fragment
         );
@@ -886,18 +896,18 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
           1
         ) + 'px';
         fixFonts(updateInfoOnBar.el);
-        if (!updateInfoOnBar.hscroll) {
+        if (TOUCH && !updateInfoOnBar.hscroll) {
           updateInfoOnBar.hscroll = new HorizontalScroll(
             updateInfoOnBar.el, {
-              onStart: function () {
+              onstart: function () {
                 this.x = updateInfoOnBar.el.scrollLeft;
                 this.el = onPlaceClick.last || $('li.place', updateInfoOnBar.el)[0];
                 onPlaceClick.reset();
               },
-              onChange: function (e) {
+              onchange: function (e) {
                 this.x = e.x - this.x;
               },
-              onEnd: function (e) {
+              onend: function (e) {
                 onPlaceClick.call((
                   this.x < 0 ?
                     this.el.nextElementSibling :
@@ -906,35 +916,14 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
                   this.el,
                   {}
                 );
-                /*
-                var
-                  i = Math.round(
-                    ( updateInfoOnBar.el.parentNode.scrollLeft -
-                      getScrollableMargin()
-                    ) / 276
-                  ),
-                  target = $('li.place', updateInfoOnBar.el)[i]
-                ;
-                if (target) {
-                  if (target === this.el) {
-                    target = target[this.x < 0 ? 'previousSibling' : 'nextSibling'];
-                    if (target) {
-                      onPlaceClick.call(target, {});
-                    }
-                  }
-                }
-                */
               },
-              onClick: function (e) {
+              onclick: function (e) {
                 var target = e.target;
-                e.preventDefault();
-                e.stopPropagation();
                 while(target && target.nodeName !== 'LI') {
                   target = target.parentNode;
                 }
                 if (target && target.nodeName === 'LI') {
-                  target.clicked = false;
-                  setTimeout(onPlaceFakeClick, 350, target);
+                  onPlaceClick.call(target, target);
                 }
               }
             }
@@ -950,7 +939,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
   }
 
   function onMarkerClick() {
-    $('li#place-' + this.id).trigger('click', false);
+    onPlaceClick.call($('li#place-' + this.id)[0], {detail:false});
   }
 
   function isPlaceFieldNotEmpty(key) {
@@ -987,17 +976,26 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
         document.createElement('a')
       );
       li.classList.add('ellipsis');
-      li.href = field === (
-        'phone' ? 'tel:' : (
-          field === 'email' ? 'mailto:' : ''
-        )
-      ) + place[field];
+      switch(field) {
+        case 'phone':
+          li.href = 'tel:' + place[field].replace(/[^0-9+]/g, '');
+          break;
+        case 'email':
+          li.href = 'mailto:' + place[field];
+          break;
+        default:
+          li.href = /^https?:\/\//i.test(place[field]) ?
+            place[field] :
+            'http://' + place[field]
+          ;
+          break;
+      }
       li.textContent = place[field];
     }
   }
 
   function showAllDetails(place) {
-    var el, ul, height;
+    var el, ul, height, coords;
     showAllDetails.showing = true;
     if (!showAllDetails.footer) {
       showAllDetails.footer = section.nav.parentNode.offsetHeight;
@@ -1036,8 +1034,12 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     // no need to remove others
     // nicer effect, not a huge deal, practically ...
     createMarker(place).addTo(minimap);
+    coords = mercator.coordsToPoint(place, 15);
+    coords.y -= 18;
     minimap.setView(
-      toGeoArray(place),
+      toGeoArray(
+        mercator.pointToCoords(coords, 15)
+      ),
       15
     );
     showAllDetails.h3.textContent =
@@ -1056,14 +1058,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
       'postcode',
       'city'
     ]);
-    /*
-    showDetailsIfNeeded(ul, place, [
-      'county',
-      'state',
-      'country'
-    ]);
-    */
-    place.phone = '+393387621067';
+    place.phone = '(415) 535-6886';
     place.email = 'polpetta@polpetti.po';
     place.website = 'www.polpetti.com';
     showButtonIfNeeded(ul, place, 'phone', 'phone');
@@ -1071,17 +1066,24 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     showButtonIfNeeded(ul, place, 'website', 'globe');
 
     fixFonts(el);
-    console.log(place);
   }
 
   function onPlaceClick(e) {
+    try {
     var
       coords = this.data('coords').split('/'),
       doubleClick = onPlaceClick.last == this,
       scroller = this.parentNode.parentNode,
       placeId = this.id.slice(6),
-      li, x, onend
+      li, x, tmp, onend
     ;
+    } catch(o_O) {
+      // something terribly wrong happened
+      // right now some too quick action can cause this
+      // so untile we figure out why
+      // this stays and ...
+      return;
+    }
     this.clicked = true;
     if (doubleClick) {
       if (showAllDetails.showing) {
@@ -1116,15 +1118,22 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
         li = li.previousElementSibling;
         x += 276;
       }
+      tmp = HorizontalScroll.compat ?
+        -parseFloat(scroller.style.marginLeft || 0) :
+        scroller.scrollLeft;
       (onPlaceClick.sk = new SimpleKinetic({
         onmove: function (x, y, dx, dy, ex, ey) {
-          scroller.scrollLeft = x;
+          if (HorizontalScroll.compat) {
+            scroller.style.marginLeft = -x + 'px';
+          } else {
+            scroller.scrollLeft = x;
+          }
         },
         onend: onend
       })).init(
-        scroller.scrollLeft,
+        tmp,
         0,
-        x - scroller.scrollLeft,
+        x - tmp,
         0,
         true,
         false
@@ -1146,11 +1155,13 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     onPlaceClick.reset();
   };
 
+  /* hack not needed anymore
   function onPlaceFakeClick(target) {
     if (!target.clicked) {
       onPlaceClick.call(target, target);
     }
   }
+  */
 
   function updateMapMarkers(parseActivity) {
     // remove and if needed erase all layers

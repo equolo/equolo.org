@@ -1030,20 +1030,22 @@ function Mercator(TILE_SIZE) {
     }
   };
 }/*! (C) Andrea Giammarchi */
-var HorizontalScroll = (function(bugged, Math){
-
-  // for IE10 and IE11 remember to add this
-  // CSS to the element that should be scrolled by this
-  // -ms-touch-action: none;
-  // touch-action: none;
+// @link https://gist.github.com/WebReflection/7311642
+var HorizontalScroll = (function(UA, Math){
 
   var
+    // this is horrible, unfortunately needed
+    bugged = /Android 4\.0/.test(UA),
+    // AFAIK no proper way to do feature in here detection :-(
+    preventsAllDefaults = /Android/.test(UA) &&
+                          /Chrom(?:e|ium)/.test(UA),
     // shortcut for happy minifiers
     Prototype = HorizontalScroll.prototype,
     // quicker shortcuts
     abs = Math.abs,
     max = Math.max,
-    min = Math.min
+    min = Math.min,
+    gap = 15
   ;
 
   // a very essential horizontal touch scroll handler
@@ -1053,48 +1055,79 @@ var HorizontalScroll = (function(bugged, Math){
   // <div class="scrlable"><p></p></div>
   // @param object with handlers
   function HorizontalScroll(el, obj) {
-    for (var type in this) {
-      if (type !== 'handleEvent') {
-        el.addEventListener(type, this);
-      }
-    }
     if (!obj) obj = this;
+    // needs the original reference
+    this._el = el;
+    // and an element with an offset (mainly a Chrome problem)
+    while (!el.offsetHeight) el = el.parentNode;
+    addOrRemoveListeners(this, this._r = el, true);
+    // mark as working
+    this.disabled = false;
     // by default, it really does nothing
-    this.onStart  = obj.onStart || nothingToDoHere;
-    this.onChange = obj.onChange || nothingToDoHere;
-    this.onEnd    = obj.onEnd || nothingToDoHere;
-    this.onClick  = obj.onClick || nothingToDoHere;;
-    // this avoids checking while scrolling
-    el.style.cssText += ';overflow:hidden;-ms-touch-action:none;touch-action:none';
+    // avoiding cheks per each call
+    this.onstart  = obj.onstart || nothingToDoHere;
+    this.onchange = obj.onchange || nothingToDoHere;
+    this.onend    = obj.onend || nothingToDoHere;
+    this.onclick  = obj.onclick || nothingToDoHere;
+    if ('ontouchend' in document) {
+      // MS needs this to drop original scroll behavior
+      // others might want to enforce the scrolling
+      this._el.parentNode.style.cssText += [
+        ';-ms-touch-action:none',
+        ';touch-action:none',
+        ';overflow:hidden'
+      ].join('');
+    }
   }
 
   function nothingToDoHere(o_O){/*literally*/}
 
+  // helps adding or removing listeners
+  function addOrRemoveListeners(hs, el, add) {
+    var method = (add ? 'add' : 'remove') + 'EventListener';
+    el[method]('touchstart', hs, true);
+    el[method]('touchmove', hs, true);
+    el[method]('touchend', hs, true);
+  }
+
+  Prototype.clear = function clear() {
+    addOrRemoveListeners(this, this._r, false);
+  };
+
   // entry point for the handler
   Prototype.handleEvent = function handleEvent(e) {
+    if (this._vscrolling && e.type !== 'touchend') return;
+    if (preventsAllDefaults) e.preventDefault();
     this[e.type](e);
   };
 
   Prototype.touchstart = function touchstart(e) {
-    e.preventDefault();
     // only if not scrolling yet
     if (!this._scrolling) {
       // remember first X in the page
+      // also the first Y to avoid undesired clicks
       // even if slower to calculate,
       // pageX is better than screenX
       // due pixel density agnostic nature
       // once the viewport has been set as mobile
-      this._x = e.touches[0].pageX >> 0;
+      e = e.touches[0];
+      this._x = e.pageX >> 0;
+      this._y = e.pageY >> 0;
+      this._diffY = 0;
+      this._t = 0;
+      this._l = 0;
       // I don't care about multiple fingers for now
     }
   };
 
   Prototype.touchmove = function touchmove(e) {
-    var pageX = e.touches[0].pageX >> 0;
-    // do not let it scroll by its own regardless
-    e.preventDefault();
-    // if already scrolling
+    var
+      touch = e.touches[0],
+      pageX = touch.pageX >> 0
+    ;
     if (this._scrolling) {
+      // do not let it scroll by its own
+      e.preventDefault();
       // do not propagate the action anywhere
       e.stopPropagation();
       // calculate the different x from
@@ -1112,21 +1145,26 @@ var HorizontalScroll = (function(bugged, Math){
         this._e = e.x;
       }
       // notify the scroll changed
-      this.onChange(e);
-    } else {
-      // calculate current diff from the first pageX
+      this.onchange(e);
+    }
+    // verify if scrolling
+    else {
+      // calculate current diff from the first pageX/Y
       this._diffX = pageX - this._x;
+      this._diffY = touch.pageY - this._y;
+      this._vscrolling = gap <= this._t++ || gap <= abs(this._diffY);
       // if that's about 15 or more
-      this._scrolling = 14 < abs(this._diffX);
+      this._scrolling = !this._vscrolling && gap <= abs(this._diffX);
       // then it's scrolling
       if (this._scrolling) {
+        e.preventDefault();
         // grab the element that should scroll
-        this._p = e.currentTarget.parentNode;
+        this._p = this._el.parentNode;
         // store initial scrolling value
         this._s = this._p.scrollLeft;
         if (bugged) {
           if (!this._l) {
-            this._l = 0;
+            this._l = parseFloat(this._p.style.marginLeft || 0);
             // minimum margin left
             // so it won't disappear from the screen
             this._m = this._p.clientWidth - this._p.scrollWidth;
@@ -1134,23 +1172,21 @@ var HorizontalScroll = (function(bugged, Math){
           this._s = -this._l;
         }
         // notify the action
-        this.onStart(e);
+        this.onstart(e);
       }
     }
   };
 
   Prototype.touchend = function touchend(e) {
-    // do not do anything by default
-    e.preventDefault();
     // and if there are no fingers anymore on the screen
     if (!e.touches.length) {
       // if it was scrolling
       if (this._scrolling) {
+        // do not do anything by default
+        e.preventDefault();
         // drop the parentNode reference
         // so we have one less leak to think about
         this._p = null;
-        // set it as non scrolling
-        this._scrolling = false;
         if (bugged)
           this._l = max(
             this._m,
@@ -1158,27 +1194,38 @@ var HorizontalScroll = (function(bugged, Math){
           )
         ;
         // notify the end
-        this.onEnd(e);
-      } else {
+        this.onend(e);
+      } else if (!this._vscrolling) {
         // no scrolled, this was a click intent
-        this.onClick(e);
+        // bear in mind some browser might fire
+        // the click regardless the default has been prevented
+        this.onclick(e);
       }
+      // reset them all
+      this._t = 0;
+      this._scrolling = false;
+      this._vscrolling = false;
     }
   };
+
+  // so it is possible to react differently
+  // through the marginLeft out there
+  HorizontalScroll.compat = bugged;
 
   // the bare essential constructor
   return HorizontalScroll;
 
-}(/Android 4\.0/.test(navigator.userAgent), Math));/*! (C) Andrea Giammarchi */
+}(navigator.userAgent, Math));/*! (C) Andrea Giammarchi */
+// @link https://gist.github.com/WebReflection/7313880
 (function (navigator, document, pointerEnabled) {
 
   // highly experimental, should work on IE10 and IE11 only
 
   if (!(
-    (pointerEnabled = navigator.pointerEnabled) ||
+    (pointerEnabled = !!navigator.pointerEnabled) ||
     navigator.msPointerEnabled
   ) ||
-    'touchend' in document
+    'ontouchend' in document
   ) return;
 
   var
@@ -1344,9 +1391,9 @@ var HorizontalScroll = (function(bugged, Math){
   commonOverride(Element.prototype, 'removeEventListener');
 
   // mark these are available
-  document.touchstart =
-  document.touchmove =
-  document.touchend = null;
+  document.ontouchstart =
+  document.ontouchmove =
+  document.ontouchend = null;
 
 }(navigator, document));// let's dirtly feature detect browser capabilities
 // in the worst case scenario, we'll prepare
@@ -1374,6 +1421,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     ZOOM_FOR_BBOX = 15,
     ZOOM_MAX = 18,
     ZOOM_MIN = 3,
+    TOUCH = 'ontouchend' in document,
     // coordinates utility
     mercator = new Mercator(256),
     // the shared map instance
@@ -1512,6 +1560,12 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     }
     // make section good for synthetic `scrollingTo`
     onDisplayChange();
+
+    if (display.height <= 500) {
+      section.map.appendChild(
+        $(window.compat ? 'img' : 'canvas', section.map)[0]
+      ).classList.add('logo');
+    }
 
     // add shortcut icons per each resolution to the header at runtime
     function createShortcutIcon() {
@@ -2057,7 +2111,8 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
         icon: L.icon({
           // works with retina too and any pixel density
           iconUrl: fontAwesomeIcon(place.icon, 36),
-          iconSize: [36, 36]
+          iconSize: [36, 36],
+          iconAnchor: [18, 36]
         })
       }
     );
@@ -2216,7 +2271,9 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
             p.appendChild(
               document.createTextNode(place.description)
             );
-            li.on('click', onPlaceClick);
+            if (!TOUCH) {
+              li.on('click', onPlaceClick);
+            }
           },
           fragment
         );
@@ -2236,18 +2293,18 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
           1
         ) + 'px';
         fixFonts(updateInfoOnBar.el);
-        if (!updateInfoOnBar.hscroll) {
+        if (TOUCH && !updateInfoOnBar.hscroll) {
           updateInfoOnBar.hscroll = new HorizontalScroll(
             updateInfoOnBar.el, {
-              onStart: function () {
+              onstart: function () {
                 this.x = updateInfoOnBar.el.scrollLeft;
                 this.el = onPlaceClick.last || $('li.place', updateInfoOnBar.el)[0];
                 onPlaceClick.reset();
               },
-              onChange: function (e) {
+              onchange: function (e) {
                 this.x = e.x - this.x;
               },
-              onEnd: function (e) {
+              onend: function (e) {
                 onPlaceClick.call((
                   this.x < 0 ?
                     this.el.nextElementSibling :
@@ -2256,35 +2313,14 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
                   this.el,
                   {}
                 );
-                /*
-                var
-                  i = Math.round(
-                    ( updateInfoOnBar.el.parentNode.scrollLeft -
-                      getScrollableMargin()
-                    ) / 276
-                  ),
-                  target = $('li.place', updateInfoOnBar.el)[i]
-                ;
-                if (target) {
-                  if (target === this.el) {
-                    target = target[this.x < 0 ? 'previousSibling' : 'nextSibling'];
-                    if (target) {
-                      onPlaceClick.call(target, {});
-                    }
-                  }
-                }
-                */
               },
-              onClick: function (e) {
+              onclick: function (e) {
                 var target = e.target;
-                e.preventDefault();
-                e.stopPropagation();
                 while(target && target.nodeName !== 'LI') {
                   target = target.parentNode;
                 }
                 if (target && target.nodeName === 'LI') {
-                  target.clicked = false;
-                  setTimeout(onPlaceFakeClick, 350, target);
+                  onPlaceClick.call(target, target);
                 }
               }
             }
@@ -2300,7 +2336,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
   }
 
   function onMarkerClick() {
-    $('li#place-' + this.id).trigger('click', false);
+    onPlaceClick.call($('li#place-' + this.id)[0], {detail:false});
   }
 
   function isPlaceFieldNotEmpty(key) {
@@ -2337,17 +2373,26 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
         document.createElement('a')
       );
       li.classList.add('ellipsis');
-      li.href = field === (
-        'phone' ? 'tel:' : (
-          field === 'email' ? 'mailto:' : ''
-        )
-      ) + place[field];
+      switch(field) {
+        case 'phone':
+          li.href = 'tel:' + place[field].replace(/[^0-9+]/g, '');
+          break;
+        case 'email':
+          li.href = 'mailto:' + place[field];
+          break;
+        default:
+          li.href = /^https?:\/\//i.test(place[field]) ?
+            place[field] :
+            'http://' + place[field]
+          ;
+          break;
+      }
       li.textContent = place[field];
     }
   }
 
   function showAllDetails(place) {
-    var el, ul, height;
+    var el, ul, height, coords;
     showAllDetails.showing = true;
     if (!showAllDetails.footer) {
       showAllDetails.footer = section.nav.parentNode.offsetHeight;
@@ -2386,8 +2431,12 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     // no need to remove others
     // nicer effect, not a huge deal, practically ...
     createMarker(place).addTo(minimap);
+    coords = mercator.coordsToPoint(place, 15);
+    coords.y -= 18;
     minimap.setView(
-      toGeoArray(place),
+      toGeoArray(
+        mercator.pointToCoords(coords, 15)
+      ),
       15
     );
     showAllDetails.h3.textContent =
@@ -2406,14 +2455,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
       'postcode',
       'city'
     ]);
-    /*
-    showDetailsIfNeeded(ul, place, [
-      'county',
-      'state',
-      'country'
-    ]);
-    */
-    place.phone = '+393387621067';
+    place.phone = '(415) 535-6886';
     place.email = 'polpetta@polpetti.po';
     place.website = 'www.polpetti.com';
     showButtonIfNeeded(ul, place, 'phone', 'phone');
@@ -2421,17 +2463,24 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     showButtonIfNeeded(ul, place, 'website', 'globe');
 
     fixFonts(el);
-    console.log(place);
   }
 
   function onPlaceClick(e) {
+    try {
     var
       coords = this.data('coords').split('/'),
       doubleClick = onPlaceClick.last == this,
       scroller = this.parentNode.parentNode,
       placeId = this.id.slice(6),
-      li, x, onend
+      li, x, tmp, onend
     ;
+    } catch(o_O) {
+      // something terribly wrong happened
+      // right now some too quick action can cause this
+      // so untile we figure out why
+      // this stays and ...
+      return;
+    }
     this.clicked = true;
     if (doubleClick) {
       if (showAllDetails.showing) {
@@ -2466,15 +2515,22 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
         li = li.previousElementSibling;
         x += 276;
       }
+      tmp = HorizontalScroll.compat ?
+        -parseFloat(scroller.style.marginLeft || 0) :
+        scroller.scrollLeft;
       (onPlaceClick.sk = new SimpleKinetic({
         onmove: function (x, y, dx, dy, ex, ey) {
-          scroller.scrollLeft = x;
+          if (HorizontalScroll.compat) {
+            scroller.style.marginLeft = -x + 'px';
+          } else {
+            scroller.scrollLeft = x;
+          }
         },
         onend: onend
       })).init(
-        scroller.scrollLeft,
+        tmp,
         0,
-        x - scroller.scrollLeft,
+        x - tmp,
         0,
         true,
         false
@@ -2496,11 +2552,13 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     onPlaceClick.reset();
   };
 
+  /* hack not needed anymore
   function onPlaceFakeClick(target) {
     if (!target.clicked) {
       onPlaceClick.call(target, target);
     }
   }
+  */
 
   function updateMapMarkers(parseActivity) {
     // remove and if needed erase all layers

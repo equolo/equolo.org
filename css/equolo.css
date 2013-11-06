@@ -328,6 +328,13 @@ li.button > a:visited {
   section#map > header {
     display: none;
   }
+  section#map .logo {
+    position: fixed;
+    left: auto;
+    top: 52px;
+    right: 8px;
+    z-index: 1;
+  }
   #category {
     top: 12px;
   }
@@ -342,5 +349,11 @@ li.button > a:visited {
   }
   section#map > select[name=category] {
     top: 8px;
+  }
+}
+/* some phone screen is just too damn small */
+@media all and (max-height: 350px) {
+  div.minimap {
+    display: none;
   }
 }

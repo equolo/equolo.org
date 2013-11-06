@@ -1,13 +1,14 @@
 /*! (C) Andrea Giammarchi */
+// @link https://gist.github.com/WebReflection/7313880
 (function (navigator, document, pointerEnabled) {
 
   // highly experimental, should work on IE10 and IE11 only
 
   if (!(
-    (pointerEnabled = navigator.pointerEnabled) ||
+    (pointerEnabled = !!navigator.pointerEnabled) ||
     navigator.msPointerEnabled
   ) ||
-    'touchend' in document
+    'ontouchend' in document
   ) return;
 
   var
@@ -173,8 +174,8 @@
   commonOverride(Element.prototype, 'removeEventListener');
 
   // mark these are available
-  document.touchstart =
-  document.touchmove =
-  document.touchend = null;
+  document.ontouchstart =
+  document.ontouchmove =
+  document.ontouchend = null;
 
 }(navigator, document));
