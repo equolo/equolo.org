@@ -102,7 +102,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     });
 
     // user should not be able to scroll
-    DOMScroll(false);
+    DOMScroll(false, true);
 
   });
 
@@ -153,9 +153,9 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     ];
 
     // better quality image, or just same image?
+    el = $('section#map img')[0];
     if (!window.compat) {
       createShortcutIcon();
-      el = $('section#map img')[0];
       tmp = document.createElement('canvas');
       tmp.style.cssText = 'width:' + el.width + 'px;' +
                           'height:' + el.height + 'px;';
@@ -164,7 +164,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
           tmp,
           el.width * display.ratio,
           '#E6A72A'
-        )
+        ).on('click', fullScreen)
       );
 
       // same is for the welcome, an equolo logo would be nicer
@@ -178,7 +178,9 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
           '#064646'
         )
       );
-
+      
+    } else {
+      el.on('click', fullScreen);
     }
     // make section good for synthetic `scrollingTo`
     onDisplayChange();
@@ -188,6 +190,10 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
         $(window.compat ? 'img' : 'canvas', section.map)[0]
       ).classList.add('logo');
     }
+
+    // swap all emails indercovered by spans
+    // do this randomly asynchronously ^_^
+    setTimeout(revealEmails, Math.random() * 1000);
 
     // add shortcut icons per each resolution to the header at runtime
     function createShortcutIcon() {
@@ -220,7 +226,6 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
       }
       (document.head || document.querySelector('head')).appendChild(fragment);
     }
-
 
 
 
@@ -276,6 +281,9 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
             document.documentElement.scrollTop = 0;
             // NOTE: needed in IE9 Mobile
             click.ms.display = 'block';
+            if (IE9Mobile) {
+              section.nav.style.top = null;
+            }
             click.np.appendChild(section.nav);
           },
           onmove: function (x, y, dx, dy, ex, ey) {
@@ -345,13 +353,13 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
             click.ms.display = 'none';
             setTimeout(
               swapNavSelection,
-              50,
+              100,
               click.lt,
               click
             );
             setTimeout(
               scrollIntoSection,
-              350,
+              400,
               click.lt
             );
             click.kinetic = false;
@@ -427,6 +435,9 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
                   onscroll.i = i;
                   swapNavSelection(navLink[i].parentNode, click);
                 }
+                if (IE9Mobile) {
+                  section.nav.style.top = document.documentElement.scrollTop + 'px';
+                }
               } else {
                 // otherwise we don't care
                 // it's just capturing stuff
@@ -441,6 +452,13 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
       }
       try{this.blur()}catch(o_O){}
     });
+
+    navLink.some(function (a) {
+      if (a.href.split('#')[1] == this) {
+        setTimeout(a.trigger.bind(a), 2000, 'click');
+        return true;
+      }
+    }, location.href.split('#')[1]);
 
 
 // section#map
@@ -1301,8 +1319,12 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     );
   }
 
-  function DOMScroll(init) {
+  function DOMScroll(init, forceIt) {
     var op = init ? 'remove' : 'add';
+    if (forceIt) {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }
     document.documentElement.classList[op]('no-scroll');
     document.body.classList[op]('no-scroll');
   }
@@ -1357,12 +1379,28 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     ;
   }
 
+  function fullScreen() {
+    display.full(!display.fullScreen);
+  }
+
   // all places are packed via JSONH to preserve
   // both bandwidth and localStorage space once stringified
   // we then need to unpack them once parsed back
   function unpack(activity) {
     activity.place = JSONH.unpack(activity.place);
     return activity;
+  }
+
+  function revealEmails() {
+    $('span.email').forEach(function (span) {
+      var
+        a = document.createElement('a'),
+        mailto = span.textContent.split('').reverse().join('')
+      ;
+      a.href = 'mailto:' + mailto;
+      a.textContent = mailto;
+      span.replace(a);
+    });
   }
 
   // every time the dispay changes

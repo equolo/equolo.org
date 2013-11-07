@@ -42,6 +42,10 @@ section#map > * {
   right: 0;
   left: 0;
 }
+section#map header canvas,
+section#map header img:nth-child(1) {
+  cursor: pointer;
+}
 section#map header {
   top: 0;
   height: 48px;
@@ -287,7 +291,7 @@ section#about > nav + div {
 
 section#about > div,
 section#contact > div,
-section#pin-it > div{
+section#pin-it > div {
   border-top: 8px dotted #286868;
   color: #FFF;
   font-size: 16px;
@@ -329,9 +333,54 @@ li.button > a.social img {
   border: 0;
 }
 
-
-
-
+section#about h3,
+section#contact h3,
+section#pin-it h3 {
+  padding: 8px;
+  color: #E6A72A;
+  margin: 32px auto 8px 0;
+  font-weight: 600;
+  font-size: 16px;
+}
+section#about h3.on,
+section#contact h3.on,
+section#pin-it h3.on {
+  background: #E6A72A;
+  color: #000;
+}
+section#about h3 img,
+section#about h3 canvas {
+  height: 24px;
+  width: 24px;
+}
+section#about P,
+section#contact p,
+section#pin-it p {
+  padding: 4px 8px;
+  margin: 0 0 0 8px;
+  font-weight: 200;
+  font-size: 14px;
+  line-height: 18px;
+}
+section#about p > a,
+section#contact p > a,
+section#pin-it p > a,
+section#about p > a:visited,
+section#contact p > a:visited,
+section#pin-it p > a:visited,
+section ul.content a,
+section ul.content a:visited {
+  color: #E6A72A;
+  text-decoration: none;
+  border-bottom: 1px dashed #198A8A;
+}
+section ul.content li {
+  margin: 8px;
+}
+span.email {
+  direction: rtl;
+  unicode-bidi: bidi-override;
+}
 
 
 

@@ -40,7 +40,7 @@ IE9Mobile=/*@cc_on(IEMobile&&@_jscript_version<10)||@*/false,
 IE10Mobile=/*@cc_on(IEMobile&&@_jscript_version/10>=1)||@*/false
 ;
 IE9Mobile&&document.write('<link rel="stylesheet" href="css/IE9Mobile.css"/><script src="js/IE9Mobile.js"></script>');(function(window){
-/*! display v0.1.6 - MIT license */
+/*! display v0.1.8 - MIT license */
 /** easy way to obtain the full window size and some other prop */
 var display = function (global) {
 
@@ -53,8 +53,18 @@ var display = function (global) {
     screen = global.screen || Infinity,
     matchMedia = global.matchMedia,
     addEventListener = 'addEventListener',
-    documentElement = global.document.documentElement,
+    document = global.document,
+    documentElement = document.documentElement,
     shouldBeMobile  = /\bMobile\b/.test(navigator.userAgent),
+    rFS = documentElement.requestFullscreen ||
+          documentElement.mozRequestFullScreen ||
+          documentElement.webkitRequestFullScreen
+    ,
+    cFS = document.exitFullscreen ||
+          document.cancelFullscreen ||
+          document.mozCancelFullScreen ||
+          document.webkitExitFullscreen
+    ,
     handlers = {
       change: []
     },
@@ -62,6 +72,22 @@ var display = function (global) {
       width: 0,
       height: 0,
       ratio: 0,
+      full: rFS && cFS ? function (onOrOff) {
+        var
+          isFS =  document.fullscreenElement ||
+                  document.mozFullScreenElement ||
+                  document.webkitFullscreenElement
+        ;
+        if (onOrOff || onOrOff == null) {
+          display.fullScreen = true;
+          if (!isFS) {
+            rFS.call(documentElement);
+          }
+        } else if (isFS) {
+          display.fullScreen = false;
+          cFS.call(document);
+        }
+      } : Object,
       on: function (type, callback) {
         // right now only change is supported
         // throws otherwise
@@ -1395,7 +1421,26 @@ var HorizontalScroll = (function(UA, Math){
   document.ontouchmove =
   document.ontouchend = null;
 
-}(navigator, document));// let's dirtly feature detect browser capabilities
+}(navigator, document));// WARNING ===================================================
+// this is not how you should do JavaScript for any website
+// this is a rushed code out of a prototype and potentially
+// full of any sort of bug, not organized, not optimized
+// not ... you name it, it's **not** !
+// Please feel free to use some hint used in this file
+// but do not copy the style, it's a mess,
+// and we deeply apologize about such state at this point.
+// If we'll ever have more time to test properly all devices
+// we are curently supported in a properly well organized
+// code and repository, we'll just do that!
+// Right now, we are looking forward to any sort of bug report
+// so we can organize our time and resources to fix
+// what's really important/missing and prioritize accordingly.
+// THANK YOU FOR YOUR UNDERSTANDING!!!
+// =================================================== WARNING
+
+
+
+// let's dirtly feature detect browser capabilities
 // in the worst case scenario, we'll prepare
 // the most common icon fallback: the marker one
 try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
@@ -1480,7 +1525,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     });
 
     // user should not be able to scroll
-    DOMScroll(false);
+    DOMScroll(false, true);
 
   });
 
@@ -1531,9 +1576,9 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     ];
 
     // better quality image, or just same image?
+    el = $('section#map img')[0];
     if (!window.compat) {
       createShortcutIcon();
-      el = $('section#map img')[0];
       tmp = document.createElement('canvas');
       tmp.style.cssText = 'width:' + el.width + 'px;' +
                           'height:' + el.height + 'px;';
@@ -1542,7 +1587,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
           tmp,
           el.width * display.ratio,
           '#E6A72A'
-        )
+        ).on('click', fullScreen)
       );
 
       // same is for the welcome, an equolo logo would be nicer
@@ -1556,7 +1601,9 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
           '#064646'
         )
       );
-
+      
+    } else {
+      el.on('click', fullScreen);
     }
     // make section good for synthetic `scrollingTo`
     onDisplayChange();
@@ -1566,6 +1613,10 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
         $(window.compat ? 'img' : 'canvas', section.map)[0]
       ).classList.add('logo');
     }
+
+    // swap all emails indercovered by spans
+    // do this randomly asynchronously ^_^
+    setTimeout(revealEmails, Math.random() * 1000);
 
     // add shortcut icons per each resolution to the header at runtime
     function createShortcutIcon() {
@@ -1598,7 +1649,6 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
       }
       (document.head || document.querySelector('head')).appendChild(fragment);
     }
-
 
 
 
@@ -1654,6 +1704,9 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
             document.documentElement.scrollTop = 0;
             // NOTE: needed in IE9 Mobile
             click.ms.display = 'block';
+            if (IE9Mobile) {
+              section.nav.style.top = null;
+            }
             click.np.appendChild(section.nav);
           },
           onmove: function (x, y, dx, dy, ex, ey) {
@@ -1723,13 +1776,13 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
             click.ms.display = 'none';
             setTimeout(
               swapNavSelection,
-              50,
+              100,
               click.lt,
               click
             );
             setTimeout(
               scrollIntoSection,
-              350,
+              400,
               click.lt
             );
             click.kinetic = false;
@@ -1805,6 +1858,9 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
                   onscroll.i = i;
                   swapNavSelection(navLink[i].parentNode, click);
                 }
+                if (IE9Mobile) {
+                  section.nav.style.top = document.documentElement.scrollTop + 'px';
+                }
               } else {
                 // otherwise we don't care
                 // it's just capturing stuff
@@ -1819,6 +1875,13 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
       }
       try{this.blur()}catch(o_O){}
     });
+
+    navLink.some(function (a) {
+      if (a.href.split('#')[1] == this) {
+        setTimeout(a.trigger.bind(a), 2000, 'click');
+        return true;
+      }
+    }, location.href.split('#')[1]);
 
 
 // section#map
@@ -1991,46 +2054,6 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
       lastReducedActivities = lastParsedActivities.reduce(
         flatPlaces, []
       );
-      /*
-      // simplified and quite dumb algo
-      // to have ordered points by distance
-      for(var
-        current, nd, od, p, n,
-        changed = false
-        j = 0,
-        i = 0,
-        length = lastReducedActivities.length;
-        i < length; i++
-      ) {
-        current = lastReducedActivities[i];
-        if (!current.point) {
-          current.point = mercator.coordsToPoint(current, ZOOM_MAX);
-        }
-        for(od = null, j = i + 1; j < length; j++) {
-          p = lastReducedActivities[j];
-          nd = mercator.pointDistance(
-            current.point,
-            p.point || (
-              p.point = mercator.coordsToPoint(p, ZOOM_MAX)
-            )
-          );
-          if (!od) {
-            od = nd;
-          } else if (nd < od || p.point.x < n.point.x) {
-            changed = true;
-            od = nd;
-            lastReducedActivities[j - 1] = p;
-            lastReducedActivities[j] = n;
-            --j;
-          }  
-          n = p;
-        }
-        if (changed && i + 1 == length) {
-          i = -1;
-          changed = false;
-        }
-      }
-      */
     }
     return lastReducedActivities;
   }
@@ -2586,14 +2609,6 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     onPlaceClick.reset();
   };
 
-  /* hack not needed anymore
-  function onPlaceFakeClick(target) {
-    if (!target.clicked) {
-      onPlaceClick.call(target, target);
-    }
-  }
-  */
-
   function updateMapMarkers(parseActivity) {
     // remove and if needed erase all layers
     removeMarkers(parseActivity);
@@ -2727,8 +2742,12 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     );
   }
 
-  function DOMScroll(init) {
+  function DOMScroll(init, forceIt) {
     var op = init ? 'remove' : 'add';
+    if (forceIt) {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }
     document.documentElement.classList[op]('no-scroll');
     document.body.classList[op]('no-scroll');
   }
@@ -2783,12 +2802,28 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     ;
   }
 
+  function fullScreen() {
+    display.full(!display.fullScreen);
+  }
+
   // all places are packed via JSONH to preserve
   // both bandwidth and localStorage space once stringified
   // we then need to unpack them once parsed back
   function unpack(activity) {
     activity.place = JSONH.unpack(activity.place);
     return activity;
+  }
+
+  function revealEmails() {
+    $('span.email').forEach(function (span) {
+      var
+        a = document.createElement('a'),
+        mailto = span.textContent.split('').reverse().join('')
+      ;
+      a.href = 'mailto:' + mailto;
+      a.textContent = mailto;
+      span.replace(a);
+    });
   }
 
   // every time the dispay changes

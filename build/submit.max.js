@@ -40,7 +40,7 @@ IE9Mobile=/*@cc_on(IEMobile&&@_jscript_version<10)||@*/false,
 IE10Mobile=/*@cc_on(IEMobile&&@_jscript_version/10>=1)||@*/false
 ;
 IE9Mobile&&document.write('<link rel="stylesheet" href="css/IE9Mobile.css"/><script src="js/IE9Mobile.js"></script>');(function(window){
-/*! display v0.1.6 - MIT license */
+/*! display v0.1.8 - MIT license */
 /** easy way to obtain the full window size and some other prop */
 var display = function (global) {
 
@@ -53,8 +53,18 @@ var display = function (global) {
     screen = global.screen || Infinity,
     matchMedia = global.matchMedia,
     addEventListener = 'addEventListener',
-    documentElement = global.document.documentElement,
+    document = global.document,
+    documentElement = document.documentElement,
     shouldBeMobile  = /\bMobile\b/.test(navigator.userAgent),
+    rFS = documentElement.requestFullscreen ||
+          documentElement.mozRequestFullScreen ||
+          documentElement.webkitRequestFullScreen
+    ,
+    cFS = document.exitFullscreen ||
+          document.cancelFullscreen ||
+          document.mozCancelFullScreen ||
+          document.webkitExitFullscreen
+    ,
     handlers = {
       change: []
     },
@@ -62,6 +72,22 @@ var display = function (global) {
       width: 0,
       height: 0,
       ratio: 0,
+      full: rFS && cFS ? function (onOrOff) {
+        var
+          isFS =  document.fullscreenElement ||
+                  document.mozFullScreenElement ||
+                  document.webkitFullscreenElement
+        ;
+        if (onOrOff || onOrOff == null) {
+          display.fullScreen = true;
+          if (!isFS) {
+            rFS.call(documentElement);
+          }
+        } else if (isFS) {
+          display.fullScreen = false;
+          cFS.call(document);
+        }
+      } : Object,
       on: function (type, callback) {
         // right now only change is supported
         // throws otherwise
