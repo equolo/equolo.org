@@ -156,7 +156,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
       // IE10 does not expose widht and height
       // when the image is not visible
       width = el.width || el.naturalWidth;
-      createShortcutIcon();
+      createShortcutIcon(equoloIcon);
       tmp = document.createElement('canvas');
       tmp.style.cssText = 'width:' + width + 'px;' +
                           'height:' + width + 'px;';
@@ -185,10 +185,25 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
       
     } else {
       el.on('click', fullScreen);
+      tmp = $('head')[0].appendChild(
+        document.createElement('link')
+      );
+      tmp.rel = 'shortcut icon';
+      tmp.type = 'image/png';
+      tmp.href = '/img/equolo-favicon.png';
     }
 
     if (display.height <= 500) {
-      section.map.appendChild(el).classList.add('logo');
+      tmp = el.cloneNode(true);
+      section.map.appendChild(tmp).classList.add('logo');
+      if (tmp.nodeName !== 'IMG') {
+        tmp.getContext('2d').putImageData(
+          el.getContext('2d').getImageData(
+            0, 0, el.width, el.height
+          ),
+          0, 0
+        );
+      }
     }
 
     // make section good for synthetic `scrollingTo`
@@ -197,38 +212,6 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     // swap all emails indercovered by spans
     // do this randomly asynchronously just because :P
     setTimeout(revealEmails, Math.random() * 1000);
-
-    // add shortcut icons per each resolution to the header at runtime
-    function createShortcutIcon() {
-      for(var
-        link1, link2,
-        // used to generate icons at runtime
-        canvas = document.createElement('canvas'),
-        // where to place links
-        fragment = document.createDocumentFragment(),
-        sizes = [
-          30, 57, 60, 72, 114, 128, 144, 173, 196
-          // completely random , hopefully future proof, entries
-          , 214, 256
-          // btw, the whole sizes and 2X idea is so wrong ...
-        ],
-        i = 0; i < sizes.length; i++
-      ) {
-        link1 = document.createElement('link');
-        link2 = document.createElement('link');
-        link1.rel = 'shortcut icon';
-        link2.rel = 'apple-touch-icon';
-        link1.type = link2.type = 'image/png';
-        link1.href = link2.href = equoloIcon(
-          canvas, sizes[i], '#E6A72A', '#286868'
-        ).toDataURL();
-        link1.setAttribute('sizes', link1.sizes = sizes[i] + 'x' + sizes[i]);
-        link2.setAttribute('sizes', link1.sizes);
-        fragment.appendChild(link1);
-        fragment.appendChild(link2);
-      }
-      (document.head || document.querySelector('head')).appendChild(fragment);
-    }
 
     // Google Analytics async load
     GoogleAnalytics();

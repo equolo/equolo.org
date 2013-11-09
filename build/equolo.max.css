@@ -419,6 +419,9 @@ span.email {
   direction: rtl;
   unicode-bidi: bidi-override;
 }
+section#map .logo {
+  display: none;
+}
 
 
 
@@ -430,6 +433,7 @@ span.email {
     display: none;
   }
   section#map .logo {
+    display: block;
     position: fixed;
     left: auto;
     top: 52px;

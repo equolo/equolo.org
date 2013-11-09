@@ -20,6 +20,7 @@ JS =  js/display.js\
       js/simple-kinetic.js\
       js/equolo-icon.js\
       js/font-awesome-icon.js\
+      js/create-shortcut-icon.js\
       js/storage.js\
       js/IE9Mobile.js\
       font-cawesome/build/font-cawesome.js\
