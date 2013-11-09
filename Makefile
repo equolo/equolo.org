@@ -28,6 +28,7 @@ JS =  js/display.js\
       js/HorizontalScroll.js\
       js/ietouches.js\
       js/wp.js\
+      js/ffos.js\
       js/ga.js\
       js/paypal.js\
       js/$(REPO).js
@@ -134,6 +135,8 @@ php:
 	rm -rf www/*.php
 	cp pages/* www
 	cp -r lang www/cgi
+	cp htaccess www/.htaccess
+	cp equolo.webapp www
 
 # preserve private data
 db:

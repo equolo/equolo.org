@@ -1452,6 +1452,15 @@ window.on('wp:hs-icon', function(e) {
     ].join('');
   }
   e.preventDefault();
+});// install equolo.org as App in Firefox OS
+window.on('wp:ffos-install', function(e) {
+  try {
+    navigator.mozApps.install('http://equolo.org/equolo.webapp').onerror = function () {
+      // something went wrong
+      alert(':-(\n' + this.error.name);
+    };
+  } catch(notFirefoxOS) {}
+  e.preventDefault();
 });function GoogleAnalytics() {
   if(location.href.indexOf('equolo') < 0) return;
   window._gaq = [
@@ -2887,6 +2896,10 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     display.full(!display.fullScreen);
     setTimeout(invalidateMapSize, 300);
   }
+
+  window.on('go:fullscreen', function () {
+    display.full(true);
+  });
 
   // all places are packed via JSONH to preserve
   // both bandwidth and localStorage space once stringified

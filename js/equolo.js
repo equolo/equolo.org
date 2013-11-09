@@ -1404,6 +1404,10 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     setTimeout(invalidateMapSize, 300);
   }
 
+  window.on('go:fullscreen', function () {
+    display.full(true);
+  });
+
   // all places are packed via JSONH to preserve
   // both bandwidth and localStorage space once stringified
   // we then need to unpack them once parsed back

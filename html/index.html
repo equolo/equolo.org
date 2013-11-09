@@ -219,7 +219,7 @@ After, you can simply create the shortcut through the following action:
 Right now the save to home screen is experimental in latest Google Chrome Beta for Android and unavailable for all other phones.
 </p>
 <p>However, it is possible to save this service as bookmark or tab, and reach it back quickly at any time.</p>
-<p>You can also <a href="#fullscreen" onclick="display.full(true);">go full screen</a> by tapping the squirrel to have a proper App fell without the chrome around.</p>
+<p>You can also <a href="#fullscreen" onclick="window.emit('go:fullscreen')">go full screen</a> by tapping the squirrel to have a proper App fell without the chrome around.</p>
 <h3>Windows Phone</h3>
 <p>
 You can simply pin this page to the start screen as it is, or using a temporary icon that will better look in your screen.
@@ -232,6 +232,9 @@ You can simply pin this page to the start screen as it is, or using a temporary 
 <p>
 Having this service pinned is a must, specially for ZTE phones with a tiny screen.
 A simple click on the bottom right star should do everything without problems.
+</p>
+<p>
+However, for a better icon and a better experience, you can <a href="#ffos" onclick="window.emit('wp:ffos-install',event)">install equolo as App</a> too.
 </p>
 <h3>Blackberry 10</h3>
 <p>

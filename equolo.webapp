@@ -1,0 +1,25 @@
+{
+  "name": "equolo",
+  "description": "discovering a sustainable world",
+  "launch_path": "/",
+  "icons": {
+    "256": "/img/equolo_256.png",
+    "128": "/img/equolo_128.png",
+    "120": "/img/equolo_120.png",
+    "90": "/img/equolo_90.png",
+    "64": "/img/equolo_64.png",
+    "60": "/img/equolo_60.png",
+    "32": "/img/equolo_32.png"
+  },
+  "developer": {
+    "name": "Andrea Giammarchi",
+    "url": "https://twitter.com/WebReflection"
+  },
+  "default_locale": "en",
+  "orientation": ["portrait", "portrait-primary","landscape-secondary"],
+  "permissions": {
+    "geolocation": {
+      "description": "to find equo places around you"
+    }
+  }
+}
