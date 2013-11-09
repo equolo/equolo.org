@@ -1,10 +1,11 @@
+// once notified, creates a full screen logo
 window.on('wp:hs-icon', function(e) {
   var
     wp = document.body.appendChild(
       document.createElement('wp')
     ),
     tmp = document.createElement('canvas'),
-    width = (display.width / 2) >> 0
+    width = (Math.min(display.width, display.height) / 2) >> 0
   ;
   tmp.style.cssText = 'width:' + width + 'px;' +
                       'height:' + width + 'px;';

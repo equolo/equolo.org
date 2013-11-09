@@ -1,5 +1,8 @@
 <?php
 $dictionary = array(
+  'about' => 'about',
+  'contact' => 'contact',
+  'pin-it' => 'pin it',
   'language-selection' => 'please choose your language',
   'email' => 'your email',
   'email-fieldset-description' =>

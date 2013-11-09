@@ -20,6 +20,14 @@
   -o-transition: all .3s ease-out;
   transition: all .3s ease-out;
 }
+.hw {
+  -webkit-transform: translate3d(0, 0, 0);
+  -khtml-transform: translate3d(0, 0, 0);
+  -moz-transform: translate3d(0, 0, 0);
+  -ms-transform: translate3d(0, 0, 0);
+  -o-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+}
 .scroll {
   -webkit-overflow-scrolling: touch;
   -khtml-overflow-scrolling: touch;

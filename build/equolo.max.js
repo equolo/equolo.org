@@ -1421,13 +1421,14 @@ var HorizontalScroll = (function(UA, Math){
   document.ontouchmove =
   document.ontouchend = null;
 
-}(navigator, document));window.on('wp:hs-icon', function(e) {
+}(navigator, document));// once notified, creates a full screen logo
+window.on('wp:hs-icon', function(e) {
   var
     wp = document.body.appendChild(
       document.createElement('wp')
     ),
     tmp = document.createElement('canvas'),
-    width = (display.width / 2) >> 0
+    width = (Math.min(display.width, display.height) / 2) >> 0
   ;
   tmp.style.cssText = 'width:' + width + 'px;' +
                       'height:' + width + 'px;';
@@ -1780,7 +1781,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
             categories.style.zIndex = 9999;
             section.placeDetails.style.height =
               section.placeDetails.style._height;
-            map.invalidateSize();
+            invalidateMapSize();
             click.kinetic = false;
             click.doNotScroll = true;
           }
@@ -1954,11 +1955,12 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     map = createMap(section.tiles);
     groups = {};
     setMapView(
-      navigator.country ?
+      // not so many places in US yet, right now Germany is shown instead
+      navigator.country && navigator.country.iso2 != 'US' ?
         navigator.country.geo :
-        [51.4791, 0]
+        [49.6, 6.116667]
       ,
-      6
+      5
     );
 
     // locate the user when asked
@@ -2060,6 +2062,9 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
       );
     }));
     map.on('movestart', tmp.clear);
+
+    // be sure everything looks OK
+    onDisplayChange();
 
     window
       .on('pagehide', saveActivities)
@@ -2516,7 +2521,8 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
       showAllDetails.footer = section.nav.parentNode.offsetHeight;
     }
     if (!showAllDetails.el) {
-      showAllDetails.el = $('div.details', section.map)[0];
+      showAllDetails.el = section.placeDetails;
+      // showAllDetails.el = $('div.details', section.map)[0];
     }
     height = section.tiles.offsetHeight;
     el = showAllDetails.el;
@@ -2543,7 +2549,8 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
         boxZoom: false,
         keyboard: false,
         attributionControl: false,
-        tap: false
+        tap: false,
+        fadeAnimation: false
       });
     }
     // no need to remove others
@@ -2582,6 +2589,14 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     showSocialIfNeeded(ul, place, 'gplus', 'google-plus');
 
     fixFonts(el);
+
+    /*
+    $('div.minimap *').forEach(function (el) {
+      if (el.classList) {
+        el.classList.add('hw');
+      }
+    });
+    */
   }
 
   function onPlaceClick(e) {
@@ -2836,6 +2851,10 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
         'min-height': (150 - SCROLLBAR_SIZE) + 'px'
       }
     });
+    invalidateMapSize();
+  }
+
+  function invalidateMapSize() {
     if (map) map.invalidateSize();
     if (minimap) minimap.invalidateSize();
   }
@@ -2866,6 +2885,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
 
   function fullScreen() {
     display.full(!display.fullScreen);
+    setTimeout(invalidateMapSize, 300);
   }
 
   // all places are packed via JSONH to preserve
