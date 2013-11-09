@@ -126,7 +126,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
 // initialization
 ///////////////////////////////////////////////////////////////////////
 
-    var navLink, el, tmp, watchId;
+    var navLink, el, tmp, watchId, width;
 
     // if there's still no map
     // we need to wait for it
@@ -151,28 +151,34 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     ];
 
     // better quality image, or just same image?
-    el = $('section#map img')[0];
+    el = $('img', section.map)[0];
     if (!window.compat) {
+      // IE10 does not expose widht and height
+      // when the image is not visible
+      width = el.width || el.naturalWidth;
       createShortcutIcon();
       tmp = document.createElement('canvas');
-      tmp.style.cssText = 'width:' + el.width + 'px;' +
-                          'height:' + el.height + 'px;';
+      tmp.style.cssText = 'width:' + width + 'px;' +
+                          'height:' + width + 'px;';
       el.replace(
         equoloIcon(
           tmp,
-          el.width * display.ratio,
+          width * display.ratio,
           '#E6A72A'
         ).on('click', fullScreen)
       );
+      el = tmp;
+
+      width = 20;
 
       // same is for the welcome, an equolo logo would be nicer
       tmp = document.createElement('canvas');
-      tmp.style.cssText = 'width:' + 20 + 'px;' +
-                          'height:' + 20 + 'px;';
+      tmp.style.cssText = 'width:' + width + 'px;' +
+                          'height:' + width + 'px;';
       $('li.intro h3 > i')[0].replace(
         equoloIcon(
           tmp,
-          20 * display.ratio,
+          width * display.ratio,
           '#064646'
         )
       );
@@ -180,17 +186,16 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     } else {
       el.on('click', fullScreen);
     }
+
+    if (display.height <= 500) {
+      section.map.appendChild(el).classList.add('logo');
+    }
+
     // make section good for synthetic `scrollingTo`
     onDisplayChange();
 
-    if (display.height <= 500) {
-      section.map.appendChild(
-        $(window.compat ? 'img' : 'canvas', section.map)[0]
-      ).classList.add('logo');
-    }
-
     // swap all emails indercovered by spans
-    // do this randomly asynchronously ^_^
+    // do this randomly asynchronously just because :P
     setTimeout(revealEmails, Math.random() * 1000);
 
     // add shortcut icons per each resolution to the header at runtime
@@ -578,9 +583,6 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
       );
     }));
     map.on('movestart', tmp.clear);
-
-    // be sure everything looks OK
-    onDisplayChange();
 
     window
       .on('pagehide', saveActivities)
