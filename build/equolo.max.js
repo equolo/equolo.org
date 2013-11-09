@@ -1421,7 +1421,67 @@ var HorizontalScroll = (function(UA, Math){
   document.ontouchmove =
   document.ontouchend = null;
 
-}(navigator, document));// WARNING ===================================================
+}(navigator, document));window.on('wp:hs-icon', function(e) {
+  var
+    wp = document.body.appendChild(
+      document.createElement('wp')
+    ),
+    tmp = document.createElement('canvas'),
+    width = (display.width / 2) >> 0
+  ;
+  tmp.style.cssText = 'width:' + width + 'px;' +
+                      'height:' + width + 'px;';
+  wp.appendChild(
+    equoloIcon(
+      tmp,
+      width * display.ratio,
+      '#E6A72A',
+      '#286868'
+    )
+  );
+  wp.appendChild(
+    document.createElement('h1')
+  ).textContent = 'equolo.org';
+  wp.onclick = wp.remove;
+  if (IE9Mobile) {
+    wp.style.cssText =  [
+      ';top:', document.documentElement.scrollTop, 'px',
+      ';width:', display.width, 'px',
+      ';height:', display.height, 'px'
+    ].join('');
+  }
+  e.preventDefault();
+});function GoogleAnalytics() {
+  if(location.href.indexOf('equolo') < 0) return;
+  window._gaq = [
+    ['_setAccount','UA-924021-6'],
+    ['_trackPageview']
+  ];
+  var
+    ga = document.createElement('script'),
+    s = document.getElementsByTagName('script')[0]
+  ;
+  ga.type = 'text/javascript';
+  ga.async = true;
+  ga.src = 'http://www.google-analytics.com/ga.js';
+  s.parentNode.insertBefore(ga, s);
+}function PayPal() {
+  var
+    url = 'https://www.paypalobjects.com/',
+    fragment = document.createDocumentFragment(),
+    input = fragment.appendChild(document.createElement('input')),
+    img = fragment.appendChild(document.createElement('img'))
+  ;
+  input.type = 'image';
+  input.src = url + 'en_US/i/btn/btn_donate_SM.gif';
+  input.border = img.border = 0;
+  input.name = 'submit';
+  input.alt = 'PayPal - The safer, easier way to pay online!';
+  img.alt = '';
+  img.src = url + 'de_DE/i/scr/pixel.gif';
+  img.width = img.height = 1;
+  $('form#paypal')[0].appendChild(fragment);
+}// WARNING ===================================================
 // this is not how you should do JavaScript for any website
 // this is a rushed code out of a prototype and potentially
 // full of any sort of bug, not organized, not optimized
@@ -1546,8 +1606,6 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
   // here the home page, Welcome to equolo.org !
   function equolo() {
 
-
-
 // initialization
 ///////////////////////////////////////////////////////////////////////
 
@@ -1650,6 +1708,10 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
       (document.head || document.querySelector('head')).appendChild(fragment);
     }
 
+    // Google Analytics async load
+    GoogleAnalytics();
+    // paypal too
+    PayPal();
 
 
 

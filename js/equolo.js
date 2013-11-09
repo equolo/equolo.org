@@ -123,8 +123,6 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
   // here the home page, Welcome to equolo.org !
   function equolo() {
 
-
-
 // initialization
 ///////////////////////////////////////////////////////////////////////
 
@@ -227,6 +225,10 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
       (document.head || document.querySelector('head')).appendChild(fragment);
     }
 
+    // Google Analytics async load
+    GoogleAnalytics();
+    // paypal too
+    PayPal();
 
 
 

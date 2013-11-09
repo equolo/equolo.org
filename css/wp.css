@@ -1,0 +1,17 @@
+wp {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: #286868;
+}
+wp > canvas {
+  margin-left: 25%;
+  margin-top: 25%;
+}
+wp > h1 {
+  text-align: center;
+  color: #FFFFFF;
+  font-size: 24px;
+}

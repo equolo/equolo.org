@@ -379,12 +379,20 @@ section#pin-it h3.on {
   color: #000;
 }
 section#about h3 img,
-section#about h3 canvas {
+section#about h3 canvas,
+section#pin-it h3 img,
+section#pin-it h3 canvas {
   height: 24px;
   width: 24px;
 }
+section#about div.central > img,
+section#contact div.central > img,
+section#pin-it div.central > img {
+  margin: 16px;
+}
 section#about P,
 section#contact p,
+section#contact form,
 section#pin-it p {
   padding: 4px 8px;
   margin: 0 0 0 8px;
@@ -544,4 +552,20 @@ nav li img:last-child {
 nav li.selected img:last-child {
   opacity: 1;
   margin-left: 4px;
+}wp {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: #286868;
+}
+wp > canvas {
+  margin-left: 25%;
+  margin-top: 25%;
+}
+wp > h1 {
+  text-align: center;
+  color: #FFFFFF;
+  font-size: 24px;
 }

@@ -27,6 +27,9 @@ JS =  js/display.js\
       js/Mercator.js\
       js/HorizontalScroll.js\
       js/ietouches.js\
+      js/wp.js\
+      js/ga.js\
+      js/paypal.js\
       js/$(REPO).js
 
 # make pinit/submit section files
@@ -45,7 +48,8 @@ PINIT=js/display.js\
 CSS = css/$(REPO).css\
       css/utils.css\
       css/leaflet.css\
-      css/IE9Mobile.css
+      css/IE9Mobile.css\
+      css/wp.css
 
 # move HTML files
 HTML = html/*
