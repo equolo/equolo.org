@@ -922,8 +922,8 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
         updateInfoOnBar.moveend.clear();
         onPlaceClick.cancel();
       });
-      updateInfoOnBar.moveend();
     }
+    updateInfoOnBar.moveend();
   }
 
   function onMarkerClick() {

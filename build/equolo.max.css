@@ -533,6 +533,11 @@ section#map .logo {
 .leaflet-popup.custom i {
   color: #198A8A;
 }
+
+/* Tiles Chrome Fix  */
+.leaflet-tile-container img {
+  -webkit-backface-visibility: hidden;
+}
 #ie9-map-wrapper,
 #ie9-map-center {
   display: block;

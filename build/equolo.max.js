@@ -794,6 +794,12 @@ var fontAwesomeIcon = function(canvas){
     },
     cache = {}
   ;
+  /*
+  context.globalAlpha = 0;
+  context.imageSmoothingEnabled =
+  context.webkitImageSmoothingEnabled = false;
+  alert([context.globalAlpha, context.imageSmoothingEnabled, context.webkitImageSmoothingEnabled]);
+  */
   function ellipse(x, y, r) {
     context.beginPath();
     context.arc(x, y, r, 0, Math.PI * 2, true); 
@@ -2446,8 +2452,8 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
         updateInfoOnBar.moveend.clear();
         onPlaceClick.cancel();
       });
-      updateInfoOnBar.moveend();
     }
+    updateInfoOnBar.moveend();
   }
 
   function onMarkerClick() {
