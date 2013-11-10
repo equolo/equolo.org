@@ -281,6 +281,32 @@ function sql($command) {
       AND
         `category-name`.`category-id` = category.id',
 
+      'category-list' =>
+      'SELECT
+        `category`.icon AS "icon",
+        `category-name`.value AS "name",
+         GROUP_CONCAT(
+           `category-list`.value
+           ORDER BY `category-list`.value
+           DESC SEPARATOR ";;;"
+        ) AS "list"
+      FROM
+        `category`,
+        `category-name`,
+        `category-list`,
+        lang
+      WHERE
+        lang.value = ?
+      AND
+        `category-name`.`lang-id` = lang.id
+      AND
+        `category-list`.`category-id` = `category-name`.`category-id`
+      AND
+        `category`.id = `category-name`.`category-id`
+      AND
+        `category-list`.`lang-id` = lang.id
+      GROUP BY
+        `category-list`.`category-id`',
 
 
     'remove-notification' =>

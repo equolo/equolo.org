@@ -69,6 +69,7 @@ $dictionary = array(
     'Please use the following link in order to edit all your activities, thank you!',
   'authentication-activation-text' =>
     'Please confirm your email in order to be able to add and edit all your activities, thank you!',
+  'category-other' => 'whatever',
   'jslang' => 'this.jslang='.json_encode(array(
     'pinit' => 'Do you want to place the icon here?',
     'seeYouLater' =>

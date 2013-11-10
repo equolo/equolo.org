@@ -645,7 +645,8 @@ var fontAwesomeIcon = function(canvas){
       glass: 0xf000,
       briefcase: 0xf0b1,
       group: 0xf0c0,
-      truck: 0xf0d1
+      truck: 0xf0d1,
+      umbrella: 0xf0e9
       //,'map-marker': 32 //0xf041
     },
     cache = {}
@@ -802,6 +803,13 @@ document.once('DOMContentLoaded', function () {
                           '?lang=' + this.value;
         });
         this.trigger('step-2');
+        $('a').forEach(function(a){
+          // do not let the user loose focus/content
+          // the section is highly interactive
+          if (-1 < a.href.indexOf('/categories')) {
+            a.target = '_blank';
+          }
+        });
       },
 
 

@@ -156,6 +156,16 @@ $dictionary['title'] = 'equolo.org - add your equobusiness here :-)';
 // is the province needed ?
 $dictionary['county-field'] = in_array($lang, array('de', 'fr')) ? 'hidden' : 'text';
 
+
+// populate the select with all categories
+$categories = '<select name="category"><option value="question">-</option>';
+$stmt = query('category-lang', array($lang));
+while($row = $stmt->fetch(PDO::FETCH_OBJ)) {
+  $categories .= '<option value="'.$row->icon.'">'.$row->description.'</option>';
+}
+$categories .= '</select>';
+$dictionary['select-categories'] = $categories;
+
 header('Content-Type: text/html; charset=utf-8');
 echo template(
   // the template name

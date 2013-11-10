@@ -93,6 +93,15 @@ CREATE TABLE IF NOT EXISTS `category` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=ascii;
 
+CREATE TABLE IF NOT EXISTS `category-list` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `category-id` int(10) unsigned NOT NULL,
+  `lang-id` int(10) unsigned NOT NULL,
+  `value` varchar(60) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `category-id` (`category-id`,`lang-id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+
 CREATE TABLE IF NOT EXISTS `category-name` (
   `category-id` int(10) unsigned NOT NULL,
   `lang-id` int(10) unsigned NOT NULL,

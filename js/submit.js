@@ -87,6 +87,13 @@ document.once('DOMContentLoaded', function () {
                           '?lang=' + this.value;
         });
         this.trigger('step-2');
+        $('a').forEach(function(a){
+          // do not let the user loose focus/content
+          // the section is highly interactive
+          if (-1 < a.href.indexOf('/categories')) {
+            a.target = '_blank';
+          }
+        });
       },
 
 

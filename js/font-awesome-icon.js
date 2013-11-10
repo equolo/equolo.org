@@ -15,7 +15,8 @@ var fontAwesomeIcon = function(canvas){
       glass: 0xf000,
       briefcase: 0xf0b1,
       group: 0xf0c0,
-      truck: 0xf0d1
+      truck: 0xf0d1,
+      umbrella: 0xf0e9
       //,'map-marker': 32 //0xf041
     },
     cache = {}
