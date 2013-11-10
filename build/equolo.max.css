@@ -169,7 +169,6 @@ section#map > div.location > ul > li > p {
 }
 section#map > div.location > ul > li > h3 > span {
   float: right;
-  margin-left: -100px;
   font-size: 12px;
   color: #198A8A;
 }
@@ -187,8 +186,11 @@ section#map > div.location > ul > li.intro > ul {
 section#map > div.location > ul > li.selected {
   background-color: #F5F5F5;
 }
+section#map > div.location > ul > li.selected > h3 > span {
+  margin-right: 8px;
+}
 section#map > div.location > ul > li.selected + li {
-  margin-left: -8px;
+  margin-left: 0;
   border-left: 8px solid #F5F5F5;
 }
 section#map > footer {
