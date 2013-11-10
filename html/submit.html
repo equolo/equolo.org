@@ -18,17 +18,18 @@
   <body>
     <div>
       <fieldset id="step-1">
+        {{welcome}}
         <select name="lang">{{dom-language-options}}</select>
         <label>{{language-selection}}</label>
       </fieldset>
       <fieldset id="step-2">
         <legend>{{email}}</legend>
-        <p>{{email-fieldset-description}}</p>
+        {{email-fieldset-description}}
         <input placeholder="{{email-field}}" value="{{user.email}}"/>
       </fieldset>
       <fieldset id="step-3">
         <legend>{{activity}}</legend>
-        <p>{{activity-fieldset-description}}</p>
+        {{activity-fieldset-description}}
         <div class="activity">
           <select name="activity"></select>
           <button name="add">{{add}}</button>
@@ -56,14 +57,14 @@
       </fieldset>
       <fieldset id="step-4">
         <legend>{{location}}</legend>
-        <p>{{location-fieldset-description}}</p>
+        {{location-fieldset-description}}
         <select name="place"></select>
         <button name="add">{{add}}</button>
         <button name="remove">{{remove}}</button>
         <hr/>
         <fieldset class="category">
           <legend>{{category}}</legend>
-          <p>{{category-description}}</p>
+          {{category-description}}
           {{select-categories}}
           <i class="fa-question"></i>
         </fieldset>
@@ -98,11 +99,13 @@
         <legend>{{terms-of-service}}</legend>
         <div class="terms-of-use">
           <h3>{{terms-of-service-about}}</h3>
-          <p>{{terms-of-service-about-description}}</p>
+          {{terms-of-service-about-description}}
           <h3>{{terms-of-service-privacy}}</h3>
-          <p>{{terms-of-service-privacy-description}}</p>
+          {{terms-of-service-privacy-description}}
           <h3>{{terms-of-service-liability}}</h3>
-          <p>{{terms-of-service-liability-description}}</p>
+          {{terms-of-service-liability-description}}
+          <h3>{{obligations-title}}</h3>
+          {{obligations-list}}
         </div>
         <input type="checkbox"/>{{terms-of-use-agreement}}{{terms-of-service}}
         <hr/>

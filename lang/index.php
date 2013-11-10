@@ -3,6 +3,13 @@ if (isset($_POST['save'])) {
   $fp = fopen($_POST['lang'].'.json', 'w+');
   fwrite($fp, stripslashes($_POST['save']));
   fclose($fp);
+  if (isset($_POST['html'])) {
+    $decoded = json_decode(stripslashes($_POST['html']));
+    $php = var_export($decoded, true);
+    $fp = fopen($_POST['lang'].'.html.php', 'w+');
+    fwrite($fp, "<?php\n".str_replace('stdClass::__set_state', '$dictionary=', $php).";\n?>");
+    fclose($fp);
+  }
   exit;
 }
 ?>
@@ -48,7 +55,7 @@ this.onload = function () {
   }
   function transformText(textarea) {
     timer = 0;
-    textarea.parentNode.nextSibling.innerHTML = tinydown(textarea.value);
+    textarea.parentNode.nextSibling.innerHTML = tinydown(textarea.value.trim());
   }
 };
 </script>
@@ -81,27 +88,91 @@ foreach($dictionary as $key => $value) {
 <script>
 <?php echo 'var lang={'.$lang.':'.$currentRaw.'};'?>
 var timer = 0;
+if (!String.prototype.trim) String.prototype.trim = function () {
+  return this.replace(/^\s+|\s+$/g, '');
+};
 function sendAndSave() {
   var
     xhr = new XMLHttpRequest,
-    what = Object.keys(lang)[0]
+    what = Object.keys(lang)[0],
+    json = lang[what],
+    keys = Object.keys(json),
+    newJSON = {},
+    html = {}
   ;
+  keys.sort().forEach(function(key){
+    var value = json[key];
+    newJSON[key] = value;
+    switch(key) {
+      case 'language-selection':
+      case 'email':
+      case 'email-field':
+      case 'activity':
+      case 'add':
+      case 'remove':
+      case 'activity-name':
+      case 'activity-description':
+      case 'characters-counting':
+      case 'certificates-yes':
+      case 'certificates-no':
+      case 'location':
+      case 'category':
+      case 'address':
+      case 'road':
+      case 'extra':
+      case 'postcode':
+      case 'city':
+      case 'county':
+      case 'state':
+      case 'country':
+      case 'phone':
+      case 'website':
+      case 'twitter':
+      case 'gplus':
+      case 'facebook':
+      case 'find-me':
+      case 'next':
+      case 'terms-of-service':
+      case 'terms-of-service-about':
+      case 'terms-of-service-privacy':
+      case 'terms-of-service-liability':
+      case 'terms-of-use-agreement':
+      case 'authentication-reminder':
+      case 'authentication-activation':
+      case 'jslang':
+      case 'about':
+      case 'contact':
+      case 'pin-it':
+      case 'obligations-title':
+        this[key] = value;
+        break;
+      case 'criteria-descriptions':
+        this[key] = tinydown(value).replace(/^<p>|<\/p>$/g, '');
+        break;
+      default:
+        this[key] = tinydown(value);
+    }
+  }, html);
   xhr.open('POST', location.href.split('?')[0], false);
   xhr.setRequestHeader("If-Modified-Since", "Mon, 26 Jul 1997 05:00:00 GMT");
   xhr.setRequestHeader("Cache-Control", "no-cache");
   xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-  xhr.send('lang=' + what + '&save=' + encodeURIComponent(JSON.stringify(lang[what])));
+  xhr.send(
+    'lang=' + what +
+    '&save=' + encodeURIComponent(JSON.stringify(newJSON)) +
+    '&html=' + encodeURIComponent(JSON.stringify(html))
+  );
 }
 function saveIt() {
   [].forEach.call(document.querySelectorAll('textarea'), function(t){
-    this[t.name] = t.value;
+    this[t.name] = t.value.trim();
   }, lang[Object.keys(lang)[0]]);
   sendAndSave();
 }
 function beforeSaving() {
   clearTimeout(timer);
-  timer = setTimeout(saveIt, 2000);
+  timer = setTimeout(saveIt, 4000);
 }
 function changeLocation(select) {
   var href = location.href.split('?')[0];
