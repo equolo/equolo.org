@@ -1,5 +1,6 @@
 <?php
 $dictionary = array(
+  'welcome' => '',
   'about' => 'about',
   'contact' => 'contact',
   'pin-it' => 'pin it',
@@ -57,6 +58,8 @@ $dictionary = array(
   '<li>Equolo has the right to pre-screen, refuse, temporarily or permanently disable, delete, or move any content or users at its discretion.</li>'.
   '<li>Equolo.org contains links to other websites. When accessing external websites through equolo, you do it at your own risk.</li></ul>'.
   '<p>Please understand that the service is provided "as-is" and on an "as available" basis. There are no performance guarantees. You also agree that equolo.org is not liable for any damages that may occur through your use of the service, because of service unavailability or feature-loss, or because of data loss that may occur.',
+  'obligations-title' => '',
+  'obligations-list' => '',
   'terms-of-use-agreement' => 'I have read and understood the ',
   'authentication-reminder' =>
     'authentication reminder',

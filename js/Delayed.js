@@ -2,27 +2,32 @@
 // https://gist.github.com/WebReflection/7286687
 var Delayed = function(delay){
   function Delayed(callback, delay) {
-    if (!delay) delay = Delayed.delay;
     function delayed() {
-      clear();
-      delayed._ = setTimeout(
-        invoke, delay, callback, this, arguments, delayed
+      // ensure the right clear method
+      clear.call(delayed);
+      // re-set the timeout (still waiting after)
+      delayed.waiting = setTimeout(
+        invoke, delay, delayed, callback, this, arguments
       );
     }
-    function clear() {
-      clearTimeout(delayed._);
-    }
+    if (!delay) delay = Delayed.delay;
+    // a ways to stop the execution
     delayed.clear = clear;
-    delayed._ = 0;
+    // although waiting will be false only once executed
+    delayed.waiting = Infinity;
+    // **or** if explicitly blocked by a user
     return delayed;
   }
   function clear() {
-    clearTimeout(this._);
-    this._ = 0;
-    return this;
+    if (this.waiting !== Infinity) {
+      clearTimeout(this.waiting);
+    }
+    this.waiting = 0;
   }
-  function invoke(callback, context, args, delayed) {
-    delayed._ = 0;
+  function invoke(delayed, callback, context, args) {
+    // mark as consumed already, not waiting anymore
+    delayed.waiting = 0;
+    // finally invoke the callback
     callback.apply(context, args);
   }
   Delayed.delay = delay;

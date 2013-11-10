@@ -3,6 +3,12 @@
 
  ... discovering a sustainable world
 
+### TODO
+
+Here a list of known or desired tasks to fix, improve, or change.
+
+- [ ] a better horizontal navigation
+
 
 ### Mit Style License
 ```

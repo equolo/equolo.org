@@ -956,6 +956,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
       a = where.lastChild.appendChild(
         document.createElement('a')
       );
+      a.target = '_blank';
       a.classList.add('social');
       switch(field) {
         case 'twitter':
@@ -1005,6 +1006,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
           li.href = 'mailto:' + place[field];
           break;
         default:
+          li.target = '_blank';
           li.href = /^https?:\/\//i.test(place[field]) ?
             place[field] :
             'http://' + place[field]
