@@ -9,7 +9,8 @@
     "90": "/img/equolo_90.png",
     "64": "/img/equolo_64.png",
     "60": "/img/equolo_60.png",
-    "32": "/img/equolo_32.png"
+    "32": "/img/equolo_32.png",
+    "16": "/img/equolo_16.png"
   },
   "developer": {
     "name": "Andrea Giammarchi",

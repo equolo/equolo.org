@@ -194,7 +194,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
     }
 
     if (display.height <= 500) {
-      tmp = el.cloneNode(true);
+      tmp = el.cloneNode(true).on('click', fullScreen);
       section.map.appendChild(tmp).classList.add('logo');
       if (tmp.nodeName !== 'IMG') {
         tmp.getContext('2d').putImageData(
