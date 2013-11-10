@@ -794,12 +794,7 @@ var fontAwesomeIcon = function(canvas){
     },
     cache = {}
   ;
-  /*
-  context.globalAlpha = 0;
-  context.imageSmoothingEnabled =
-  context.webkitImageSmoothingEnabled = false;
-  alert([context.globalAlpha, context.imageSmoothingEnabled, context.webkitImageSmoothingEnabled]);
-  */
+
   function ellipse(x, y, r) {
     context.beginPath();
     context.arc(x, y, r, 0, Math.PI * 2, true); 
