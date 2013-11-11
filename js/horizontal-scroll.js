@@ -135,6 +135,11 @@ var HorizontalScroll = (function(UA, Math){
         if (bugged) {
           if (!this._l) {
             this._l = parseFloat(this._p.style.marginLeft || 0);
+            if (!this._l) {
+              this._l = -this._p.scrollLeft;
+              this._p.scrollLeft = 0;
+              this._p.style.marginLeft = this._l;
+            }
             // minimum margin left
             // so it won't disappear from the screen
             if (!this._m) {
