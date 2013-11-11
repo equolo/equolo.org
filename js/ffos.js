@@ -6,5 +6,5 @@ window.on('wp:ffos-install', function(e) {
       alert(':-(\n' + this.error.name);
     };
   } catch(notFirefoxOS) {}
-  e.preventDefault();
+  e.arguments[0].preventDefault();
 });

@@ -28,5 +28,5 @@ window.on('wp:hs-icon', function(e) {
       ';height:', display.height, 'px'
     ].join('');
   }
-  e.preventDefault();
+  e.arguments[0].preventDefault();
 });

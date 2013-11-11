@@ -1489,7 +1489,7 @@ window.on('wp:hs-icon', function(e) {
       ';height:', display.height, 'px'
     ].join('');
   }
-  e.preventDefault();
+  e.arguments[0].preventDefault();
 });// install equolo.org as App in Firefox OS
 window.on('wp:ffos-install', function(e) {
   try {
@@ -1498,7 +1498,7 @@ window.on('wp:ffos-install', function(e) {
       alert(':-(\n' + this.error.name);
     };
   } catch(notFirefoxOS) {}
-  e.preventDefault();
+  e.arguments[0].preventDefault();
 });function GoogleAnalytics() {
   if(location.href.indexOf('equolo') < 0) return;
   window._gaq = [
