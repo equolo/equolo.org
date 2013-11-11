@@ -26,7 +26,7 @@ JS =  js/display.js\
       font-cawesome/build/font-cawesome.js\
       js/Delayed.js\
       js/Mercator.js\
-      js/HorizontalScroll.js\
+      js/horizontal-scroll.js\
       js/ietouches.js\
       js/wp.js\
       js/ffos.js\

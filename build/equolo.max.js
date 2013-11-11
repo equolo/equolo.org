@@ -1197,8 +1197,6 @@ var HorizontalScroll = (function(UA, Math){
       // calculate the different x from
       // the beginning of the action
       e.x = pageX - this._diffX - this._x;
-      // change the scroll
-      this._p.scrollLeft = this._s - e.x;
       // however, Android 4.0 will ignore that
       // reflecting the value if get but not the layout
       if (bugged) {
@@ -1207,6 +1205,9 @@ var HorizontalScroll = (function(UA, Math){
           min(0, e.x + this._l)
         ) + 'px';
         this._e = e.x;
+      } else {
+        // change the scroll
+        this._p.scrollLeft = this._s - e.x;
       }
       // notify the scroll changed
       this.onchange(e);
@@ -1231,7 +1232,9 @@ var HorizontalScroll = (function(UA, Math){
             this._l = parseFloat(this._p.style.marginLeft || 0);
             // minimum margin left
             // so it won't disappear from the screen
-            this._m = this._p.clientWidth - this._p.scrollWidth;
+            if (!this._m) {
+              this._m = this._p.clientWidth - this._p.scrollWidth;
+            }
           }
           this._s = -this._l;
         }
