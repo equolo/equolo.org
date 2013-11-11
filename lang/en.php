@@ -13,7 +13,7 @@ $dictionary=(array(
    'authentication-reminder-text' => '<p>Please use the following link in order to edit all your activities, thank you!</p>',
    'category' => 'category',
    'category-description' => '<p>Be sure you specify a category for each location.&lt;br/&gt;In case you are not sure about your category, <a href="/categories.php" title="undefined">click here to know more and see a list</a>.</p>',
-   'category-other' => '',
+   'category-other' => 'If you think you do not belong to any of the above categories, please send me a message or <a href="https://github.com/equolo/equolo.org#-equolo">file a request in github</a> to let me know how I could improve my service by adding new options. Meanwhile, feel free to use this category, thank you.',
    'certificates-no' => 'My activity/business and/or the products it sells or trades have not been issues any sustainability certificate so far',
    'certificates-yes' => 'My activity/business and/or a significant majority of the products it sells (80% or more) have been issued one or more official certificate/s for sustainable/ethical/ecological production/commerce/service (e.g. Ecolables, Fair Trade labels, organic labels etc.)',
    'characters-counting' => 'characters left',

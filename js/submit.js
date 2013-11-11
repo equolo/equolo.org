@@ -878,7 +878,9 @@ document.once('DOMContentLoaded', function () {
                       alert([jslang.everythingOK].concat(
                         user.firstTimeInHere ? jslang.oneStepLeft : []
                       ).join('\n'));
-                      return location.reload();
+                      return user.firstTimeInHere ? (
+                        location.href = 'http://equolo.org/'
+                      ) : location.reload();
 
                     case 'bad-data':    // something went terribly wrong!
                       alert('bad data');

@@ -51,7 +51,7 @@ if (isEquoloRequest()) {
           );
           // send an email with the authentication link
           mailTo(
-            'no-reply',
+            'info@equolo.org',
             $commonParams[0],
             ($active ?
               $dictionary['authentication-reminder'] :
