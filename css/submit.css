@@ -187,6 +187,9 @@ fieldset:last-child {
   font-weight: 100;
   font-size: 12px;
 }
+p strong {
+  font-size: 12px;
+}
 div.terms-of-use ul li {
   margin: 8px 0;
 }

@@ -62,7 +62,7 @@ if (isEquoloRequest()) {
               $dictionary['authentication-activation-text']
             ).
               "\n<br>\n".
-              '<a href="http://equolor.org/?email='.
+              '<a href="http://equolo.org/submit.php?email='.
                 rawurlencode($commonParams[0]).
               '&token='.
                 rawurlencode($token).

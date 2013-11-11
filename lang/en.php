@@ -29,7 +29,7 @@ $dictionary=(array(
    'facebook' => 'facebook',
    'find-me' => 'find me!',
    'gplus' => 'google plus',
-   'jslang' => 'this.jslang={"pinit":"Do you want to place the icon here?","seeYouLater":"An email has been sent to your account with the edit button\\/link\\nPlease check your email inbox and feel free to come back whenever you want. Thank You!"}',
+   'jslang' => 'this.jslang={"pinit":"Do you want to place the icon here?","seeYouLater":"An email has been sent to your account with the edit button\\/link\\nPlease check your email inbox and feel free to come back whenever you want. Thank You!","pleaseConfirmFirst":"Your email is already in our database.\\nPlease check your email inbox, we have sent you further instructions on how to proceed."}',
    'language-selection' => 'please choose a language',
    'location' => 'location',
    'location-fieldset-description' => '<p>Insert data on the location of your business. For each activity you can add as many locations as needed.</p><p><strong>If the activity is not showing up in the map</strong> or is located in the wrong spot, right-click where you want it to appear and confirm the position once asked.</p><p>Please note: The information entered in this section <strong>will be displayed publicly</strong>. Only enter information regarding your activity that you want the users to see.</p>',

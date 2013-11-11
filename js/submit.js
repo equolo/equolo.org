@@ -984,7 +984,7 @@ document.once('DOMContentLoaded', function () {
       // ask if a new email should be sent
       // silently failing in the backend
       // if already sent in last 24 hours
-      // TODO: inform the user something went wrong
+      alert(jslang.pleaseConfirmFirst);
       return (location.href = 'http://equolo.org/');
     }
     if (user.hasOwnProperty('activities')) {
