@@ -138,7 +138,7 @@ var HorizontalScroll = (function(UA, Math){
             if (!this._l) {
               this._l = -this._p.scrollLeft;
               this._p.scrollLeft = 0;
-              this._p.style.marginLeft = this._l;
+              this._p.style.marginLeft = this._l + 'px';
             }
             // minimum margin left
             // so it won't disappear from the screen
