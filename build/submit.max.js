@@ -1591,9 +1591,10 @@ document.once('DOMContentLoaded', function () {
                   $('fieldset').forEach(FieldSet.enable);
                   switch(xhr.responseText) {
                     case 'OK':          // yeah!
-                      alert(')°(,');
+                      alert([jslang.everythingOK].concat(
+                        user.firstTimeInHere ? jslang.oneStepLeft : []
+                      ).join('\n'));
                       return location.reload();
-                      break;
 
                     case 'bad-data':    // something went terribly wrong!
                       alert('bad data');
@@ -1686,6 +1687,7 @@ document.once('DOMContentLoaded', function () {
     user.currentActivity = null;
     if (detail == null) {
       user.activities = [];
+      user.firstTimeInHere = true;
     } else if(typeof detail == 'object') {
       user.activities = detail;
       if (user.activities.length) {
@@ -1703,10 +1705,7 @@ document.once('DOMContentLoaded', function () {
       alert(jslang.pleaseConfirmFirst);
       return (location.href = 'http://equolo.org/');
     }
-    if (user.hasOwnProperty('activities')) {
-      this.trigger('step-3', user);
-    }
-    
+    this.trigger('step-3', user);
   }
 
   // do not perform this check every keyup event
