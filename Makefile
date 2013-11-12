@@ -1,4 +1,4 @@
-.PHONY: build clean structure html js css php db external size dependencies builder
+.PHONY: build clean credentials structure html js css php db external size dependencies builder
 
 # repository name
 REPO = equolo
@@ -176,6 +176,10 @@ dependencies:
 	mv es5-shim.min.js js/es5-shim.js
 	mv leaflet*.* leaflet
 	mv font*.* fonts
+
+credentials:
+	ssh-add ~/.ssh/id_rsa_equolo
+	git config user.email "dev@equolo.org"
 
 # every time something changes,
 # except for the runtime created www folder
