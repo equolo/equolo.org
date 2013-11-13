@@ -49,7 +49,6 @@
         value: function (type, eventHandler, capture) {
           if (type in types) {
             original.call(this, types[type], handler, capture);
-            original.call(this, types.touchout, handler, capture);
           }
           return original.call(this, type, eventHandler, capture);
         }
@@ -121,7 +120,6 @@
     types = Object.create(null),
     // the unique handler for all the things
     handler = {
-      _t: 0,
       handleEvent: function (e) {
         // when an event occurres
         if (humanReadablePointerType(e) === 'touch') {
@@ -134,20 +132,12 @@
         dispatchEvent('touchstart', e);
       },
       pointermove: function (e) {
-        if (handler._t) {
-          clearTimeout(handler._t);
-          handler._t = 0;
-        }
         touches[e.pointerId]._ = e;
         dispatchEvent('touchmove', e);
       },
       pointerup: function (e) {
         delete touches[e.pointerId];
         dispatchEvent('touchend', e);
-      },
-      pointerout: function (e) {
-        clearTimeout(handler._t);
-        handler._t = setTimeout(handler.pointerup, 200, e);
       }
     }
   ;
@@ -177,7 +167,6 @@
   types['touchstart'] = type('PointerDown');
   types['touchmove']  = type('PointerMove');
   types['touchend']   = type('PointerUp');
-  types['touchout']   = type('PointerOut');
 
   commonOverride(document, 'addEventListener');
   commonOverride(document, 'removeEventListener');
