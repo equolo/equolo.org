@@ -168,11 +168,11 @@ dependencies:
 	curl -O -L http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css
 	curl -O -L http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.ie.css
 	curl -O -L http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js
-	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.min.css
-	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/4.0.0/fonts/fontawesome-webfont.eot
-	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/4.0.0/fonts/fontawesome-webfont.woff
-	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/4.0.0/fonts/fontawesome-webfont.ttf
-	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/4.0.0/fonts/fontawesome-webfont.svg
+	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css
+	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/4.0.3/fonts/fontawesome-webfont.eot
+	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/4.0.3/fonts/fontawesome-webfont.woff
+	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/4.0.3/fonts/fontawesome-webfont.ttf
+	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/4.0.3/fonts/fontawesome-webfont.svg
 	mv es5-shim.min.js js/es5-shim.js
 	mv leaflet*.* leaflet
 	mv font*.* fonts

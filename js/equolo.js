@@ -20,7 +20,7 @@
 // let's dirtly feature detect browser capabilities
 // in the worst case scenario, we'll prepare
 // the most common icon fallback: the marker one
-try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36)throw 0}catch(o_O){
+try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userAgent))throw 0}catch(o_O){
   // ok, very old browser, icons should be static images
   // instead of runtime generated canvas
   // let's force them to be in there once needed

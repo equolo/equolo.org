@@ -1214,7 +1214,7 @@ document.once('DOMContentLoaded', function () {
     // so let's try to avoid unnecessary calls. How ?
     // If at least 4 values are not specified
     // there's no reason to trigger any request
-    if (2 < values.length) {
+    if (3 < values.length) {
       searchStateIcon.className = searchState.searching;
       // otherwise we can bother the remote server
       // hoping these info will be enough
@@ -1366,8 +1366,8 @@ document.once('DOMContentLoaded', function () {
       RE_VALID_GEO.test(place.longitude) &&
       // there is an address
       place.address.trim().length &&
-      // at least 3 other fields
-      2 < (
+      // at least 4 other fields
+      3 < (
         place.postcode.trim().length +
         place.city.trim().length +
         place.county.trim().length +
