@@ -2,14 +2,14 @@ CACHE MANIFEST
 # 1
 
 CACHE:
-/css/equolo.css
-/css/font-awesome.css
-/css/leaflet.css
+/cgi/equolo.css.php
+/cgi/font-awesome.css.php
+/cgi/leaflet.css.php
 /css/leaflet.ie.css
-/js/equolo.js
-/js/leaflet.js
+/cgi/equolo.js.php
+/cgi/leaflet.js.php
 /fonts/fontawesome-webfont.eot
-/fonts/fontawesome-webfont.svg
+/cgi/fontawesome-webfont.svg.php
 /fonts/fontawesome-webfont.ttf
 /fonts/fontawesome-webfont.woff
 /cgi/base64_icon.php

@@ -21,4 +21,4 @@
   window.onLoad = on(load);
   document[add]('DOMContentLoaded', ready(dom));
   window[add]('load', ready(load));
-}(this, 'addEventListener', [], []));
+}(window, 'addEventListener', [], []));

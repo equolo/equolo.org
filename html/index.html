@@ -8,14 +8,17 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="mobile-web-app-capable" content="yes"/>
-    <!--[if IE 8]><script src="js/ie8.js"></script><script src="js/es5-shim.js"></script><link rel="stylesheet" href="css/leaflet.ie.css"/><![endif]--><script>{{navigator.country}}
-(function(b,d,e,f){function g(a){return function(c){for(;a.length;)a.shift().call(b,c);a.K=!0}}function h(a){return function(c){a.K?c.call(b):a.push(c)}}b.onDOM=h(e);b.onLoad=h(f);document[d]("DOMContentLoaded",g(e));b[d]("load",g(f))})(this,"addEventListener",[],[]);(function(r,u,n){n=u.documentElement;while(r<2){n.insertBefore(u.createElement('script'),n.lastChild).src=[
-'/js/equolo{{MAX_JS}}.js',
-'/js/leaflet.js'
-][r++]}}(0,document));</script>
-    <link rel="stylesheet" href="/css/font-awesome.css"/>
-    <link rel="stylesheet" href="/css/equolo.css"/>
-    <link rel="stylesheet" href="/css/leaflet.css"/>
+    <!--[if IE 8]>
+      <script src="js/ie8.js"></script>
+      <script src="js/es5-shim.js"></script>
+      <link rel="stylesheet" href="css/leaflet.ie.css"/>
+    <![endif]-->
+    <script>{{navigator.country}}</script>
+    <script src="/cgi/equolo{{MAX_JS}}.js.php"></script>
+    <script src="/cgi/leaflet.js.php"></script>
+    <link rel="stylesheet" href="/cgi/equolo.css.php"/>
+    <link rel="stylesheet" href="/cgi/font-awesome.css.php"/>
+    <link rel="stylesheet" href="/cgi/leaflet.css.php"/>
     <link rel="apple-touch-startup-image" href="/img/equolo-logo.png"/>
   </head>
   <body><script>document.write('<br/>')</script><noscript></noscript>

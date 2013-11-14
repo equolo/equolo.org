@@ -1638,11 +1638,11 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
   ;
 
   // things that should be done ASAP
-  window.onDOM(function(){
+  document.once('DOMContentLoaded', function(){
 
     // solve IE9Mobile problem with fonts
     if (IE9Mobile)
-      FontCawesome('../fonts/fontawesome-webfont.svg')
+      FontCawesome('/cgi/fontawesome-webfont.svg.php')
     ;
 
     // clean dirty nodes on stage
@@ -1668,7 +1668,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
 
   // use window.onload to "hope" everythingis there
   // (font, map, css, etc)
-  window.onLoad(equolo);
+  window.once('load', equolo);
 
   // not necessary but nice to keep the body semantic
   function cleanTheStage() {
