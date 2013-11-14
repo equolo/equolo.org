@@ -1,0 +1,36 @@
+CACHE MANIFEST
+# 1
+
+CACHE:
+/css/equolo.css
+/css/font-awesome.css
+/css/leaflet.css
+/css/leaflet.ie.css
+/js/equolo.js
+/js/leaflet.js
+/fonts/fontawesome-webfont.eot
+/fonts/fontawesome-webfont.svg
+/fonts/fontawesome-webfont.ttf
+/fonts/fontawesome-webfont.woff
+/cgi/base64Icon.php
+/js/ie8.js
+/js/es5-shim.js
+/img/equolo-favicon.png
+/img/equolo-logo.png
+/img/equolo_16.png
+/img/equolo_32.png
+/img/equolo_60.png
+/img/equolo_64.png
+/img/equolo_90.png
+/img/equolo_120.png
+/img/equolo_128.png
+/img/equolo_256.png
+/img/iOS7_bottom_bar.png
+/img/iOS7_home_screen.png
+/img/iOS_home_screen.png
+/img/wp_home_screen.png
+/img/bb10_home_screen.png
+/equolo.webapp
+
+NETWORK:
+*
