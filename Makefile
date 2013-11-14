@@ -139,6 +139,7 @@ php:
 	cp -r lang www/cgi
 	cp htaccess www/.htaccess
 	cp equolo.webapp www
+	cp equolo.appcache www
 
 # preserve private data
 db:

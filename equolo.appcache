@@ -12,7 +12,7 @@ CACHE:
 /fonts/fontawesome-webfont.svg
 /fonts/fontawesome-webfont.ttf
 /fonts/fontawesome-webfont.woff
-/cgi/base64Icon.php
+/cgi/base64_icon.php
 /js/ie8.js
 /js/es5-shim.js
 /img/equolo-favicon.png
