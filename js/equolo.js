@@ -128,9 +128,17 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
 
     var navLink, el, tmp, watchId, width;
 
-    // if there's still no map
-    // we need to wait for it
-    if (!window.L) return setTimeout(equolo, 15);
+    if (
+      // if there's still no map
+      !window.L || (
+      // not compact
+      !window.compat &&
+      // and still waiting for font
+      !isFontLoaded('FontAwesome', '\uf06b')
+    )) {
+      // wait for it
+      return setTimeout(equolo, 50);
+    }
 
     // map all sections once
     // these won't change anyway during

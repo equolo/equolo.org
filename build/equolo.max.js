@@ -1537,7 +1537,28 @@ window.on('wp:ffos-install', function(e) {
   img.src = url + 'de_DE/i/scr/pixel.gif';
   img.width = img.height = 1;
   $('form#paypal')[0].appendChild(fragment);
-}// WARNING ===================================================
+}/*! (C) Andrea Giammarchi */
+// @link https://gist.github.com/WebReflection/7461879
+// @example
+//  isFontLoaded('FontAwesome', '\uf06b')
+var isFontLoaded = function(canvas1, canvas2) {
+  function reset(canvas, fontName) {
+    var context = canvas.getContext('2d');
+    canvas.width = canvas.height = 16;
+    context.clearRect(0, 0, 16, 16);
+    context.fillStyle = "rgb(0,0,0)";
+    context.font = "16px '" + fontName + "'";
+    context.fillText('\uf06b', 0, 16);
+    return canvas.toDataURL();
+  }
+  return function (fontName, specialChar) {
+    return  reset(canvas1, 'default', specialChar) !==
+            reset(canvas2, fontName, specialChar);
+  };
+}(
+  document.createElement('canvas'),
+  document.createElement('canvas')
+);// WARNING ===================================================
 // this is not how you should do JavaScript for any website
 // this is a rushed code out of a prototype and potentially
 // full of any sort of bug, not organized, not optimized
@@ -1667,9 +1688,17 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
 
     var navLink, el, tmp, watchId, width;
 
-    // if there's still no map
-    // we need to wait for it
-    if (!window.L) return setTimeout(equolo, 15);
+    if (
+      // if there's still no map
+      !window.L || (
+      // not compact
+      !window.compat &&
+      // and still waiting for font
+      !isFontLoaded('FontAwesome', '\uf06b')
+    )) {
+      // wait for it
+      return setTimeout(equolo, 50);
+    }
 
     // map all sections once
     // these won't change anyway during

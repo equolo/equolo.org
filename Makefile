@@ -32,6 +32,7 @@ JS =  js/display.js\
       js/ffos.js\
       js/ga.js\
       js/paypal.js\
+      js/is-font-loaded.js\
       js/$(REPO).js
 
 # make pinit/submit section files
