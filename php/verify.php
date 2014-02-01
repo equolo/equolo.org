@@ -57,7 +57,8 @@ if (isEquoloRequest()) {
               $dictionary['authentication-reminder'] :
               $dictionary['authentication-activation']
             ),
-            ($active ?
+            '<!DOCTYPE html>'.(
+            $active ?
               $dictionary['authentication-reminder-text'] :
               $dictionary['authentication-activation-text']
             ).

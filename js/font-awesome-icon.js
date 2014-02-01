@@ -16,7 +16,7 @@ var fontAwesomeIcon = function(canvas){
       briefcase: 0xf0b1,
       group: 0xf0c0,
       truck: 0xf0d1,
-      umbrella: 0xf0e9
+      // umbrella: 0xf0e9
       //,'map-marker': 32 //0xf041
     },
     cache = {}
@@ -39,19 +39,19 @@ var fontAwesomeIcon = function(canvas){
     ellipse(size / 2, size / 2.5, size / 2.8);
     context.font = context.mozTextStyle =
       Math.round(size / 2) + "px FontAwesome";
-    context.translate((canvas.width - (
-      context.measureText || context.mozMeasureText
-    ).call(context, chr).width) / 2, 0);
     context.fillStyle = "rgb(40,104,104)";
-    if (chr.length) {
+    if (chr.charAt(0)!= '@') {
+      context.translate((canvas.width - (
+        context.measureText || context.mozMeasureText
+      ).call(context, chr).width) / 2, 0);
       context.fillText(chr, 0, size / 1.5);
     } else {
       context.drawImage(
-        equoloIcon(
+        (chr === '@map-marker' ? equoloIcon : fashionIcon)(
           document.createElement('canvas'),
           size / 1.5
         ),
-        -size / 2.8,
+        size / 7,
         size / 10
       );
     }
@@ -70,7 +70,7 @@ var fontAwesomeIcon = function(canvas){
     return cache[chr + size + ratio] || (
       cache[chr + size + ratio] = icon(
         code.hasOwnProperty(chr) ?
-          String.fromCharCode(code[chr]) : ''
+          String.fromCharCode(code[chr]) : '@' + chr
         ,
         Math.round(size * (
           ratio || (

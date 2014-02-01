@@ -10,11 +10,7 @@
 require_once('common.php');
 
 if (isEquoloRequest() &&
-  isset(
-    $_COOKIE['lang'],
-    $_COOKIE['country'],
-    $_COOKIE['ip']
-  )
+  isset($_COOKIE['lang'])
 ) {
   jsHeader('javascript', true);
   echo json_encode(getOrganizedResults(

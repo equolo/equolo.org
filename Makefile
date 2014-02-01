@@ -19,6 +19,7 @@ JS =  js/display.js\
       js/scrollbar-size.js\
       js/simple-kinetic.js\
       js/equolo-icon.js\
+      js/fashion-icon.js\
       js/font-awesome-icon.js\
       js/create-shortcut-icon.js\
       js/storage.js\

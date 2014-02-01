@@ -78,7 +78,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
   ;
 
   // things that should be done ASAP
-  document.once('DOMContentLoaded', function(){
+  document.when('ready', function(){
 
     // solve IE9Mobile problem with fonts
     if (IE9Mobile)

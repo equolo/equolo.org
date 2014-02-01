@@ -366,7 +366,7 @@ var JSONH, jsonh = JSONH = function (Array, JSON) {"use strict"; // if you want
 
 }(Array, JSON);/*! (C) WebReflection Mit Style License */
 (function(e){"use strict";function t(t){return typeof t=="string"?e.document.createTextNode(t):t}function n(n){if(n.length===1)return t(n[0]);for(var r=e.document.createDocumentFragment(),i=h.call(n),s=0;s<n.length;s++)r.appendChild(t(i[s]));return r}for(var r,i,s,o=/^\s+|\s+$/g,u=/\s+/,a=" ",f=function(t,n){return this.contains(t)?n||this.remove(t):n&&this.add(t),!!n},l=(e.Element||e.Node||e.HTMLElement).prototype,c=["prepend",function(){var t=this.firstChild,r=n(arguments);t?this.insertBefore(r,t):this.appendChild(r)},"append",function(){this.appendChild(n(arguments))},"before",function(){var t=this.parentNode;t&&t.insertBefore(n(arguments),this)},"after",function(){var t=this.parentNode,r=this.nextSibling,i=n(arguments);t&&(r?t.insertBefore(i,r):t.appendChild(i))},"replace",function(){var t=this.parentNode;t&&t.replaceChild(n(arguments),this)},"remove",function(){var t=this.parentNode;t&&t.removeChild(this)}],h=c.slice,p=c.length;p;p-=2)r=c[p-2],r in l||(l[r]=c[p-1]);"classList"in document.documentElement?(s=document.createElement("div").classList,s.add("a","b"),"a b"!=s&&(l=s.constructor.prototype,"add"in l||(l=e.DOMTokenList.prototype),i=function(e){return function(){var t=0;while(t<arguments.length)e.call(this,arguments[t++])}},l.add=i(l.add),l.remove=i(l.remove),l.toggle=f)):(i=function(e){if(!e)throw"SyntaxError";if(u.test(e))throw"InvalidCharacterError";return e},s=function(e){var t=e.className.replace(o,"");t.length&&c.push.apply(this,t.split(u)),this._=e},s.prototype={length:0,add:function(){for(var t=0,n;t<arguments.length;t++)n=arguments[t],this.contains(n)||c.push.call(this,r);this._.className=""+this},contains:function(e){return function(n){return p=e.call(this,r=i(n)),-1<p}}([].indexOf||function(e){p=this.length;while(p--&&this[p]!==e);return p}),item:function(t){return this[t]||null},remove:function(){for(var t=0,n;t<arguments.length;t++)n=arguments[t],this.contains(n)&&c.splice.call(this,p,1);this._.className=""+this},toggle:f,toString:function v(){return c.join.call(this,a)}},(Object.defineProperty||function(e,t,n){e.__defineGetter__(t,n.get)})(l,"classList",{get:function(){return new s(this)},set:function(){}}));try{new e.CustomEvent("?")}catch(d){e.CustomEvent=function(e,t){function n(n,i){var s=document.createEvent(e);if(typeof n!="string")throw new Error("An event name must be provided");return e=="Event"&&(s.initCustomEvent=r),i==null&&(i=t),s.initCustomEvent(n,i.bubbles,i.cancelable,i.detail),s}function r(e,t,n,r){this.initEvent(e,t,n),this.detail=r}return n}(e.CustomEvent?"CustomEvent":"Event",{bubbles:!1,cancelable:!1,detail:null})}})(window);/*! (C) Andrea Giammarchi Mit Style License */
-(function(e){"use strict";function E(){return{l:{},m:[],b:[]}}function S(e){var t=E();return c.value=t,p(e,f,c),c.value=null,t}function x(e,t,n){typeof t=="function"?t.apply(e,n):t.handleEvent.apply(t,n)}function T(e,t,n){n!==void 0&&y(this,"detail",n),y(this,"type",t),y(this,"target",e),y(this,"timeStamp",m())}if(e.eddy)return;e.eddy=!0;var t=Array.prototype,n=e.prototype,r=T.prototype,i=n.hasOwnProperty,s=t.push,o=t.slice,u=t.unshift,a="toLocaleString",f={toLocaleString:1}.propertyIsEnumerable(a)?"_@eddy"+Math.random():a,l=f===a,c=(e.create||e)(null),h=[],p=l?function(e,t,n){e[t]=n.value}:e.defineProperty,d=function(e){var t=this;return function(){return t.apply(e,arguments)}},v=t.indexOf||function(e){var t=this.length;while(t--&&this[t]!==e);return t},m=Date.now||function(){return(new Date).getTime()},g={boundTo:function(t){var n=i.call(this,f)?this[f]:S(this),r=n.m,o=n.b,u=typeof t=="string"?this[t]:t,a=v.call(r,u);return a<0?o[s.call(r,u)-1]=d.call(u,this):o[a]},emit:function(t){var n=i.call(this,f),r=n&&this[f].l,s=n&&i.call(r,t),u=s&&r[t],a=s&&o.call(arguments,1),l=0,c=s?u.length:l;while(l<c)x(this,u[l++],a);return s},listeners:function(t){return i.call(this,f)&&i.call(this[f].l,t)&&this[f].l[t].slice()||[]},off:function(t,n){var r=i.call(this,f),s=r&&this[f].l,o=r&&i.call(s,t)&&s[t],u;return o&&(u=v.call(o,n),-1<u&&(o.splice(u,1),o.length||delete s[t])),this},on:function(t,n,r){var o=i.call(this,f),a=(o?this[f]:S(this)).l,l=o&&i.call(a,t)?a[t]:a[t]=[];return v.call(l,n)<0&&(r?u:s).call(l,n),this},once:function(t,n,r){var i=function(e){s.off(t,i,r),x(s,n,arguments)},s=this;return s.on(t,i,r)},trigger:function(t,n){var s=i.call(this,f),o=s&&this[f].l,u=typeof t=="string",a=u?t:t.type,l=s&&i.call(o,a),c=l&&o[a].slice(0),p=u?new T(this,a,n):t,d=0,v=l?c.length:d,m=!(p instanceof T);m&&(p._active=!0,p.stopImmediatePropagation=r.stopImmediatePropagation),p.currentTarget=this,h[0]=p;while(p._active&&d<v)x(this,c[d++],h);return m&&(delete p._active,delete p.stopImmediatePropagation),!p.defaultPrevented}},y=function(e,t,n){i.call(e,t)||(e[t]=n)},b=!1,w;r.defaultPrevented=!1,r._active=r.cancelable=!0,r.preventDefault=function(){this.defaultPrevented=!0},r.stopImmediatePropagation=function(){this._active=!1};for(w in g)i.call(g,w)&&p(n,w,{enumerable:!1,configurable:!0,writable:!0,value:g[w]});(function(e){function n(t){function n(e){e[t].apply(e,this)}return function(){return e.call(this,n,arguments),this}}for(var r in g)g.hasOwnProperty(r)&&!/^listeners|boundTo$/.test(r)&&p(t,r,{enumerable:!1,configurable:!0,writable:!0,value:n(r)})})(t.forEach);var N={boundTo:g.boundTo,data:function k(e,t){var n="dataset"in this,r;return arguments.length<2?n?e in this.dataset?this.dataset[e]:r:(t=this.getAttribute("data-"+e.replace(k.gre||(k.gre=/-[a-z]/g),k.gplace||(k.gplace=function(e,t){return t.toUpperCase()}))))==null?r:t:n?t==null?delete this.dataset[e]:(this.dataset[e]=t,t):(k.sre||(k.sre=/([a-z])([A-Z])/g,k.splace=function(e,t,n){return t+"-"+n.toLowerCase()}),e="data-"+e.replace(k.sre,k.splace),t==null?!this.removeAttribute(e):(this.setAttribute(e,t),t))},emit:function(n){var r=new CustomEvent(n);return r.arguments=t.slice.call(arguments,1),this.dispatchEvent(r)},listeners:function(t){return[]},off:function(e,t,n){return this.removeEventListener(e,t,n),this},on:function(e,t,n){return this.addEventListener(e,t,n),this},once:g.once,trigger:function(t,n){var r=typeof t=="string",i=r?t:t.type,s=r?new CustomEvent(i,(c.detail=n,c)):t;return c.detail=null,T.call(s,this,i),this.dispatchEvent(s)}};c.cancelable=!0,c.bubbles=!0;try{document.createEvent("Event").target=document}catch(C){b=!0,y=function(e,t,n){if(!i.call(e,t))try{e[t]=n}catch(r){}}}(function(e){var t=e.Window,n=t?t.prototype:e,r=(e.Node||e.Element||e.HTMLElement).prototype,s=(e.Document||e.HTMLDocument).prototype,o=(e.XMLHttpRequest||function(){}).prototype,u,a;for(u in N)i.call(N,u)&&(a={enumerable:!1,configurable:!0,writable:!0,value:N[u]},p(r,u,a),u!=="data"&&(p(n,u,a),p(s,u,a),p(o,u,a)))})(window)})(Object);// very simple jQueryish approach: inefficient but handy enough
+(function(e){"use strict";function S(){return{w:{},l:{},m:[],b:[]}}function x(e,t,n){typeof t=="function"?t.apply(e,n):t.handleEvent.apply(t,n)}function T(e,t,n){n!==void 0&&b(this,"detail",n),b(this,"type",t),b(this,"target",e),b(this,"timeStamp",m())}if(e.eddy)return;e.eddy=!0;var t=Array.prototype,n=e.prototype,r=T.prototype,i=n.hasOwnProperty,s=t.push,o=t.slice,u=t.unshift,a="toLocaleString",f={toLocaleString:1}.propertyIsEnumerable(a)?"_@eddy"+Math.random():a,l=f===a,c=(e.create||e)(null),h=[],p=l?function(e,t,n){e[t]=n.value}:e.defineProperty,d=function(e){var t=this;return function(){return t.apply(e,arguments)}},v=t.indexOf||function(e){var t=this.length;while(t--&&this[t]!==e);return t},m=Date.now||function(){return(new Date).getTime()},g=function(e){var t=S();return c.value=t,p(e,f,c),c.value=null,t},y={boundTo:function k(e,t){var n=i.call(this,f)?this[f]:g(this),r=n.m,o=n.b,u=typeof e=="string"?typeof t===void 0||i.call(this,e)?this[e]:this[e]=t:e,a=v.call(r,u);return a<0?o[s.call(r,u)-1]=d.call(u,this):o[a]},emit:function L(e){var t=i.call(this,f),n=t&&this[f].l,r=t&&i.call(n,e),s=r&&n[e].slice(0),u=r&&o.call(arguments,1),a=0,l=r?s.length:a;while(a<l)x(this,s[a++],u);return r},listeners:function A(e){return i.call(this,f)&&i.call(this[f].l,e)&&this[f].l[e].slice()||[]},off:function O(e,t){var n=i.call(this,f),r=n&&this[f].l,s=n&&i.call(r,e)&&r[e],o;return s&&(o=v.call(s,t),-1<o&&(s.splice(o,1),s.length||delete r[e])),this},on:function M(e,t,n){var r=i.call(this,f),o=(r?this[f]:g(this)).l,a=r&&i.call(o,e)?o[e]:o[e]=[];return v.call(a,t)<0&&(n?u:s).call(a,t),this},once:function _(e,t,n){var r=function(s){i.off(e,r,n),x(i,t,arguments)},i=this;return i.on(e,r,n)},trigger:function D(e,t){var n=i.call(this,f),s=n&&this[f].l,o=typeof e=="string",u=o?e:e.type,a=n&&i.call(s,u),l=a&&s[u].slice(0),c=o?new T(this,u,t):e,p=0,d=a?l.length:p,v=!(c instanceof T);v&&(c._active=!0,c.stopImmediatePropagation=r.stopImmediatePropagation),c.currentTarget=this,h[0]=c;while(c._active&&p<d)x(this,l[p++],h);return v&&(delete c._active,delete c.stopImmediatePropagation),!c.defaultPrevented},when:function(e,t){var n=i.call(this,f),r=(n?this[f]:g(this)).w,s=n&&i.call(r,e);return s?(x(this,t,r[e]),this):this.once(e,function(){i.call(r,e)||(r[e]=arguments)},!0).once(e,t)}},b=function(e,t,n){i.call(e,t)||(e[t]=n)},w=!1,E;r.defaultPrevented=!1,r._active=r.cancelable=!0,r.preventDefault=function(){this.defaultPrevented=!0},r.stopImmediatePropagation=function(){this._active=!1};for(E in y)i.call(y,E)&&p(n,E,{enumerable:!1,configurable:!0,writable:!0,value:y[E]});(function(e){function n(t){function n(e){e[t].apply(e,this)}return function(){return e.call(this,n,arguments),this}}for(var r in y)y.hasOwnProperty(r)&&!/^listeners|boundTo$/.test(r)&&p(t,r,{enumerable:!1,configurable:!0,writable:!0,value:n(r)})})(t.forEach);var N={boundTo:function(e){try{e.call(document.createElement("div"),function(){})}catch(t){g=function(e){return e[f]=S(),e[f]}}return e}(y.boundTo),data:function P(e,t){var n="dataset"in this,r;return arguments.length<2?n?e in this.dataset?this.dataset[e]:r:(t=this.getAttribute("data-"+e.replace(P.gre||(P.gre=/-[a-z]/g),P.gplace||(P.gplace=function(e,t){return t.toUpperCase()}))))==null?r:t:n?t==null?delete this.dataset[e]:(this.dataset[e]=t,t):(P.sre||(P.sre=/([a-z])([A-Z])/g,P.splace=function(e,t,n){return t+"-"+n.toLowerCase()}),e="data-"+e.replace(P.sre,P.splace),t==null?!this.removeAttribute(e):(this.setAttribute(e,t),t))},emit:function H(e){var n=new CustomEvent(e);return n.arguments=t.slice.call(arguments,1),this.dispatchEvent(n)},listeners:function B(e){return[]},off:function(e,t,n){return this.removeEventListener(e,t,n),this},on:function(e,t,n){return this.addEventListener(e,t,n),this},once:y.once,trigger:function j(e,t){var n=typeof e=="string",r=n?e:e.type,i=n?new CustomEvent(r,(c.detail=t,c)):e;return c.detail=null,T.call(i,this,r),this.dispatchEvent(i)},when:y.when};c.cancelable=!0,c.bubbles=!0;try{document.createEvent("Event").target=document}catch(C){w=!0,b=function(e,t,n){if(!i.call(e,t))try{e[t]=n}catch(r){}}}(function(t){var n=t.Window,r=n?n.prototype:t,s=(t.Node||t.Element||t.HTMLElement).prototype,o=(t.Document||t.HTMLDocument).prototype,u=(t.XMLHttpRequest||function(){}).prototype,a=function(){f.trigger("ready")},f=t.document,l,c;for(l in N)i.call(N,l)&&(c={enumerable:!1,configurable:!0,writable:!0,value:N[l]},p(s,l,c),l!=="data"&&(p(r,l,c),p(o,l,c),p(u,l,c)));f.when("ready",e),/loaded|complete/.test(f.readyState)?(t.setImmediate||setTimeout)(a):f.once("DOMContentLoaded",a,!0)})(window)})(Object);// very simple jQueryish approach: inefficient but handy enough
 window.$=function(a){return function(c,p){return a.slice.call(a.concat(p||document)[0].querySelectorAll(c))}}([]);/*! SimpleKinetic v0.1.1 - MIT license */
 
 
@@ -646,7 +646,7 @@ var fontAwesomeIcon = function(canvas){
       briefcase: 0xf0b1,
       group: 0xf0c0,
       truck: 0xf0d1,
-      umbrella: 0xf0e9
+      // umbrella: 0xf0e9
       //,'map-marker': 32 //0xf041
     },
     cache = {}
@@ -669,19 +669,19 @@ var fontAwesomeIcon = function(canvas){
     ellipse(size / 2, size / 2.5, size / 2.8);
     context.font = context.mozTextStyle =
       Math.round(size / 2) + "px FontAwesome";
-    context.translate((canvas.width - (
-      context.measureText || context.mozMeasureText
-    ).call(context, chr).width) / 2, 0);
     context.fillStyle = "rgb(40,104,104)";
-    if (chr.length) {
+    if (chr.charAt(0)!= '@') {
+      context.translate((canvas.width - (
+        context.measureText || context.mozMeasureText
+      ).call(context, chr).width) / 2, 0);
       context.fillText(chr, 0, size / 1.5);
     } else {
       context.drawImage(
-        equoloIcon(
+        (chr === '@map-marker' ? equoloIcon : fashionIcon)(
           document.createElement('canvas'),
           size / 1.5
         ),
-        -size / 2.8,
+        size / 7,
         size / 10
       );
     }
@@ -700,7 +700,7 @@ var fontAwesomeIcon = function(canvas){
     return cache[chr + size + ratio] || (
       cache[chr + size + ratio] = icon(
         code.hasOwnProperty(chr) ?
-          String.fromCharCode(code[chr]) : ''
+          String.fromCharCode(code[chr]) : '@' + chr
         ,
         Math.round(size * (
           ratio || (
@@ -732,7 +732,7 @@ var fontAwesomeIcon = function(canvas){
  * 
  *  Happy equolo )°(,
  */
-document.once('DOMContentLoaded', function () {
+document.when('ready', function () {
   var
     RE_EMAIL = /^[^@]+?@[^\1@]+\.([a-zA-Z]{2,})$/,
     RE_VALID_GEO = /^-?\d+(?:\.\d+)?$/, // well, sort of ..
@@ -897,13 +897,12 @@ document.once('DOMContentLoaded', function () {
         // after change, do everything again from the scratch
         activities.on(
           'change',
-          this.onActivityChange || (
-          this.onActivityChange = function () {
+          getOrSet(this, 'onActivityChange', function () {
             user.currentActivity = this.value;
             // trigger again the same event
             e.currentTarget.trigger(e);
-          }
-        ));
+          })
+        );
         // when the current activity changes
         // update the activity object with the new name
         name.on(
@@ -913,8 +912,7 @@ document.once('DOMContentLoaded', function () {
           // all those DOM references won't change later on
           // so let's create a single listener
           // so that it won't be added twice
-          this.onNameChange || (
-          this.onNameChange = function (e) {
+          getOrSet(this, 'onNameChange', function (e) {
             // the activity name
             var
               activityName = name.value.trim(),
@@ -928,15 +926,14 @@ document.once('DOMContentLoaded', function () {
               option.append(activityName);
             }
             enableAddRemoveButtons();
-          }
-        ));
+          })
+        );
         // when the description changes
         // update the counter
         description.on(
           'keyup',
           // same trick
-          this.onDescriptionChange || (
-          this.onDescriptionChange = function (e) {
+          getOrSet(this, 'onDescriptionChange', function (e) {
             var
               value = description.value.trim(),
               maxChars = parseInt(
@@ -969,20 +966,19 @@ document.once('DOMContentLoaded', function () {
               Object.keys(activityDescription).forEach(createLanguageIndicator);
             }
             enableAddRemoveButtons();
-          }
-        ));
+          })
+        );
         // on language change, the description should change too
         lang.on(
           'change',
           // same trick
-          this.onLanguageDescriptionChange || (
-          this.onLanguageDescriptionChange = function (e) {
+          getOrSet(this, 'onLanguageDescriptionChange', function (e) {
             var activityDescription = getOrCreateActivity(user).description;
             description.value = activityDescription[lang.value] || '';
             // notify the textarea and let it handle the rest
             description.emit('keyup');
-          }
-        ));
+          })
+        );
         // populate the field set with all available data
         user.activities.forEach(function (activity, i) {
           // only activity that have not been removed
@@ -1024,8 +1020,7 @@ document.once('DOMContentLoaded', function () {
         add.on(
           'click',
           // same usual trick
-          this.onAnotherActivity || (
-          this.onAnotherActivity = function (e) {
+          getOrSet(this, 'onAnotherActivity', function (e) {
             var
               options = activities.options,
               onlyOne = !options.length
@@ -1051,26 +1046,24 @@ document.once('DOMContentLoaded', function () {
             );
             // change the selected index
             activities.selectedIndex = options.length - 1;
-          }
-        ));
+          })
+        );
         // what to do in order to remove an activity
         remove.on(
           'click',
-          this.onRemoveActivity || (
-          this.onRemoveActivity = function (e) {
+          getOrSet(this, 'onRemoveActivity', function (e) {
             user.currentActivity = null;
             removeGenericObject(
               user.activities,
               activities
             );
-          }
-        ));
+          })
+        );
         // checkbox should notify buttons that maybe the user can go on
         // we need a single listener for this
         checkboxes.on(
           'change',
-          this.onCriteriaChange || (
-          this.onCriteriaChange = function () {
+          getOrSet(this, 'onCriteriaChange', function () {
             // save current activity status
             checkboxes.forEach(
               updateUserCriteria,
@@ -1078,8 +1071,8 @@ document.once('DOMContentLoaded', function () {
             );
             // verify
             enableAddRemoveButtons();
-          }
-        ));
+          })
+        );
 
         // need to setup criterias too
         // not a criteria concern to create a new user
@@ -1104,39 +1097,36 @@ document.once('DOMContentLoaded', function () {
         // should invoke the activity "next" check
         criteria.on(
           'change',
-          this.enableAddRemoveButtons || (
-          this.enableAddRemoveButtons = function() {
+          getOrSet(this, 'enableAddRemoveButtons', function() {
             if (criteria.checked) {
               getOrCreateActivity(user).certification = [];
             }
             enableAddRemoveButtons();
-          }
-        ));
+          })
+        );
         // while certified should flag
         // the object as certified and
         // still do the check
         certified.on(
           'change',
-          this.onCertifiedEnabled || (
-          this.onCertifiedEnabled = function() {
+          getOrSet(this, 'onCertifiedEnabled', function() {
             if (certified.checked) {
               // right now the certification is just a static flag
               getOrCreateActivity(user).certification = [1];
             }
             enableAddRemoveButtons();
-          }
-        ));
+          })
+        );
         // what to do after ?
         next.on(
           'click',
           // same trick,
           // this time bound to the walkThrough object
-          this.onNextActivity || (
-          this.onNextActivity = function (e) {
+          this.boundTo('onNextActivity', function (e) {
             getOrCreateActivity(user).currentPlace = null;
             this.trigger('step-4', user);
-          }.bind(this)
-        ));
+          })
+        );
         // verify button status (enable or disable them)
         enableAddRemoveButtons();
         // if both disabled
@@ -1555,15 +1545,13 @@ document.once('DOMContentLoaded', function () {
         submit.disabled = true;
         agreed.on(
           'change',
-          this.onAgreement || (
-          this.onAgreement = function () {
+          getOrSet(this, 'onAgreement', function () {
             submit.disabled = !this.checked;
-          }
-        ));
+          })
+        );
         submit.on(
           'click',
-          this.onSaveAllTheData || (
-          this.onSaveAllTheData = function () {
+          getOrSet(this, 'onSaveAllTheData', function () {
             var
               // double/triple check before sending
               result = verifyAllUserData(user),
@@ -1614,8 +1602,8 @@ document.once('DOMContentLoaded', function () {
             } else {
               notifyProblemsWithData(result);
             }
-          }
-        ));
+          })
+        );
       }
     },
 
@@ -2113,6 +2101,10 @@ document.once('DOMContentLoaded', function () {
 ///////////////////////////////////////////////////////////////////////
 ////                        <<< INIT >>>
 ///////////////////////////////////////////////////////////////////////
+
+  function getOrSet(self, method, callback) {
+    return self[method] || (self[method] = callback);
+  }
 
   // per each key in the walkThrough object
   Object.keys(walkThrough).forEach(

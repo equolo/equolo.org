@@ -416,6 +416,58 @@ function sql($command) {
       auth
       VALUES
       (null, ?, ?)',
+    'user-delete' =>
+      'DELETE LOW_PRIORITY FROM
+        auth,
+        `auth-login`
+      USING
+        auth
+      INNER JOIN
+        `auth-login`
+      WHERE
+        auth.id = ?
+      AND
+        `auth-login`.`auth-id` = auth.id',
+
+
+    'delete-user-and-related-activities' =>
+      'DELETE LOW_PRIORITY FROM
+        auth,
+        `auth-login`,
+        activity,
+        `activity-description`,
+        `activity-name`,
+        `activity-geo`,
+        `activity-place`
+      USING
+        auth
+      INNER JOIN
+        `auth-login`
+      INNER JOIN
+        activity
+      INNER JOIN
+        `activity-description`
+      INNER JOIN
+        `activity-name`
+      INNER JOIN
+        `activity-geo`
+      INNER JOIN
+        `activity-place`
+      WHERE
+        auth.id = ?
+      AND
+        `auth-login`.`auth-id` = auth.id
+      AND
+        activity.`auth-id` = auth.id
+      AND
+        `activity-description`.`activity-id` = activity.id
+      AND
+        `activity-name`.`activity-id` = activity.id
+      AND
+        `activity-geo`.`activity-id` = activity.id
+      AND
+        `activity-place`.`activity-geo-id` = `activity-geo`.id',
+
 
     'user-country' =>
       'SELECT

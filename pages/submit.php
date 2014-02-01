@@ -3,7 +3,7 @@
 /**
  * (C) equolo.org - Mit Style License
  *
- *  - Index page
+ *  - Submit page
  */
 
 require_once('cgi/common.php');

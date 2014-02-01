@@ -252,7 +252,7 @@ function mailTo(
   return mail(
     $to,
     $logo.$subject,
-    '<!DOCTYPE html>'.$message,
+    $message,
     "From: {$name} <{$from}@equolo.org>\r\n".
     "Reply-To: {$name} <{$from}@equolo.org>\r\n".
     "MIME-Version: 1.0\r\nContent-Type: text/html; charset=utf-8\r\n".

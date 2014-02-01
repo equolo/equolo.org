@@ -434,3 +434,12 @@ section#map .logo {
     display: none;
   }
 }
+
+.fa-umbrella:before {
+  content: "" !important;
+  background-image: url('/img/shirt_32.png') !important;
+  background-size: 18px !important;
+  display: block;
+  width: 16px;
+  height: 16px;
+}

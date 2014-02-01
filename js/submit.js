@@ -16,7 +16,7 @@
  * 
  *  Happy equolo )°(,
  */
-document.once('DOMContentLoaded', function () {
+document.when('ready', function () {
   var
     RE_EMAIL = /^[^@]+?@[^\1@]+\.([a-zA-Z]{2,})$/,
     RE_VALID_GEO = /^-?\d+(?:\.\d+)?$/, // well, sort of ..
@@ -181,13 +181,12 @@ document.once('DOMContentLoaded', function () {
         // after change, do everything again from the scratch
         activities.on(
           'change',
-          this.onActivityChange || (
-          this.onActivityChange = function () {
+          getOrSet(this, 'onActivityChange', function () {
             user.currentActivity = this.value;
             // trigger again the same event
             e.currentTarget.trigger(e);
-          }
-        ));
+          })
+        );
         // when the current activity changes
         // update the activity object with the new name
         name.on(
@@ -197,8 +196,7 @@ document.once('DOMContentLoaded', function () {
           // all those DOM references won't change later on
           // so let's create a single listener
           // so that it won't be added twice
-          this.onNameChange || (
-          this.onNameChange = function (e) {
+          getOrSet(this, 'onNameChange', function (e) {
             // the activity name
             var
               activityName = name.value.trim(),
@@ -212,15 +210,14 @@ document.once('DOMContentLoaded', function () {
               option.append(activityName);
             }
             enableAddRemoveButtons();
-          }
-        ));
+          })
+        );
         // when the description changes
         // update the counter
         description.on(
           'keyup',
           // same trick
-          this.onDescriptionChange || (
-          this.onDescriptionChange = function (e) {
+          getOrSet(this, 'onDescriptionChange', function (e) {
             var
               value = description.value.trim(),
               maxChars = parseInt(
@@ -253,20 +250,19 @@ document.once('DOMContentLoaded', function () {
               Object.keys(activityDescription).forEach(createLanguageIndicator);
             }
             enableAddRemoveButtons();
-          }
-        ));
+          })
+        );
         // on language change, the description should change too
         lang.on(
           'change',
           // same trick
-          this.onLanguageDescriptionChange || (
-          this.onLanguageDescriptionChange = function (e) {
+          getOrSet(this, 'onLanguageDescriptionChange', function (e) {
             var activityDescription = getOrCreateActivity(user).description;
             description.value = activityDescription[lang.value] || '';
             // notify the textarea and let it handle the rest
             description.emit('keyup');
-          }
-        ));
+          })
+        );
         // populate the field set with all available data
         user.activities.forEach(function (activity, i) {
           // only activity that have not been removed
@@ -308,8 +304,7 @@ document.once('DOMContentLoaded', function () {
         add.on(
           'click',
           // same usual trick
-          this.onAnotherActivity || (
-          this.onAnotherActivity = function (e) {
+          getOrSet(this, 'onAnotherActivity', function (e) {
             var
               options = activities.options,
               onlyOne = !options.length
@@ -335,26 +330,24 @@ document.once('DOMContentLoaded', function () {
             );
             // change the selected index
             activities.selectedIndex = options.length - 1;
-          }
-        ));
+          })
+        );
         // what to do in order to remove an activity
         remove.on(
           'click',
-          this.onRemoveActivity || (
-          this.onRemoveActivity = function (e) {
+          getOrSet(this, 'onRemoveActivity', function (e) {
             user.currentActivity = null;
             removeGenericObject(
               user.activities,
               activities
             );
-          }
-        ));
+          })
+        );
         // checkbox should notify buttons that maybe the user can go on
         // we need a single listener for this
         checkboxes.on(
           'change',
-          this.onCriteriaChange || (
-          this.onCriteriaChange = function () {
+          getOrSet(this, 'onCriteriaChange', function () {
             // save current activity status
             checkboxes.forEach(
               updateUserCriteria,
@@ -362,8 +355,8 @@ document.once('DOMContentLoaded', function () {
             );
             // verify
             enableAddRemoveButtons();
-          }
-        ));
+          })
+        );
 
         // need to setup criterias too
         // not a criteria concern to create a new user
@@ -388,39 +381,36 @@ document.once('DOMContentLoaded', function () {
         // should invoke the activity "next" check
         criteria.on(
           'change',
-          this.enableAddRemoveButtons || (
-          this.enableAddRemoveButtons = function() {
+          getOrSet(this, 'enableAddRemoveButtons', function() {
             if (criteria.checked) {
               getOrCreateActivity(user).certification = [];
             }
             enableAddRemoveButtons();
-          }
-        ));
+          })
+        );
         // while certified should flag
         // the object as certified and
         // still do the check
         certified.on(
           'change',
-          this.onCertifiedEnabled || (
-          this.onCertifiedEnabled = function() {
+          getOrSet(this, 'onCertifiedEnabled', function() {
             if (certified.checked) {
               // right now the certification is just a static flag
               getOrCreateActivity(user).certification = [1];
             }
             enableAddRemoveButtons();
-          }
-        ));
+          })
+        );
         // what to do after ?
         next.on(
           'click',
           // same trick,
           // this time bound to the walkThrough object
-          this.onNextActivity || (
-          this.onNextActivity = function (e) {
+          this.boundTo('onNextActivity', function (e) {
             getOrCreateActivity(user).currentPlace = null;
             this.trigger('step-4', user);
-          }.bind(this)
-        ));
+          })
+        );
         // verify button status (enable or disable them)
         enableAddRemoveButtons();
         // if both disabled
@@ -839,15 +829,13 @@ document.once('DOMContentLoaded', function () {
         submit.disabled = true;
         agreed.on(
           'change',
-          this.onAgreement || (
-          this.onAgreement = function () {
+          getOrSet(this, 'onAgreement', function () {
             submit.disabled = !this.checked;
-          }
-        ));
+          })
+        );
         submit.on(
           'click',
-          this.onSaveAllTheData || (
-          this.onSaveAllTheData = function () {
+          getOrSet(this, 'onSaveAllTheData', function () {
             var
               // double/triple check before sending
               result = verifyAllUserData(user),
@@ -898,8 +886,8 @@ document.once('DOMContentLoaded', function () {
             } else {
               notifyProblemsWithData(result);
             }
-          }
-        ));
+          })
+        );
       }
     },
 
@@ -1397,6 +1385,10 @@ document.once('DOMContentLoaded', function () {
 ///////////////////////////////////////////////////////////////////////
 ////                        <<< INIT >>>
 ///////////////////////////////////////////////////////////////////////
+
+  function getOrSet(self, method, callback) {
+    return self[method] || (self[method] = callback);
+  }
 
   // per each key in the walkThrough object
   Object.keys(walkThrough).forEach(
