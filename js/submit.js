@@ -26,10 +26,10 @@ document.when('ready', function () {
     // used as indicator for automatic searching
     searchStateIcon = $('fieldset#step-4 fieldset.address > legend > i')[0],
     searchState = {
-      no: 'fa-angle-down',
-      ok: 'fa-check',
-      error: 'fa-exclamation-triangle',
-      searching: 'fa fa-refresh fa-spin'
+      no: '',
+      ok: 'icon-checkmark',
+      error: 'icon-close2',
+      searching: 'fx-spin icon-spinner'
     },
     // the single user shared across all logic
     user = {},
@@ -528,9 +528,7 @@ document.when('ready', function () {
               ],
               {
                 icon:L.icon({
-                  iconUrl: fontAwesomeIcon(category.value, 36),
-                  // shouldn't be needed with display
-                  // iconRetinaUrl: fontAwesomeIcon(category.value, 36, 2),
+                  iconUrl: '/img/map/' + category.value + '.png',
                   iconSize: [36, 36]
                 })
               }
@@ -594,7 +592,7 @@ document.when('ready', function () {
             // same trick used in step-3
             this.onCategoryChange || (
             this.onCategoryChange = function (e) {
-              icon.className = 'fa-' + category.value;
+              icon.className = 'icon-' + category.value;
               getOrCreatePlace(
                 getOrCreateActivity(user)
               ).icon = category.value;
@@ -1111,7 +1109,7 @@ document.when('ready', function () {
       if (options[i].value == value) {
         select.selectedIndex = i;
         options[i].selected = true;
-        icon.className = 'fa-' + value;
+        icon.className = 'icon-' + value;
       } else {
         options[i].selected = false;
       }

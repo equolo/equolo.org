@@ -19,12 +19,9 @@ JS =  js/display.js\
       js/scrollbar-size.js\
       js/simple-kinetic.js\
       js/equolo-icon.js\
-      js/fashion-icon.js\
-      js/font-awesome-icon.js\
       js/create-shortcut-icon.js\
       js/storage.js\
       js/IE9Mobile.js\
-      font-cawesome/build/font-cawesome.js\
       js/Delayed.js\
       js/Mercator.js\
       js/horizontal-scroll.js\
@@ -33,7 +30,6 @@ JS =  js/display.js\
       js/ffos.js\
       js/ga.js\
       js/paypal.js\
-      js/is-font-loaded.js\
       js/$(REPO).js
 
 # make pinit/submit section files
@@ -50,6 +46,7 @@ PINIT=js/display.js\
 
 # make CSS files
 CSS = css/$(REPO).css\
+      css/fx.css\
       css/utils.css\
       css/leaflet.css\
       css/IE9Mobile.css\
@@ -124,10 +121,11 @@ css:
 	rm -rf www/css/*
 	cp build/$(REPO).css www/css
 	cp build/$(REPO).max.css www/css
+	cp css/fx.css www/css/fx.css
 	cp css/utils.css www/css/submit.css
 	cat css/submit.css >>www/css/submit.css
 	cp -r fonts www
-	mv www/fonts/font-awesome.min.css www/css/font-awesome.css
+	mv www/fonts/font.css www/css/font.css
 	cp leaflet/leaflet.css www/css/leaflet.css
 	cp leaflet/leaflet.ie.min.css www/css/leaflet.ie.css
 
@@ -171,11 +169,6 @@ dependencies:
 	curl -O -L http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css
 	curl -O -L http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.ie.css
 	curl -O -L http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js
-	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css
-	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/4.0.3/fonts/fontawesome-webfont.eot
-	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/4.0.3/fonts/fontawesome-webfont.woff
-	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/4.0.3/fonts/fontawesome-webfont.ttf
-	curl -O -L http://netdna.bootstrapcdn.com/font-awesome/4.0.3/fonts/fontawesome-webfont.svg
 	mv es5-shim.min.js js/es5-shim.js
 	mv leaflet*.* leaflet
 	mv font*.* fonts

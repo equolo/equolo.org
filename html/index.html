@@ -17,7 +17,7 @@
     <script src="/cgi/equolo{{MAX_JS}}.js.php"></script>
     <script src="/cgi/leaflet.js.php"></script>
     <link rel="stylesheet" href="/cgi/equolo.css.php"/>
-    <link rel="stylesheet" href="/cgi/font-awesome.css.php"/>
+    <link rel="stylesheet" href="/cgi/font.css.php"/>
     <link rel="stylesheet" href="/cgi/leaflet.css.php"/>
     <link rel="apple-touch-startup-image" href="/img/equolo-logo.png"/>
   </head>
@@ -25,25 +25,25 @@
     <section id="map">
       <header>
         <div class="central">
-          <img src="/img/equolo-logo.png"/>
+          <i class="fx-2x icon icon-equolo logo"></i>
           <h1>equolo</h1>
           <h2>discovering a sustainable world</h2>
         </div>
       </header>
       <div id="tiles" class="map"></div>
-      <button id="find-me"><i class="fa fa-compass"></i></button>
+      <button id="find-me"><i class="icon icon-compass"></i></button>
       {{select-categories}}
       <div class="t-all location scroll h-scroll"><ul class="no-select">
         <li class="intro">
-          <h3><i class="fa fa-globe"></i> Welcome</h3>
+          <h3><i class="icon -earth"></i> Welcome</h3>
           <ul>
-            <li>use the icon to find your position <i class="fa fa-compass"></i></li>
-            <li>use these buttons to zoom <i class="fa fa-plus"></i> / <i class="fa fa-minus"></i></li>
-            <li>click this icon to know details <i class="fa fa-external-link-square"></i></li>
+            <li>use the icon to find your position <i class="icon icon-compass"></i></li>
+            <li>use these buttons to zoom <strong>+</strong> / <strong>-</strong></li>
+            <li>click this icon to know details <i class="icon icon-new-tab"></i></li>
             <li>choose all categories or just one of them with top right selection</li>
           </ul>
         </li>
-        <li class="stats"><h3><i class="fa fa-bar-chart-o"></i> What's up in this area ?</h3><p></p></li>
+        <li class="stats"><h3><i class="icon icon-cogs"></i> What's up in this area ?</h3><p></p></li>
         <li class="place"><h3></h3><p></p></li>
       </ul></div>
       <div class="details scroll t-all hw">
@@ -57,45 +57,79 @@
       <footer class="no-select"><nav>
         <ul>
           <li><a href="#about" class="t-all">
-            <i class="t-all fa fa-info"></i>
+            <i class="t-all icon icon-info"></i>
             {{about}}
-            <i class="t-all fa fa-times-circle"></i>
+            <i class="t-all icon icon-close"></i>
           </a></li>
           <li><a href="#contact" class="t-all">
-            <i class="t-all fa fa-envelope"></i>
+            <i class="t-all icon icon-envelope"></i>
             {{contact}}
-            <i class="t-all fa fa-times-circle"></i>
+            <i class="t-all icon icon-close"></i>
           </a></li>
           <li><a href="#pin-it" class="t-all">
-            <i class="t-all fa fa-map-marker"></i>
+            <i class="t-all icon icon-mobile"></i>
             {{pin-it}}
-            <i class="t-all fa fa-times-circle"></i>
+            <i class="t-all icon icon-close"></i>
           </a></li>
         </ul>
       </nav></footer>
+    </section>
+    <section id="intro" class="{{show-intro}}">
+      <header>
+        <i class="fx-3x icon icon-equolo"></i>
+        <h3>equolo</h3>
+      </header>
+      <div class="disclaimer">
+        Welcome to equolo, the collaborative platform for a sustainable world!
+      </div>
+      <div class="description">
+        The equolo map helps responsible consumers to find sustainable places around them,
+        and responsible entrepreneurs to get get in touch with more people
+      </div>
+      <ul>
+        <li class="icon-search">
+          <strong>browse</strong>
+          the map and find sustainable services, businesses, activities, and organizations in your surroundings
+        </li>
+        <li class="icon-cart">
+          <strong>shop</strong>
+          responsibly by supporting healthy, ethical, and environmentally friendly business and production models
+        </li>
+        <li class="icon-users">
+          <strong>spread</strong>
+          the word, spot more sustainable places and help the platform grow ... the more we are, the greater the impact
+        </li>
+      </ul>
+      <h4>
+        Let's map together a sustainable world!
+      </h4>
+      <div class="choice">
+        <button class="map">go to the map <i class="icon icon-close"></i></button>
+        <button class="register">register your activity <i class="icon icon-arrow-right"></i></button>
+      </div>
     </section>
     <section id="about"><div>
       <noscript class="nav"><nav>
         <ul>
           <li><a href="#about" class="t-all">
-            <i class="t-all fa fa-info"></i>
+            <i class="t-all icon icon-info"></i>
             {{about}}
-            <i class="t-all fa fa-times-circle"></i>
+            <i class="t-all icon icon-close"></i>
           </a></li>
           <li><a href="#contact" class="t-all">
-            <i class="t-all fa fa-envelope"></i>
+            <i class="t-all icon icon-envelope"></i>
             {{contact}}
-            <i class="t-all fa fa-times-circle"></i>
+            <i class="t-all icon icon-close"></i>
           </a></li>
           <li><a href="#pin-it" class="t-all">
-            <i class="t-all fa fa-map-marker"></i>
+            <i class="t-all icon icon-location"></i>
             {{pin-it}}
-            <i class="t-all fa fa-times-circle"></i>
+            <i class="t-all icon icon-close"></i>
           </a></li>
         </ul>
       </nav></noscript><div class="central">
 
-        <h3><img src="/img/equolo-logo.png"/> Hello folks, this is equolo!</h3>
+        <h3><i class="fx-2x icon icon-equolo"></i>Hello folks, this is equolo!</h3>
 
         <p>My mission is to contribute to a more sustainable world by offering a platform for buyers and sellers who are committed to sustainability to easily find each other.</p>
         <p>I will find and promote shops, businesses, and public and private initiatives that offer socially and environmentally responsible solutions. I want to pin all these places on a map and make them easy to find for the everyday consumer with a mobile phone or laptop.</p>
@@ -154,8 +188,8 @@ Arianna worked on the idea of this online platform with Andrea Giammarchi, my ot
 Being in here, I believe there's something you'd like to tell me.
 </p>
 <p>Is it about your business or somebody else's place you believe should be shown on the map?</p>
-<p>For this or any other general inquiry, feel free to contact me by email at <span class="email">gro.olou<span>qe@</span>ofni</span> <i class="fa fa-envelope"></i></p>
-<p>You can also follow me on Twitter via <a href="https://twitter.com/equolo" target="_blank">@equolo</a> <i class="fa fa-twitter"></i> or on Facebook via <a href="https://www.facebook.com/equolo" target="_blank">this page</a> <i class="fa fa-facebook-square"></i>.</p>
+<p>For this or any other general inquiry, feel free to contact me by email at <span class="email">gro.olou<span>qe@</span>ofni</span> <i class="icon icon-envelope"></i></p>
+<p>You can also follow me on Twitter via <a href="https://twitter.com/equolo" target="_blank">@equolo</a> <i class="icon icon-twitter"></i> or on Facebook via <a href="https://www.facebook.com/equolo" target="_blank">this page</a> <i class="icon icon-facebook"></i>.</p>
 
 <h3>Maybe you would like to contribute?</h3>
 <p>
@@ -173,7 +207,7 @@ My effort is to improve and dedicate as much time as possible to make this idea 
 Maybe I've been such a bad developer you would like to help me improving this whole service?
 </p>
 <p>
-Feel free to <a href="https://github.com/equolo/equolo.org#-equolo" target="_blank">file an issue on github</a> <i class="fa fa-github-square"></i> or contribute with any improvement you might have for me, thank you!
+Feel free to <a href="https://github.com/equolo/equolo.org#-equolo" target="_blank">file an issue on github</a> <i class="icon icon-github"></i> or contribute with any improvement you might have for me, thank you!
 </p>
 
 
@@ -182,7 +216,7 @@ Feel free to <a href="https://github.com/equolo/equolo.org#-equolo" target="_bla
     <section id="pin-it"><div>
       <div class="central">
 
-<h3><img src="/img/equolo-logo.png"/> Pin your activity on the Map</h3>
+<h3><i class="fx-2x icon icon-equolo"></i> Pin your activity on the Map</h3>
 <p>
 Dear shop owner, farmer, business holder, service provider, leader of community initiatives...I am looking for you!
 </p>
@@ -197,9 +231,9 @@ Do you share my goal and want to be part of it? Take a few minutes to join the e
 Equolo is a service free of charge. Use the opportunity of being part of a great social movement by promoting your business at the same time!
 </p>
 <p>
-<a href="submit.php" target="_blank"><strong>Let's get started! Jump to the registration form</strong></a> <i class="fa fa-arrow-circle-right"></i>
+<a href="submit.php" target="_blank"><strong>Let's get started! Jump to the registration form</strong></a> <i class="icon icon-arrow-right"></i>
 </p>
-<h3><i class="fa fa-mobile fa-2x"></i> ... and pin it on your device too!</h3>
+<h3><i class="fx-2x icon icon-mobile"></i> ... and pin it on your device too!</h3>
 <p>
 HTML5 and the Mobile Web are a great way to have the same app reachable everywhere and without requiring extra software.
 </p>
@@ -233,7 +267,7 @@ You can simply pin this page to the start screen as it is, or using a temporary 
 <a href="#wp" onclick="window.emit('wp:hs-icon',event)">Here the <strong>big icon</strong> before saving on start screen!</a>
 </p>
 <img src="img/wp_home_screen.png" onclick="window.emit('wp:hs-icon',event)" width="160" height="220"/>
-<h3>FirefoxOS <i class="fa fa-star-o"></i></h3>
+<h3>FirefoxOS</h3>
 <p>
 Having this service pinned is a must, specially for ZTE phones with a tiny screen.
 A simple click on the bottom right star should do everything without problems.

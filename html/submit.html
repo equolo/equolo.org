@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0"/>
     <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
-    <link rel="stylesheet" href="css/font-awesome.css"/>
+    <link rel="stylesheet" href="css/font.css"/>
+    <link rel="stylesheet" href="css/fx.css"/>
     <link rel="stylesheet" href="css/leaflet.css"/>
     <link rel="stylesheet" href="css/submit.css"/>
     <!--[if IE 8]><script src="js/ie8.js"></script><![endif]-->
@@ -66,10 +67,10 @@
           <legend>{{category}}</legend>
           {{category-description}}
           {{select-categories}}
-          <i class="fa-question"></i>
+          <i class="icon icon-question"></i>
         </fieldset>
         <fieldset class="address">
-          <legend>{{address}} <i class='fa-angle-down'></i></legend>
+          <legend>{{address}} <i class='icon icon-compass'></i></legend>
           <div class="fields">
             <input required name="address" placeholder="{{road}}"/><br/>
             <input name="extra" placeholder="{{extra}}"/><br/>
@@ -88,7 +89,7 @@
             <input type="hidden" name="longitude"/>
           </div>
           <div class="map">
-            <button><i class="fa-location-arrow"></i> {{find-me}}</button>
+            <button><i class="icon icon-compass"></i> {{find-me}}</button>
             <div id="map"></div>
           </div>
         </fieldset>

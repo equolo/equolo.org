@@ -17,7 +17,7 @@
     "url": "https://twitter.com/WebReflection"
   },
   "default_locale": "en",
-  "orientation": ["portrait", "portrait-primary","landscape-secondary"],
+  "orientation": ["portrait", "portrait-primary", "landscape-secondary"],
   "permissions": {
     "geolocation": {
       "description": "to find equo places around you"

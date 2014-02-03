@@ -1,0 +1,45 @@
+.fx-2x {
+  font-size: 2em;
+}
+
+.fx-3x {
+  font-size: 3em;
+}
+
+.fx-2x.icon-equolo {
+  font-size: 2.25em;
+}
+
+.fx-spin {
+  -webkit-animation: spin 2s infinite linear;
+  -moz-animation: spin 2s infinite linear;
+  -ms-animation: spin 2s infinite linear;
+  -o-animation: spin 2s infinite linear;
+  animation: spin 2s infinite linear;
+}
+
+@-webkit-keyframes spin {
+  from  { -webkit-transform: rotate(0deg); }
+  to    { -webkit-transform: rotate(360deg); }
+}
+
+@-moz-keyframes spin {
+  from  { -moz-transform: rotate(0deg); }
+  to    { -moz-transform: rotate(360deg); }
+}
+
+@-ms-keyframes spin {
+  from  { -ms-transform: rotate(0deg); }
+  to    { -ms-transform: rotate(360deg); }
+}
+
+@-o-keyframes spin {
+  from  { -o-transform: rotate(0deg); }
+  to    { -o-transform: rotate(360deg); }
+}
+
+@keyframes spin{
+  from  { -ms-transform: rotate(0deg); }
+  to    { -ms-transform: rotate(360deg); }
+}
+

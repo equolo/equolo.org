@@ -3,18 +3,24 @@ CACHE MANIFEST
 
 CACHE:
 /cgi/equolo.css.php
-/cgi/font-awesome.css.php
 /cgi/leaflet.css.php
 /css/leaflet.ie.css
 /cgi/equolo.js.php
 /cgi/leaflet.js.php
-/fonts/fontawesome-webfont.eot
-/cgi/fontawesome-webfont.svg.php
-/fonts/fontawesome-webfont.ttf
-/fonts/fontawesome-webfont.woff
 /cgi/base64_icon.php
 /js/ie8.js
 /js/es5-shim.js
+/img/map/briefcase.png
+/img/map/car.png
+/img/map/cart.png
+/img/map/equolo.png
+/img/map/food.png
+/img/map/gift.png
+/img/map/glass.png
+/img/map/home.png
+/img/map/question.png
+/img/map/tshirt.png
+/img/map/users.png
 /img/equolo-favicon.png
 /img/equolo-logo.png
 /img/equolo_16.png
@@ -30,6 +36,10 @@ CACHE:
 /img/iOS_home_screen.png
 /img/wp_home_screen.png
 /img/bb10_home_screen.png
+/fonts/equolo.eot
+/fonts/equolo.ttf
+/fonts/equolo.woff
+/fonts/equolo.svg
 /equolo.webapp
 
 NETWORK:

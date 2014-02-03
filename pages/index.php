@@ -40,6 +40,9 @@ while($row = $stmt->fetch(PDO::FETCH_OBJ)) {
 $categories .= '</select>';
 $dictionary['select-categories'] = $categories;
 
+// show intro once per session
+$dictionary['show-intro'] = isset($_COOKIE['intro']) ? 'ignore' : 't-all show';
+cookieSetter('intro', 'ok');
 
 header('Content-Type: text/html; charset=utf-8');
 echo template(

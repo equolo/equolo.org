@@ -20,6 +20,7 @@
 // let's dirtly feature detect browser capabilities
 // in the worst case scenario, we'll prepare
 // the most common icon fallback: the marker one
+/*
 try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userAgent))throw 0}catch(o_O){
   // ok, very old browser, icons should be static images
   // instead of runtime generated canvas
@@ -34,6 +35,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
     p.insertBefore(d.createElement('script'),p.lastChild).src='/cgi/base64_icon.php';
   }(document));
 }
+*/
 
 (function(window, document){
 
@@ -74,16 +76,13 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
     // special lazy function case
     scroll,
     // as a matter of welcome :-)
-    veryFirstTime = true
+    veryFirstTime = true,
+    // should it show the intro ?
+    SHOW_INTRO
   ;
 
   // things that should be done ASAP
   document.when('ready', function(){
-
-    // solve IE9Mobile problem with fonts
-    if (IE9Mobile)
-      FontCawesome('/cgi/fontawesome-webfont.svg.php')
-    ;
 
     // clean dirty nodes on stage
     cleanTheStage();
@@ -128,14 +127,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
 
     var navLink, el, tmp, watchId, width;
 
-    if (
-      // if there's still no map
-      !window.L || (
-      // not compact
-      !window.compat &&
-      // and still waiting for font
-      !isFontLoaded('FontAwesome', '\uf06b')
-    )) {
+    if (!window.L) {
       // wait for it
       return setTimeout(equolo, 50);
     }
@@ -147,8 +139,30 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
       map: $('section#map')[0],
       about: $('section#about')[0],
       contact: $('section#contact')[0],
-      pinIt: $('section#pin-it')[0]
+      pinIt: $('section#pin-it')[0],
+      intro: $('section#intro')[0]
     };
+
+    SHOW_INTRO =  section.intro.classList.contains('show') &&
+                  !storage.getItem('equolo.show-intro');
+    if (SHOW_INTRO) {
+      $('.choice button').on('click', function() {
+        if (this.classList.contains('map')) {
+          storage.setItem('equolo.show-intro', 1);
+          hideIntro();
+          setTimeout(function() {
+            SHOW_INTRO = false;
+            section.intro.classList.remove('show', 't-all');
+          }, 1000);
+        } else {
+          location.href = '/submit.php';
+        }
+      });
+      setTimeout(function () {
+        section.intro.style.left = '50%';
+      }, 2000);
+    }
+
     section.nav = $('nav', section.map)[0];
     section.placeDetails = $('div.details', section.map)[0];
     section.location = $('div.location', section.map)[0];
@@ -158,60 +172,16 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
       section.pinIt
     ];
 
-    // better quality image, or just same image?
-    el = $('img', section.map)[0];
+    $('.logo', section.map).on('click', fullScreen);
     if (!window.compat) {
-      // IE10 does not expose widht and height
-      // when the image is not visible
-      width = el.width || el.naturalWidth;
       createShortcutIcon(equoloIcon);
-      tmp = document.createElement('canvas');
-      tmp.style.cssText = 'width:' + width + 'px;' +
-                          'height:' + width + 'px;';
-      el.replace(
-        equoloIcon(
-          tmp,
-          width * display.ratio,
-          '#E6A72A'
-        ).on('click', fullScreen)
-      );
-      el = tmp;
-
-      width = 20;
-
-      // same is for the welcome, an equolo logo would be nicer
-      tmp = document.createElement('canvas');
-      tmp.style.cssText = 'width:' + width + 'px;' +
-                          'height:' + width + 'px;';
-      $('li.intro h3 > i')[0].replace(
-        equoloIcon(
-          tmp,
-          width * display.ratio,
-          '#064646'
-        )
-      );
-      
     } else {
-      el.on('click', fullScreen);
       tmp = $('head')[0].appendChild(
         document.createElement('link')
       );
       tmp.rel = 'shortcut icon';
       tmp.type = 'image/png';
       tmp.href = '/img/equolo-favicon.png';
-    }
-
-    if (display.height <= 500) {
-      tmp = el.cloneNode(true).on('click', fullScreen);
-      section.map.appendChild(tmp).classList.add('logo');
-      if (tmp.nodeName !== 'IMG') {
-        tmp.getContext('2d').putImageData(
-          el.getContext('2d').getImageData(
-            0, 0, el.width, el.height
-          ),
-          0, 0
-        );
-      }
     }
 
     // make section good for synthetic `scrollingTo`
@@ -225,7 +195,6 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
     GoogleAnalytics();
     // paypal too
     PayPal();
-
 
 
 // navigation
@@ -258,6 +227,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
         parentNode = this.parentNode,
         offsetHeight
       ;
+      hideIntro();
       // in case kinetic was working
       if (click.sk) click.sk.cancel();
       // closing the whole menu if already selected
@@ -479,8 +449,8 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
     findMe = $('button#find-me')[0];
     if ('geolocation' in navigator) {
       findMe.on('click', function (e) {
-        findMe.firstChild.classList.remove('fa-compass');
-        findMe.firstChild.classList.add('fa-spin', 'fa-refresh');
+        findMe.firstChild.classList.remove('icon-compass');
+        findMe.firstChild.classList.add('fx-spin', 'icon-refresh');
         findMe.disabled = true;
         findMe.moved = false;
         try {
@@ -557,6 +527,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
     // true so that while waiting for position
     // the user won't be redirected
     map.on('movestart', function () {
+      hideIntro();
       findMe.moved = true;
       veryFirstTime = false;
     });
@@ -620,8 +591,8 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
   }
 
   function enableFindMe() {
-    findMe.firstChild.classList.remove('fa-spin', 'fa-download');
-    findMe.firstChild.classList.add('fa-compass');
+    findMe.firstChild.classList.remove('fx-spin', 'icon-download');
+    findMe.firstChild.classList.add('icon-compass');
     findMe.disabled = false;
   }
 
@@ -632,6 +603,12 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
       );
     }
     return lastReducedActivities;
+  }
+
+  function hideIntro() {
+    if (SHOW_INTRO) {
+      section.intro.style.left = '100%';
+    }
   }
 
   function orderByDistance(a, b) {
@@ -709,7 +686,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
       {
         icon: L.icon({
           // works with retina too and any pixel density
-          iconUrl: fontAwesomeIcon(place.icon, 36),
+          iconUrl: '/img/map/' + place.icon + '.png',
           iconSize: [36, 36],
           iconAnchor: [18, 36]
         })
@@ -803,7 +780,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
         for (key in stats) {
           if (stats.hasOwnProperty(key)) {
             result.push(
-              '<i class="fa fa-' +
+              '<i class="icon-' +
                 key +
               '"></i> ' +
                 iconDescription[key] +
@@ -859,7 +836,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
             h3.appendChild(
               document.createElement('i')
             ).classList.add(
-              'fa', 'fa-' + place.icon
+              'icon-' + place.icon
             );
             h3.appendChild(
               document.createTextNode(' ' + place.name)
@@ -988,7 +965,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
       }
       a.appendChild(
         document.createElement('i')
-      ).classList.add('fa', 'fa-' + icon);
+      ).classList.add('icon-' + icon);
     }
   }
 
@@ -1001,7 +978,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
       li.classList.add('button');
       li.appendChild(
         document.createElement('i')
-      ).classList.add('fa', 'fa-' + icon);
+      ).classList.add('icon-' + icon);
       li = li.appendChild(
         document.createElement('a')
       );
@@ -1080,7 +1057,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
     showAllDetails.contact.textContent = '';
     showAllDetails.h3.appendChild(
       document.createElement('i')
-    ).className = 'fa fa-' + place.icon;
+    ).className = 'icon-' + place.icon;
     showAllDetails.h3.appendChild(
       document.createTextNode(' ' + place.name)
     );
@@ -1346,7 +1323,13 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
 
   // what happens when the display size changes ?
   function onDisplayChange() {
-    var placeMargin = getScrollableMargin();
+    var placeMargin = getScrollableMargin(),
+        header = $('header', section.map)[0].offsetHeight,
+        mapHeight = (
+          display.height -
+          header -
+          $('footer', section.map)[0].offsetHeight
+        );
     restyle({
       // section should have a proper minimum height
       'section': {
@@ -1360,6 +1343,12 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
       },
       'section#map > div.location > ul > li': {
         'min-height': (150 - SCROLLBAR_SIZE) + 'px'
+      },
+      'section#intro': {
+        'top': header + 'px',
+        'width': Math.round(display.width / 2) + 'px',
+        'max-height': mapHeight + 'px',
+        'min-height': mapHeight + 'px'
       }
     });
     invalidateMapSize();
@@ -1389,9 +1378,11 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
   }
 
   function fixFonts(el) {
+    /*
     if (IE9Mobile)
       FontCawesome.fix(el)
     ;
+    */
   }
 
   function fullScreen() {

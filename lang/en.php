@@ -48,7 +48,7 @@ $dictionary=(array(
 <li><p>was never involved in practices of anti-social finance (tax evasion and use of tax havens; bribery and corruption, insider share dealing, involvement in Third World debt, price fixing, irresponsible marketing of financial products, excessive directors’ remuneration)</p></li></ul></p>',
    'obligations-title' => 'Obligations',
    'phone' => 'telephone',
-   'pin-it' => 'pin it',
+   'pin-it' => 'app it',
    'postcode' => 'postal code',
    'remove' => 'remove',
    'road' => 'street',

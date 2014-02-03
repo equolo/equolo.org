@@ -7,17 +7,18 @@ var fontAwesomeIcon = function(canvas){
     // all names mapped to code
     // right now I need only these icons
     code = {
-      question: 0xf128,
-      'shopping-cart': 0xf07a,
-      gift: 0xf06b,
-      cutlery: 0xf0f5,
-      home: 0xf015,
-      glass: 0xf000,
-      briefcase: 0xf0b1,
-      group: 0xf0c0,
-      truck: 0xf0d1,
-      // umbrella: 0xf0e9
-      //,'map-marker': 32 //0xf041
+      question: 0xe35a,
+      briefcase: 0xe259,
+      food: 0xe227,
+      gift: 0xe211,
+      glass: 0xe223,
+      users: 0xe198,
+      home: 0xe002,
+      equolo: 0xe600,
+      'map-marker': 0xe600,
+      cart: 0xe0c1,
+      car: 0xe25d,
+      tshirt: 0xe19d
     },
     cache = {}
   ;
@@ -38,7 +39,7 @@ var fontAwesomeIcon = function(canvas){
     context.fillStyle = "rgb(240,240,240)";
     ellipse(size / 2, size / 2.5, size / 2.8);
     context.font = context.mozTextStyle =
-      Math.round(size / 2) + "px FontAwesome";
+      Math.round(size / 2) + "px equolo";
     context.fillStyle = "rgb(40,104,104)";
     if (chr.charAt(0)!= '@') {
       context.translate((canvas.width - (

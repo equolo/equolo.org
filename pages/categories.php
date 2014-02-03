@@ -14,11 +14,11 @@ if (isset($_COOKIE['lang'])) {
   $stmt = query('category-list', array($_COOKIE['lang']));
   while($row = $stmt->fetch(PDO::FETCH_OBJ)) {
     $list = explode(';;;', $row->list);
-    $categories .= '<li><i class="fa fa-'.$row->icon.'"></i> '.$row->name.'<ul><li>'.implode('</li><li>', $list).'</li></ul></li>';
+    $categories .= '<li><i class="icon-'.$row->icon.'"></i> '.$row->name.'<ul><li>'.implode('</li><li>', $list).'</li></ul></li>';
   }
   if ($categories !== '<ul>') {
     $dictionary = getLanguage($_COOKIE['lang']);
-    $categories .= '<li class="others"><i class="fa fa-map-marker"></i> '.$dictionary['category-other'].'</li>';
+    $categories .= '<li class="others"><i class="icon-location"></i> '.$dictionary['category-other'].'</li>';
   }
   $categories .= '</ul>';
 

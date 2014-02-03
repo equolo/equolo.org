@@ -772,156 +772,7 @@ return SimpleKinetic;
   return canvas;
 }
 
-// document.body.appendChild(new Image).src=equoloIcon(document.createElement('canvas'), 256, '#E6A72A').toDataURL();
-function fashionIcon(canvas, size, fillColor, backgroundColor) {
-  /*! (C) equolo.org */
-  var
-    originalSize = 64,
-    ratio = size / originalSize,
-    fillStyle = fillColor || '#286868',
-    context = canvas.getContext('2d')
-  ;
-  function arc(a, b, c, d, e) {
-    context.arc(
-      a * ratio,
-      b * ratio,
-      c * ratio,
-      d,
-      e
-    );
-  }
-  function bezierCurveTo(a, b, c, d, e, f) {
-    context.bezierCurveTo(
-      a * ratio,
-      b * ratio,
-      c * ratio,
-      d * ratio,
-      e * ratio,
-      f * ratio
-    );
-  }
-  function moveTo(x, y) {
-    context.moveTo(x * ratio, y * ratio);
-  }
-  function lineTo(x, y) {
-    context.lineTo(x * ratio, y * ratio);
-  }
-  context.clearRect(0, 0, canvas.width, canvas.height);
-  canvas.width = canvas.height = size;
-  if (backgroundColor) {
-    context.fillStyle = backgroundColor;
-    context.fillRect(0, 0, size, size);
-  }
-  context.fillStyle = fillStyle;
-  context.save();
-  context.beginPath();
-  moveTo(18, 12);
-  lineTo(26, 10);
-  bezierCurveTo(30, 16, 34, 16, 38, 10);
-  lineTo(48, 12);
-  lineTo(58, 20);
-  lineTo(52, 28);
-  lineTo(46, 24);
-  lineTo(46, 54);
-  lineTo(18, 54);
-  lineTo(18, 24);
-  lineTo(12, 28);
-  lineTo(6, 20);
-  lineTo(18, 12);
-  context.closePath();
-  context.fill();
-  context.restore();
-  return canvas;
-}
-
-//fashionIcon(document.body.appendChild(document.createElement('canvas')), 256, '#069', '#EEE');
-// creates a png Map icon SRC out of FontAwesome
-// works with retina displays too but it uses
-// the display.js file in order to do that
-var fontAwesomeIcon = function(canvas){
-  var
-    context = canvas.getContext('2d'),
-    // all names mapped to code
-    // right now I need only these icons
-    code = {
-      question: 0xf128,
-      'shopping-cart': 0xf07a,
-      gift: 0xf06b,
-      cutlery: 0xf0f5,
-      home: 0xf015,
-      glass: 0xf000,
-      briefcase: 0xf0b1,
-      group: 0xf0c0,
-      truck: 0xf0d1,
-      // umbrella: 0xf0e9
-      //,'map-marker': 32 //0xf041
-    },
-    cache = {}
-  ;
-
-  function ellipse(x, y, r) {
-    context.beginPath();
-    context.arc(x, y, r, 0, Math.PI * 2, true); 
-    context.closePath();
-    context.fill();
-  }
-  function icon(chr, size) {
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    canvas.width = canvas.height = size;
-    context.textBaseline = 'bottom';
-    context.fillStyle = "rgb(25,138,138)";
-    ellipse(size / 2, size / 2.5, size / 2.5);
-    triangle(size, size / 4.9);
-    context.fillStyle = "rgb(240,240,240)";
-    ellipse(size / 2, size / 2.5, size / 2.8);
-    context.font = context.mozTextStyle =
-      Math.round(size / 2) + "px FontAwesome";
-    context.fillStyle = "rgb(40,104,104)";
-    if (chr.charAt(0)!= '@') {
-      context.translate((canvas.width - (
-        context.measureText || context.mozMeasureText
-      ).call(context, chr).width) / 2, 0);
-      context.fillText(chr, 0, size / 1.5);
-    } else {
-      context.drawImage(
-        (chr === '@map-marker' ? equoloIcon : fashionIcon)(
-          document.createElement('canvas'),
-          size / 1.5
-        ),
-        size / 7,
-        size / 10
-      );
-    }
-    return canvas.toDataURL();
-  }
-  function triangle(size, delta) {
-    context.beginPath();
-    context.moveTo(size / 2, size);
-    context.lineTo(delta, size / 1.5);
-    context.lineTo(size - delta, size / 1.5);
-    context.lineTo(size / 2, size);
-    context.closePath();
-    context.fill();
-  }
-  return function fontAwesomeIcon(chr, size, ratio) {
-    return cache[chr + size + ratio] || (
-      cache[chr + size + ratio] = icon(
-        code.hasOwnProperty(chr) ?
-          String.fromCharCode(code[chr]) : '@' + chr
-        ,
-        Math.round(size * (
-          ratio || (
-            typeof display === 'undefined' ?
-              1 : display.ratio
-          )
-        ))
-      )
-    );
-  };
-}(
-  document.createElement('canvas')
-);
-// add shortcut icons per each resolution to the header at runtime
+// document.body.appendChild(new Image).src=equoloIcon(document.createElement('canvas'), 256, '#E6A72A').toDataURL();// add shortcut icons per each resolution to the header at runtime
 // requires equoloIcon();
 function createShortcutIcon(equoloIcon) {
   for(var
@@ -1056,8 +907,7 @@ window.on('leaflet:map', function(e){
     diffY = wrap.scrollTop;
   };
   setTimeout(resize);
-});/*! (C) Andrea Giammarchi - Mit Style License */
-var FontCawesome=function(e){function u(e,t){var n=new XMLHttpRequest,u;n.open("get",e,!0),n.onreadystatechange=function(){if(n.readyState==4){u=n.responseXML;if(!u||!u.firstChild)u=document.createElement("div"),u.innerHTML=n.responseText;i=a(u,"font-face","units-per-em"),s=a(u,"font-face","ascent"),o=a(u,"font-face","descent"),Array.prototype.forEach.call(u.getElementsByTagName("glyph"),h,r={}),t?t(r):f()}},n.send(null)}function a(e,t,n){return parseFloat(e.getElementsByTagName(t)[0].getAttribute(n))}function f(e){Array.prototype.forEach.call((e||document).querySelectorAll(".fa"),c,r)}function l(t,r,s){var u=0,a=0,f=t.length,l=r/i*(typeof display=="object"?display.ratio:1.5),c,h,p,d,v,m,g,y;e.width=e.height=Math.round(l*i),n.setTransform(1,0,0,-1,0,e.height),n.fillStyle=s||"rgb(0,0,0)",n.globalCompositeOperation="xor";while(u<f){y=t[u++],g=1;switch(y.type){case"T":g=0;case"t":n.quadraticCurveTo(l*(v=2*p-(v||p)),l*(m=2*d-(m||d)),l*(p=p*g+y.arguments[0]),l*(d=d*g+y.arguments[1]));break;case"Q":g=0;case"q":n.quadraticCurveTo(l*(v=p*g+y.arguments[0]),l*(m=d*g+y.arguments[1]),l*(p=p*g+y.arguments[2]),l*(d=d*g+y.arguments[3]));break;case"L":g=0;case"l":n.lineTo(l*(p=p*g+y.arguments[0]),l*(d=d*g+y.arguments[1]));break;case"H":g=0;case"h":n.lineTo(l*(p=p*g+y.arguments[0]),l*d);break;case"V":g=0;case"v":n.lineTo(l*p,l*(d=d*g+y.arguments[0]));break;case"z":case"Z":n.lineTo(l*c,l*h),n.closePath(),n.fill();break;case"M":g=0,n.moveTo(l*(p=c=y.arguments[0]),l*(d=h=y.arguments[1]-o)),n.beginPath(),a=2;while(a<y.arguments.length)n.lineTo(l*(p=y.arguments[a]),l*(d=y.arguments[a+1])),a+=2;break;default:throw"unknown "+y.type}}}function c(e){var t=e.offsetHeight,n=getComputedStyle(e,":before"),r=n.getPropertyValue("content"),i=this[r.length!==1?r.charAt(1):r].size(t,n.getPropertyValue("color"));e.parentNode.replaceChild(i,e)}function h(e,t){var n=e.getAttribute("d");n&&(this[e.getAttribute("unicode")]={size:v,path:n})}function p(e){var t=0,n=[],r;e=e.replace(p.re||(p.re=/\s*([achlmqstvzACHLMQSTVZ])\s*/g),"$1");while(t<e.length)n.push(r={}),t=d(r,e,t);return n}function d(e,t,n){var r=n,i=!1;switch(e.type=t[n]){case"z":case"Z":return n+1}e.arguments=[];while(r++<t.length)switch(t[r]){case"A":case"a":case"C":case"c":case"H":case"h":case"L":case"l":case"M":case"m":case"Q":case"q":case"S":case"s":case"T":case"t":case"V":case"v":case"Z":case"z":i=!0;case" ":e.arguments.push(parseFloat(t.substring(n+1,r))),n=r;if(i)return n}}function v(r,s){var o;return l(this._actions||(this._actions=p(this.path)),r,s),t?(o=e,e=document.createElement("canvas"),n=e.getContext("2d")):(o=new Image,o.src=e.toDataURL(),n.clearRect(0,0,i,i)),o.style.cssText="width:"+r+"px;"+"height:"+r+"px;",o.className="fa-ke",o}var t=-1<navigator.userAgent.indexOf("webOSBrowser"),n=e.getContext("2d"),r,i,s,o;return u.fix=f,u}(document.createElement("canvas"));/*! (C) Andrea Giammarchi */
+});/*! (C) Andrea Giammarchi */
 // https://gist.github.com/WebReflection/7286687
 var Delayed = function(delay){
   function Delayed(callback, delay) {
@@ -1600,28 +1450,7 @@ window.on('wp:ffos-install', function(e) {
   img.src = url + 'de_DE/i/scr/pixel.gif';
   img.width = img.height = 1;
   $('form#paypal')[0].appendChild(fragment);
-}/*! (C) Andrea Giammarchi */
-// @link https://gist.github.com/WebReflection/7461879
-// @example
-//  isFontLoaded('FontAwesome', '\uf06b')
-var isFontLoaded = function(canvas1, canvas2) {
-  function reset(canvas, fontName) {
-    var context = canvas.getContext('2d');
-    canvas.width = canvas.height = 16;
-    context.clearRect(0, 0, 16, 16);
-    context.fillStyle = "rgb(0,0,0)";
-    context.font = "16px '" + fontName + "'";
-    context.fillText('\uf06b', 0, 16);
-    return canvas.toDataURL();
-  }
-  return function (fontName, specialChar) {
-    return  reset(canvas1, 'default', specialChar) !==
-            reset(canvas2, fontName, specialChar);
-  };
-}(
-  document.createElement('canvas'),
-  document.createElement('canvas')
-);// WARNING ===================================================
+}// WARNING ===================================================
 // this is not how you should do JavaScript for any website
 // this is a rushed code out of a prototype and potentially
 // full of any sort of bug, not organized, not optimized
@@ -1643,6 +1472,7 @@ var isFontLoaded = function(canvas1, canvas2) {
 // let's dirtly feature detect browser capabilities
 // in the worst case scenario, we'll prepare
 // the most common icon fallback: the marker one
+/*
 try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userAgent))throw 0}catch(o_O){
   // ok, very old browser, icons should be static images
   // instead of runtime generated canvas
@@ -1657,6 +1487,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
     p.insertBefore(d.createElement('script'),p.lastChild).src='/cgi/base64_icon.php';
   }(document));
 }
+*/
 
 (function(window, document){
 
@@ -1697,16 +1528,13 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
     // special lazy function case
     scroll,
     // as a matter of welcome :-)
-    veryFirstTime = true
+    veryFirstTime = true,
+    // should it show the intro ?
+    SHOW_INTRO
   ;
 
   // things that should be done ASAP
   document.when('ready', function(){
-
-    // solve IE9Mobile problem with fonts
-    if (IE9Mobile)
-      FontCawesome('/cgi/fontawesome-webfont.svg.php')
-    ;
 
     // clean dirty nodes on stage
     cleanTheStage();
@@ -1751,14 +1579,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
 
     var navLink, el, tmp, watchId, width;
 
-    if (
-      // if there's still no map
-      !window.L || (
-      // not compact
-      !window.compat &&
-      // and still waiting for font
-      !isFontLoaded('FontAwesome', '\uf06b')
-    )) {
+    if (!window.L) {
       // wait for it
       return setTimeout(equolo, 50);
     }
@@ -1770,8 +1591,30 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
       map: $('section#map')[0],
       about: $('section#about')[0],
       contact: $('section#contact')[0],
-      pinIt: $('section#pin-it')[0]
+      pinIt: $('section#pin-it')[0],
+      intro: $('section#intro')[0]
     };
+
+    SHOW_INTRO =  section.intro.classList.contains('show') &&
+                  !storage.getItem('equolo.show-intro');
+    if (SHOW_INTRO) {
+      $('.choice button').on('click', function() {
+        if (this.classList.contains('map')) {
+          storage.setItem('equolo.show-intro', 1);
+          hideIntro();
+          setTimeout(function() {
+            SHOW_INTRO = false;
+            section.intro.classList.remove('show', 't-all');
+          }, 1000);
+        } else {
+          location.href = '/submit.php';
+        }
+      });
+      setTimeout(function () {
+        section.intro.style.left = '50%';
+      }, 2000);
+    }
+
     section.nav = $('nav', section.map)[0];
     section.placeDetails = $('div.details', section.map)[0];
     section.location = $('div.location', section.map)[0];
@@ -1781,60 +1624,16 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
       section.pinIt
     ];
 
-    // better quality image, or just same image?
-    el = $('img', section.map)[0];
+    $('.logo', section.map).on('click', fullScreen);
     if (!window.compat) {
-      // IE10 does not expose widht and height
-      // when the image is not visible
-      width = el.width || el.naturalWidth;
       createShortcutIcon(equoloIcon);
-      tmp = document.createElement('canvas');
-      tmp.style.cssText = 'width:' + width + 'px;' +
-                          'height:' + width + 'px;';
-      el.replace(
-        equoloIcon(
-          tmp,
-          width * display.ratio,
-          '#E6A72A'
-        ).on('click', fullScreen)
-      );
-      el = tmp;
-
-      width = 20;
-
-      // same is for the welcome, an equolo logo would be nicer
-      tmp = document.createElement('canvas');
-      tmp.style.cssText = 'width:' + width + 'px;' +
-                          'height:' + width + 'px;';
-      $('li.intro h3 > i')[0].replace(
-        equoloIcon(
-          tmp,
-          width * display.ratio,
-          '#064646'
-        )
-      );
-      
     } else {
-      el.on('click', fullScreen);
       tmp = $('head')[0].appendChild(
         document.createElement('link')
       );
       tmp.rel = 'shortcut icon';
       tmp.type = 'image/png';
       tmp.href = '/img/equolo-favicon.png';
-    }
-
-    if (display.height <= 500) {
-      tmp = el.cloneNode(true).on('click', fullScreen);
-      section.map.appendChild(tmp).classList.add('logo');
-      if (tmp.nodeName !== 'IMG') {
-        tmp.getContext('2d').putImageData(
-          el.getContext('2d').getImageData(
-            0, 0, el.width, el.height
-          ),
-          0, 0
-        );
-      }
     }
 
     // make section good for synthetic `scrollingTo`
@@ -1848,7 +1647,6 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
     GoogleAnalytics();
     // paypal too
     PayPal();
-
 
 
 // navigation
@@ -1881,6 +1679,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
         parentNode = this.parentNode,
         offsetHeight
       ;
+      hideIntro();
       // in case kinetic was working
       if (click.sk) click.sk.cancel();
       // closing the whole menu if already selected
@@ -2102,8 +1901,8 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
     findMe = $('button#find-me')[0];
     if ('geolocation' in navigator) {
       findMe.on('click', function (e) {
-        findMe.firstChild.classList.remove('fa-compass');
-        findMe.firstChild.classList.add('fa-spin', 'fa-refresh');
+        findMe.firstChild.classList.remove('icon-compass');
+        findMe.firstChild.classList.add('fx-spin', 'icon-refresh');
         findMe.disabled = true;
         findMe.moved = false;
         try {
@@ -2180,6 +1979,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
     // true so that while waiting for position
     // the user won't be redirected
     map.on('movestart', function () {
+      hideIntro();
       findMe.moved = true;
       veryFirstTime = false;
     });
@@ -2243,8 +2043,8 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
   }
 
   function enableFindMe() {
-    findMe.firstChild.classList.remove('fa-spin', 'fa-download');
-    findMe.firstChild.classList.add('fa-compass');
+    findMe.firstChild.classList.remove('fx-spin', 'icon-download');
+    findMe.firstChild.classList.add('icon-compass');
     findMe.disabled = false;
   }
 
@@ -2255,6 +2055,12 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
       );
     }
     return lastReducedActivities;
+  }
+
+  function hideIntro() {
+    if (SHOW_INTRO) {
+      section.intro.style.left = '100%';
+    }
   }
 
   function orderByDistance(a, b) {
@@ -2332,7 +2138,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
       {
         icon: L.icon({
           // works with retina too and any pixel density
-          iconUrl: fontAwesomeIcon(place.icon, 36),
+          iconUrl: '/img/map/' + place.icon + '.png',
           iconSize: [36, 36],
           iconAnchor: [18, 36]
         })
@@ -2426,7 +2232,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
         for (key in stats) {
           if (stats.hasOwnProperty(key)) {
             result.push(
-              '<i class="fa fa-' +
+              '<i class="icon-' +
                 key +
               '"></i> ' +
                 iconDescription[key] +
@@ -2482,7 +2288,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
             h3.appendChild(
               document.createElement('i')
             ).classList.add(
-              'fa', 'fa-' + place.icon
+              'icon-' + place.icon
             );
             h3.appendChild(
               document.createTextNode(' ' + place.name)
@@ -2611,7 +2417,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
       }
       a.appendChild(
         document.createElement('i')
-      ).classList.add('fa', 'fa-' + icon);
+      ).classList.add('icon-' + icon);
     }
   }
 
@@ -2624,7 +2430,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
       li.classList.add('button');
       li.appendChild(
         document.createElement('i')
-      ).classList.add('fa', 'fa-' + icon);
+      ).classList.add('icon-' + icon);
       li = li.appendChild(
         document.createElement('a')
       );
@@ -2703,7 +2509,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
     showAllDetails.contact.textContent = '';
     showAllDetails.h3.appendChild(
       document.createElement('i')
-    ).className = 'fa fa-' + place.icon;
+    ).className = 'icon-' + place.icon;
     showAllDetails.h3.appendChild(
       document.createTextNode(' ' + place.name)
     );
@@ -2969,7 +2775,13 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
 
   // what happens when the display size changes ?
   function onDisplayChange() {
-    var placeMargin = getScrollableMargin();
+    var placeMargin = getScrollableMargin(),
+        header = $('header', section.map)[0].offsetHeight,
+        mapHeight = (
+          display.height -
+          header -
+          $('footer', section.map)[0].offsetHeight
+        );
     restyle({
       // section should have a proper minimum height
       'section': {
@@ -2983,6 +2795,12 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
       },
       'section#map > div.location > ul > li': {
         'min-height': (150 - SCROLLBAR_SIZE) + 'px'
+      },
+      'section#intro': {
+        'top': header + 'px',
+        'width': Math.round(display.width / 2) + 'px',
+        'max-height': mapHeight + 'px',
+        'min-height': mapHeight + 'px'
       }
     });
     invalidateMapSize();
@@ -3012,9 +2830,11 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
   }
 
   function fixFonts(el) {
+    /*
     if (IE9Mobile)
       FontCawesome.fix(el)
     ;
+    */
   }
 
   function fullScreen() {
