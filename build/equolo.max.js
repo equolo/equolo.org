@@ -131,7 +131,8 @@ var display = function (global) {
       swidth = screen.width,    // TODO: verify screen.availWidth in some device
       sheight = screen.height,  // only if width/height not working as expected
       width = min(
-        global.innerWidth || documentElement.clientWidth,
+        global.innerWidth || Infinity,
+        documentElement.clientWidth || Infinity,
         // some Android has 0.75 ratio
         devicePixelRatio < 1 ? Infinity : (
           // Android flips screen width and height size in landscape
@@ -140,7 +141,8 @@ var display = function (global) {
         )
       ),
       height = min(
-        global.innerHeight || documentElement.clientHeight,
+        global.innerHeight || Infinity,
+        documentElement.clientHeight || Infinity,
         // some Android has 0.75 ratio
         devicePixelRatio < 1 ? Infinity : (
           // Android flips screen width and height size in landscape
@@ -750,7 +752,6 @@ function createShortcutIcon(equoloIcon) {
 }var storage = localStorage;
 try{storage.setItem('0',0);storage.removeItem('0')}catch(iOS7){
   storage = {
-    length: 0,    // do not store data
     getItem: function (key) {
       var
         cookie = document.cookie,
@@ -1883,11 +1884,9 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
     grabActivities();
 
     // if there are already activities
-    if (storage.length) {
-      evaluateAndShowOnMap(
-        // usually stored at the end of a section
-        storage.getItem('equolo.activities')
-      );
+    tmp = storage.getItem('equolo.activities');
+    if (tmp) {
+      evaluateAndShowOnMap(tmp);
       tmp = storage.getItem('equolo.map');
       if (tmp) {
         veryFirstTime = false;
@@ -1955,17 +1954,15 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
   }
 
   function saveActivities() {
-    if (storage.length) {
-      try {
-        storage.setItem(
-          'equolo.activities',
-          lastReceivedActivities || ''
-        );
-      } catch(o_O) {
-        // too much data, remove it or optimize it
-        // TODO: optimize it
-        storage.setItem('equolo.activities', '');
-      }
+    try {
+      storage.setItem(
+        'equolo.activities',
+        lastReceivedActivities || ''
+      );
+    } catch(o_O) {
+      // too much data, remove it or optimize it
+      // TODO: optimize it
+      storage.setItem('equolo.activities', '');
     }
   }
 
@@ -2729,25 +2726,25 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
         style = restyle({
           // section should have a proper minimum height
           'section': {
-            'min-height': display.height + 'px'
+            'min-height': display.height
           },
           'section#map > div.location li.place:nth-child(3)': {
-            'margin-left': placeMargin + 'px'
+            'margin-left': placeMargin
           },
           'section#map > div.location li.place:last-child': {
-            'margin-right': placeMargin + 'px'
+            'margin-right': placeMargin
           },
           'section#map > div.location > ul > li': {
-            'min-height': (150 - SCROLLBAR_SIZE) + 'px'
+            'min-height': 150 - SCROLLBAR_SIZE
           },
           'section#intro': {
             'top': header + 'px',
-            'width': Math.round(display.width / 2) + 'px',
-            'max-height': mapHeight + 'px',
-            'min-height': mapHeight + 'px'
+            'width': Math.round(display.width / 2),
+            'max-height': mapHeight,
+            'min-height': mapHeight
           }
       }, []);
-    alert(onDisplayChange.style);
+
     if (onDisplayChange.style) {
       onDisplayChange.style.remove();
     }
