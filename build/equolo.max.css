@@ -494,14 +494,16 @@ section#intro.show {
   display: block;
 }
 
+@media all and (max-width: 720px) {
+  section#intro.show {
+    display: none;
+  }
+}
 
 
 /* map should be usable, the header is secondary,
     here a simple way to show more content */
 @media all and (max-height: 500px) {
-  section#intro.show {
-    display: none;
-  }
   section#map > header {
     display: none;
   }

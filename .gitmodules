@@ -4,3 +4,6 @@
 [submodule "font-cawesome"]
 	path = font-cawesome
 	url = git@github.com:WebReflection/font-cawesome.git
+[submodule "restyle"]
+	path = restyle
+	url = https://github.com/WebReflection/restyle

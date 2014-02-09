@@ -9,7 +9,7 @@ YUI = 2.4.8
 
 # make JS files
 JS =  js/display.js\
-      js/restyle.js\
+      restyle/build/restyle.js\
       js/normalizer.js\
       js/jsonh.js\
       eddy/build/dom4.js\

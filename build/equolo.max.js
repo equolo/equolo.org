@@ -182,64 +182,8 @@ var display = function (global) {
 // ---------------------------------------------------------------------------
 
 }(window);
-/*jslint browser: true, plusplus: true, indent: 2 */
-// @link https://gist.github.com/WebReflection/6924133
-function restyle(
-  rules,  // an object containing selectors and
-          // a collection of key/value pairs per each
-          // selector, i.e.
-          //  restyle({
-          //    'body > section.main': {
-          //      color: '#EEE',
-          //      'margin-left': (innerWidth - 200) + 'px'
-          //    }
-          //  });
-  doc     // the document, if necessary
-) {
-  'use strict';
-  /*! (C) Andrea Giammarchi - Mit Style License */
-  //  somehow inspired by the fully featured absurd.js
-  //  https://github.com/krasimir/absurd#absurdjs
-  if (!doc) {
-    doc = document;
-  }
-  doc.getElementsByTagName('head')[0].appendChild(
-    doc.createElement('style')
-  ).appendChild(doc.createTextNode(''));
-  var
-    styleSheets = doc.styleSheets,
-    styleSheet = styleSheets[styleSheets.length - 1],
-    add = styleSheet.addRule || function (selector, rule, index) {
-      this.insertRule(selector + '{' + rule + '}', index);
-    },
-    i = 0,
-    selector, // the CSS selector, i.e. body > section.main
-    current,  // the current style with one or more key value pairs
-    key,      // each property, i.e. transition or color or margin-left
-    value,    // the value associated, i.e. #EEDDF0, 20px
-    css;      // the list of all rules per each selector
-  for (selector in rules) {
-    if (rules.hasOwnProperty(selector)) {
-      css = [];
-      current = rules[selector];
-      for (key in current) {
-        if (current.hasOwnProperty(key)) {
-          value = current[key];
-          css.push(
-            '-webkit-' + key + ':' + value,
-            '-khtml-' + key + ':' + value,
-            '-blink-' + key + ':' + value,
-            '-moz-' + key + ':' + value,
-            '-ms-' + key + ':' + value,
-            '-o-' + key + ':' + value,
-            key + ':' + value
-          );
-        }
-      }
-      add.call(styleSheet, selector, css.join(';') + ';', i++);
-    }
-  }
-}// quite an ambitious name
+/*! (C) Andrea Giammarchi Mit Style License */
+var restyle=function(e){"use strict";function u(e,t){this.node=e,this.css=t}function a(e,t,n){return t+"-"+n.toLowerCase()}function f(e,t,n){var i=[],s=typeof t=="number"?"px":"",o=e.replace(r,a),u=n.length;while(u--)i.push("-",n[u],"-",o,":",t,s,";");return i.push(o,":",t,s,";"),i.join("")}function l(e,t){return e.length?e+"-"+t:t}function c(e,t,r,s){var o,u,a;for(o in r)if(n.call(r,o))if(typeof r[o]=="object")if(i(r[o])){u=r[o];for(a=0;a<u.length;a++)e.push(f(l(t,o),u[a],s))}else c(e,l(t,o),r[o],s);else e.push(f(l(t,o),r[o],s));return e.join("")}function h(e,t){var r=[],i,o,u,a,f,l,p;for(a in e)if(n.call(e,a)){i=a.charAt(0)==="@",o=i?a.slice(1):a,f=s.concat(e[a]);for(l=0;l<f.length;l++){u=f[l];if(i){p=t.length;while(p--)r.push("@-",t[p],"-",o,"{",h(u,[t[p]]),"}");r.push(a,"{",h(u,t),"}")}else r.push(a,"{",c([],"",u,t),"}")}}return r.join("")}var t=e.toString,n=e.hasOwnProperty,r=/([a-z])([A-Z])/g,i=Array.isArray||function(e){return t.call(e)==="[object Array]"},s=[],o;return u.prototype={remove:function(){var e=this.node,t=e.parentNode;t&&t.removeChild(e)},valueOf:function(){return this.css}},typeof document=="undefined"?(o=function(e,t){return h(e,t||s)},o.restyle=o):o=function(e,t,n){var r=n||document,i=h(e,t||o.prefixes),s=r.head||r.getElementsByTagName("head")[0]||r.documentElement,a=s.insertBefore(r.createElement("style"),s.lastChild);return a.type="text/css","styleSheet"in a?a.styleSheet.cssText=i:a.appendChild(r.createTextNode(i)),new u(a,i)},o.prefixes=["o","ms","moz","webkit"],o}({});// quite an ambitious name
 // however, this is all we might need/want to normalize
 (function(Array, Function, String){
   'bind' in Function || (Function.bind = function (c){
@@ -2781,28 +2725,33 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
           display.height -
           header -
           $('footer', section.map)[0].offsetHeight
-        );
-    restyle({
-      // section should have a proper minimum height
-      'section': {
-        'min-height': display.height + 'px'
-      },
-      'section#map > div.location li.place:nth-child(3)': {
-        'margin-left': placeMargin + 'px'
-      },
-      'section#map > div.location li.place:last-child': {
-        'margin-right': placeMargin + 'px'
-      },
-      'section#map > div.location > ul > li': {
-        'min-height': (150 - SCROLLBAR_SIZE) + 'px'
-      },
-      'section#intro': {
-        'top': header + 'px',
-        'width': Math.round(display.width / 2) + 'px',
-        'max-height': mapHeight + 'px',
-        'min-height': mapHeight + 'px'
-      }
-    });
+        ),
+        style = restyle({
+          // section should have a proper minimum height
+          'section': {
+            'min-height': display.height + 'px'
+          },
+          'section#map > div.location li.place:nth-child(3)': {
+            'margin-left': placeMargin + 'px'
+          },
+          'section#map > div.location li.place:last-child': {
+            'margin-right': placeMargin + 'px'
+          },
+          'section#map > div.location > ul > li': {
+            'min-height': (150 - SCROLLBAR_SIZE) + 'px'
+          },
+          'section#intro': {
+            'top': header + 'px',
+            'width': Math.round(display.width / 2) + 'px',
+            'max-height': mapHeight + 'px',
+            'min-height': mapHeight + 'px'
+          }
+      }, []);
+    alert(onDisplayChange.style);
+    if (onDisplayChange.style) {
+      onDisplayChange.style.remove();
+    }
+    onDisplayChange.style = style;
     invalidateMapSize();
   }
 

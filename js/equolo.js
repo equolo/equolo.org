@@ -1329,28 +1329,32 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
           display.height -
           header -
           $('footer', section.map)[0].offsetHeight
-        );
-    restyle({
-      // section should have a proper minimum height
-      'section': {
-        'min-height': display.height + 'px'
-      },
-      'section#map > div.location li.place:nth-child(3)': {
-        'margin-left': placeMargin + 'px'
-      },
-      'section#map > div.location li.place:last-child': {
-        'margin-right': placeMargin + 'px'
-      },
-      'section#map > div.location > ul > li': {
-        'min-height': (150 - SCROLLBAR_SIZE) + 'px'
-      },
-      'section#intro': {
-        'top': header + 'px',
-        'width': Math.round(display.width / 2) + 'px',
-        'max-height': mapHeight + 'px',
-        'min-height': mapHeight + 'px'
-      }
-    });
+        ),
+        style = restyle({
+          // section should have a proper minimum height
+          'section': {
+            'min-height': display.height + 'px'
+          },
+          'section#map > div.location li.place:nth-child(3)': {
+            'margin-left': placeMargin + 'px'
+          },
+          'section#map > div.location li.place:last-child': {
+            'margin-right': placeMargin + 'px'
+          },
+          'section#map > div.location > ul > li': {
+            'min-height': (150 - SCROLLBAR_SIZE) + 'px'
+          },
+          'section#intro': {
+            'top': header + 'px',
+            'width': Math.round(display.width / 2) + 'px',
+            'max-height': mapHeight + 'px',
+            'min-height': mapHeight + 'px'
+          }
+      }, []);
+    if (onDisplayChange.style) {
+      onDisplayChange.style.remove();
+    }
+    onDisplayChange.style = style;
     invalidateMapSize();
   }
 
