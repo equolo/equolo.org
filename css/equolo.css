@@ -185,7 +185,7 @@ section#map header h2 {
   font-weight: 200;
   font-style: italic;
   margin-top: 29px;
-  margin-left: -33px;
+  margin-left: -83px;
 }
 div.central {
   max-width: 720px;
@@ -194,6 +194,7 @@ div.central {
   font-size: 14px;
   line-height: 16px;
 }
+header a.join,
 button#find-me,
 select[name=category] {
   z-index: 9999;
@@ -204,6 +205,15 @@ select[name=category] {
   opacity: 0.8 !important;
   border-radius: 8px !important;
   border: 4px solid #888 !important;
+}
+header a.join,
+header a.join:visited {
+  display: inline-block;
+  line-height: 22px;
+  text-decoration: none;
+  color: #198a8a;
+  margin-top: 8px;
+  padding: 0 12px;
 }
 button#find-me {
   top: 153px;
@@ -337,13 +347,22 @@ li.button > a.social img {
 }
 
 section#about h3,
+section#about h4,
 section#contact h3,
-section#pin-it h3 {
+section#contact h4,
+section#pin-it h3,
+section#pin-it h4 {
+  text-align: left;
   padding: 8px;
   color: #E6A72A;
   margin: 32px auto 8px 0;
   font-weight: 600;
   font-size: 16px;
+}
+section#about h4,
+section#contact h4,
+section#pin-it h4 {
+  font-size: 14px;
 }
 section#about h3.on,
 section#contact h3.on,
@@ -363,7 +382,9 @@ section#contact div.central > img,
 section#pin-it div.central > img {
   margin: 16px;
 }
-section#about P,
+ul.help,
+ul.help > li,
+section#about p,
 section#contact p,
 section#contact form,
 section#pin-it p {
@@ -373,6 +394,7 @@ section#pin-it p {
   font-size: 14px;
   line-height: 18px;
 }
+
 section#about p > a,
 section#contact p > a,
 section#pin-it p > a,
@@ -453,31 +475,20 @@ section#intro a:visited {
   text-decoration: none;
   border-bottom: 1px #198a8a dotted;
 }
-/*
-section#intro .choice {
-  position: relative;
-  margin-bottom: 8px;
-}
-section#intro .choice button {
-  font-size: 1em;
-  position: absolute;
-  top: 0;
-}
-section#intro .choice .icon {
-  font-size: 12px;
-}
-section#intro .choice .map {
-  left: 32px;
-}
-section#intro .choice .register {
-  right: 32px;
-}
-*/
 section#intro.show {
   display: block;
 }
 
+.open-close.icon {
+  float: right;
+  font-size: 16px;
+  margin-right: 8px;
+}
+
 @media all and (max-width: 720px) {
+  header a.join {
+    display: none;
+  }
   section#intro.show {
     display: none;
   }

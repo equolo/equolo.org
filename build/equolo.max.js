@@ -1550,7 +1550,8 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
                   !storage.getItem('equolo.show-intro');
 
     if (SHOW_INTRO) {
-      $('section#intro a').on('click', function() {
+      $('section#intro a').on('click', function(e) {
+        e.preventDefault();
         if (this.classList.contains('map')) {
           storage.setItem('equolo.show-intro', 1);
           hideIntro();
@@ -2250,6 +2251,9 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
             p.appendChild(
               document.createTextNode(place.description)
             );
+            p.appendChild(
+              document.createElement('i')
+            ).className = 'open-close icon icon-new-tab';
             if (!TOUCH) {
               li.on('click', onPlaceClick);
             }
