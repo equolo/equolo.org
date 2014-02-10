@@ -7,7 +7,6 @@ CACHE:
 /css/leaflet.ie.css
 /cgi/equolo.js.php
 /cgi/leaflet.js.php
-/cgi/base64_icon.php
 /js/ie8.js
 /js/es5-shim.js
 /img/map/briefcase.png
@@ -37,10 +36,13 @@ CACHE:
 /img/wp_home_screen.png
 /img/bb10_home_screen.png
 /fonts/equolo.eot
+/fonts/equolo.svg
 /fonts/equolo.ttf
 /fonts/equolo.woff
-/fonts/equolo.svg
 /equolo.webapp
 
 NETWORK:
 *
+http://*
+https://*
+

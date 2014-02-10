@@ -438,6 +438,7 @@ section#intro {
 }
 section#intro header {
   padding-top: 8px;
+  color: #198a8a;
 }
 section#intro header * {
   float: left;
@@ -461,6 +462,9 @@ section#intro .description {
   padding: 10px;
   font-size: .9em;
 }
+section#intro ul {
+  margin-top: 32px;
+}
 section#intro ul,
 section#intro li {
   list-style: none;
@@ -472,6 +476,14 @@ section#intro li {
 section#intro li:before {
   margin-left: -24px;
 }
+section#intro a,
+section#intro a:visited {
+  font-weight: bold;
+  color: #198a8a;
+  text-decoration: none;
+  border-bottom: 1px #198a8a dotted;
+}
+/*
 section#intro .choice {
   position: relative;
   margin-bottom: 8px;
@@ -490,6 +502,7 @@ section#intro .choice .map {
 section#intro .choice .register {
   right: 32px;
 }
+*/
 section#intro.show {
   display: block;
 }
@@ -625,7 +638,9 @@ section#intro.show {
 .no-scroll {
   overflow: hidden;
   -ms-touch-action: none;
+  /*
   touch-action: none;
+  */
 }/* custom borders */
 .leaflet-bar {
   background: #FFF !important;

@@ -1436,6 +1436,12 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
 
 (function(window, document){
 
+  if (window.applicationCache) {
+    applicationCache.addEventListener('updateready', function() {
+      window.location.reload();
+    });
+  }
+
   var
     // which level is good enough to show proper icons ?
     ZOOM_FOR_ICONS = 12,
@@ -1542,14 +1548,16 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
 
     SHOW_INTRO =  section.intro.classList.contains('show') &&
                   !storage.getItem('equolo.show-intro');
+
     if (SHOW_INTRO) {
-      $('.choice button').on('click', function() {
+      $('section#intro a').on('click', function() {
         if (this.classList.contains('map')) {
           storage.setItem('equolo.show-intro', 1);
           hideIntro();
           setTimeout(function() {
             SHOW_INTRO = false;
             section.intro.classList.remove('show', 't-all');
+            section.intro.remove();
           }, 1000);
         } else {
           location.href = '/submit.php';
@@ -1558,6 +1566,8 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
       setTimeout(function () {
         section.intro.style.left = '50%';
       }, 2000);
+    } else {
+      section.intro.remove();
     }
 
     section.nav = $('nav', section.map)[0];
@@ -2465,8 +2475,8 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
     showButtonIfNeeded(ul, place, 'phone', 'phone');
     showSocialIfNeeded(ul, place, 'twitter', 'twitter');
     showButtonIfNeeded(ul, place, 'email', 'envelope');
-    showSocialIfNeeded(ul, place, 'facebook', 'facebook-square');
-    showButtonIfNeeded(ul, place, 'website', 'globe');
+    showSocialIfNeeded(ul, place, 'facebook', 'facebook');
+    showButtonIfNeeded(ul, place, 'website', 'earth');
     showSocialIfNeeded(ul, place, 'gplus', 'google-plus');
 
     fixFonts(el);
