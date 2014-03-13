@@ -30,7 +30,7 @@ In der Sektion "Standort" kann mann die Email-Adresse eingeben, die als Kontakt 
    'facebook' => 'facebook',
    'find-me' => 'finde mich!',
    'gplus' => 'google plus',
-   'jslang' => '',
+   'jslang' => 'this.jslang={"pinit":"Do you want to place the icon here?","seeYouLater":"An email has been sent to your account with the edit button\\/link\\nPlease check your email inbox and feel free to come back whenever you want. Thank You!","pleaseConfirmFirst":"Your email is already in our database.\\nPlease check your email inbox, we have sent you further instructions on how to proceed.","oneStepLeft":"One small step left:\\nOpen the email you received from equolo.org and follow the instructions to activate your data and be visible on the map.","everythingOK":")°(, congratulations!\\nYour data were submitted successfully!"}',
    'language-selection' => 'Sprachauswahl',
    'location' => 'Standort',
    'location-fieldset-description' => '<p>Bitte Infos über dem Ort des Unternehmens eingeben. Es ist möglich, für jedes Unternehmen mehrere Adressen hinzufügen (z.B. Wenn ein Geschäft mehrere Verkaufspunkte hat).</p><p><strong>Falls die Eingabe nicht auf der Karte erscheint</strong> oder in der falsche Position ist, klick mit der rechten Taste in dem genauen Punkt, wo Du sie haben willst und bestätig wenn gefragt.</p><p>Bitte beachten: Die Infos, die in dieser Sektion eingegeben wird, wird auf der Karte veröffentlicht und ist für alle Nutzer zu sehen.</p>',

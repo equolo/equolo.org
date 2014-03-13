@@ -41,6 +41,7 @@ $dictionary=(array(
    'remove' => 'rimuovi',
    'road' => 'via',
    'state' => 'regione',
+   'jslang' => 'this.jslang={"pinit":"Do you want to place the icon here?","seeYouLater":"An email has been sent to your account with the edit button\\/link\\nPlease check your email inbox and feel free to come back whenever you want. Thank You!","pleaseConfirmFirst":"Your email is already in our database.\\nPlease check your email inbox, we have sent you further instructions on how to proceed.","oneStepLeft":"One small step left:\\nOpen the email you received from equolo.org and follow the instructions to activate your data and be visible on the map.","everythingOK":")°(, congratulations!\\nYour data were submitted successfully!"}',
    'terms-of-service' => 'equolo.org – Termini di utilizzo',
    'terms-of-service-about' => 'Il servizio',
    'terms-of-service-about-description' => '<p>Equolo.org è un progetto non a scopo di lucro e non commerciale. La sua missione e il suo scopo è esclusivamente quello di fornire una piattaforma di promozione per le imprese, organizzazioni ed iniziative sostenibili e di rendere tali soggetti piú facilmente reperibili agli utenti.</p>',
