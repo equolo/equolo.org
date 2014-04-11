@@ -681,7 +681,13 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
       } else {
         marker = L.circleMarker(toGeoArray(current), options);
       }
-      groups[icon].addLayer(marker);
+      try {
+        groups[icon].addLayer(marker);
+      } catch(Firefox_O_o) {
+        // ... really dude ... 
+        console.log(icon || 'icon:fail');
+        console.log(groups || 'groups:fail');
+      }
     }
   }
 
