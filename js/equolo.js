@@ -47,7 +47,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
 
   var
     // which level is good enough to show proper icons ?
-    ZOOM_FOR_ICONS = 12,
+    ZOOM_FOR_ICONS = 10,
     ZOOM_FOR_BBOX = 15,
     ZOOM_MAX = 18,
     ZOOM_MIN = 3,

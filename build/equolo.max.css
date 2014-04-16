@@ -362,9 +362,8 @@ li.button > a:visited {
   padding: 2px;
 }
 li.button > a.social {
-  position: absolute;
-  left: auto;
-  right: 16px;
+  float: right;
+  margin-right: 16px;
   width: 32px;
   height: 16px;
   font-size: 16px;
@@ -507,6 +506,16 @@ section#intro a:visited {
 }
 section#intro.show {
   display: block;
+}
+section#intro button {
+  font-size: 16px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  -webkit-background-clip: padding-box; 
+  -moz-background-clip:    padding; 
+  background-clip:         padding-box;
+  background: #EEE;
 }
 
 .open-close.icon {
