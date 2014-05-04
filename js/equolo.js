@@ -52,6 +52,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
     ZOOM_MAX = 18,
     ZOOM_MIN = 3,
     TOUCH = 'ontouchend' in document,
+    TOUCH_AINT_FAKE = false,
     // coordinates utility
     mercator = new Mercator(256),
     // the shared map instance
@@ -86,6 +87,28 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
     // should it show the intro ?
     SHOW_INTRO
   ;
+
+  if (TOUCH) {
+    [
+      'touchstart',
+      'mousemove',
+      'mousewheel',
+      'scroll'
+    ].forEach(
+      function(type){
+        document.once(type, this, true);
+      },
+      function (e) {
+        if (!TOUCH_AINT_FAKE) {
+          TOUCH_AINT_FAKE = e.type === 'touchstart';
+          if (!TOUCH_AINT_FAKE && TOUCH) {
+            TOUCH = false;
+            document.emit('fake:touch');
+          }
+        }
+      }
+    );
+  }
 
   // things that should be done ASAP
   document.when('ready', function(){
@@ -501,12 +524,21 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
     tmp = storage.getItem('equolo.activities');
     if (tmp) {
       evaluateAndShowOnMap(tmp);
-      tmp = storage.getItem('equolo.map');
-      if (tmp) {
-        veryFirstTime = false;
-        setMapView.apply(null, JSON.parse(tmp));
-      }
     }
+    if (/#(-?\d+\.\d+)\|(-?\d+\.\d+)\|(\d+)$/.test(location.hash)) {
+      veryFirstTime = false;
+      setMapView(
+        {
+          latitude: parseFloat(RegExp.$1),
+          longitude: parseFloat(RegExp.$2)
+        },
+        parseInt(RegExp.$3, 10)
+      );
+    } else if (tmp = storage.getItem('equolo.map')) {
+      veryFirstTime = false;
+      setMapView.apply(null, JSON.parse(tmp));
+    }
+
     if(veryFirstTime) {
       $('li.intro', section.map)[0].style.cssText = 'display:block;margin-left:' + (
         getScrollableMargin()
@@ -546,12 +578,19 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
       var
         zoom = map.getZoom(),
         center = map.getCenter(),
-        bounds
+        state = [
+          center.lat.toFixed(3),
+          center.lng.toFixed(3),
+          zoom
+        ]
       ;
       storage.setItem(
         'equolo.map',
         JSON.stringify([center, zoom])
       );
+      if (window.history) {
+        history.replaceState(state, document.title, '#' + state.join('|'));
+      }
     }));
     map.on('movestart', tmp.clear);
 
@@ -886,6 +925,11 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
         ) + 'px';
         fixFonts(updateInfoOnBar.el);
         if (TOUCH && !updateInfoOnBar.hscroll) {
+          document.once('fake:touch', function () {
+            $('li.place', updateInfoOnBar.el).on('click', onPlaceClick);
+            updateInfoOnBar.hscroll.clear();
+            updateInfoOnBar.el.parentNode.style.overflow = 'auto';
+          });
           updateInfoOnBar.hscroll = new HorizontalScroll(
             updateInfoOnBar.el, {
               onstart: function () {

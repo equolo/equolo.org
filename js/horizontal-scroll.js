@@ -54,9 +54,15 @@ var HorizontalScroll = (function(UA, Math){
   // helps adding or removing listeners
   function addOrRemoveListeners(hs, el, add) {
     var method = (add ? 'add' : 'remove') + 'EventListener';
-    el[method]('touchstart', hs, true);
-    el[method]('touchmove', hs, true);
-    el[method]('touchend', hs, true);
+    if ('ontouchend' in document) {
+      el[method]('touchstart', hs, true);
+      el[method]('touchmove', hs, true);
+      el[method]('touchend', hs, true);
+    } else {
+      el[method]('mousedown', hs, true);
+      el[method]('mousemove', hs, true);
+      el[method]('mouseup', hs, true);
+    }
   }
 
   Prototype.clear = function clear() {
