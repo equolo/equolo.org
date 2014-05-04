@@ -1928,7 +1928,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
     if (tmp) {
       evaluateAndShowOnMap(tmp);
     }
-    if (/#(-?\d+\.\d+)\|(-?\d+\.\d+)\|(\d+)$/.test(location.hash)) {
+    if (/#(-?\d+\.\d+)(?:\||\/)(-?\d+\.\d+)(?:\||\/)(\d+)$/.test(decodeURIComponent(location.hash))) {
       veryFirstTime = false;
       setMapView(
         {
@@ -1992,7 +1992,7 @@ try{if(IE9Mobile||fontAwesomeIcon('?',36).length<36||/Silk/.test(navigator.userA
         JSON.stringify([center, zoom])
       );
       if (window.history) {
-        history.replaceState(state, document.title, '#' + state.join('|'));
+        history.replaceState(state, document.title, '#' + state.join('/'));
       }
     }));
     map.on('movestart', tmp.clear);
