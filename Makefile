@@ -23,7 +23,7 @@ JS =  js/display.js\
       js/storage.js\
       js/IE9Mobile.js\
       js/Delayed.js\
-      js/Mercator.js\
+      js/mercator.js\
       js/horizontal-scroll.js\
       js/ietouches.js\
       js/wp.js\
@@ -154,7 +154,6 @@ external:
 size:
 	wc -c build/$(REPO).js
 	gzip -c build/$(REPO).js | wc -c
-	mkdir -p www/phpmyadmin
 	rm -rf www/phpmyadmin
 	ln -s ~/code/phpmyadmin www/phpmyadmin
 
